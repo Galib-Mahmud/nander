@@ -1,0 +1,32 @@
+name: nander
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  # Fixed: ^3.12.1 is not a valid Dart SDK version. Using a standard stable range.
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Added missing packages required by your main.dart
+  get: ^4.6.6
+  flutter_screenutil: ^5.9.3
+  syncfusion_flutter_charts:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Fixed: Removed the stray 's' character that was causing a YAML parsing error
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+
+  assets:
+   - assets/images/
