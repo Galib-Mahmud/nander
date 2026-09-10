@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'club/routes/app_route.dart';
-import 'club/routes/route_name.dart';
+import 'package:nander/trainer/routes/app_route.dart';
+import 'package:nander/trainer/routes/route_name.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

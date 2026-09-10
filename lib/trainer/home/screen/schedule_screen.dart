@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import '../../../trainer/routes/route_name.dart';
-import '../../../trainer/widget/controller/app_drawer_controller.dart';
 
+
+import '../../routes/route_name.dart';
+import '../../widget/controller/app_drawer_controller.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key, required int activeTabIndex});
@@ -22,122 +23,27 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: Row(
-          children: [
-            // ✅ Logo Image Asset
-            Container(
-              width: 50.w,
-              height: 50.w,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A1628),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/images/logo.png', // ✅ Your logo image path
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // Fallback to text if image not found
-                    return const Center(
-                      child: Text(
-                        'TU',
-                        style: TextStyle(
-                          color: Color(0xFF4D94FF),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            SizedBox(width: 12.w),
-            // Title and Subtitle
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Schedule',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  'Nordkap Hockey Club',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 12.sp,
-                  ),
-                ),
-              ],
-            ),
-          ],
+        title: const Text(
+          'Schedule',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          Row(
+          // Bell Icon with Badge
+          Stack(
             children: [
-              // Notification Bell
-              Stack(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Get.toNamed(RouteName.notifications);
-                    },
-                    child: Container(
-                      width: 44.w,
-                      height: 44.w,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1A2236),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFF2A3550),
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white.withOpacity(0.7),
-                        size: 20.w,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 18.w,
-                      height: 18.w,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF5252),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '3',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 12.w),
-              // More Options
               GestureDetector(
-                onTap: () {
-                  Get.find<AppDrawerController>().open();
+                onTap: (){
+                  Get.toNamed(RouteName.notifications);
                 },
                 child: Container(
                   width: 44.w,
@@ -150,15 +56,59 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   ),
                   child: Icon(
-                    Icons.more_vert,
-                    color: Colors.white,
-                    size: 20.w,
+                    Icons.notifications_outlined,
+                    color: Colors.white.withOpacity(0.7),
+                    size: 22.w,
                   ),
                 ),
               ),
-              SizedBox(width: 12.w), // Right padding for better alignment
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 20.w,
+                  height: 20.w,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFF5252),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '3',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
+          SizedBox(width: 12.w),
+          // More Options
+          GestureDetector(
+            onTap: (){
+              Get.find<AppDrawerController>().open();
+            },
+            child: Container(
+              width: 44.w,
+              height: 44.w,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A2236),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF2A3550),
+                ),
+              ),
+              child: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+                size: 22.w,
+              ),
+            ),
+          ),
+          SizedBox(width: 20.w),
         ],
         elevation: 0,
       ),
@@ -319,7 +269,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         ),
         GestureDetector(
           onTap: (){
-            Get.toNamed(RouteName.scheduler);
+            Get.to(() => const ScheduleScreen(activeTabIndex: 0));
           },
           child: Container(
             margin: EdgeInsets.only(bottom: 20.h),

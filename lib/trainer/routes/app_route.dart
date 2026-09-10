@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
+import '../../club/home/screen/main_screen1.dart';
 import '../auth/screen/login_screen.dart';
 import '../auth/screen/otp_screen.dart';
+import '../auth/screen/premium_screen.dart';
 import '../auth/screen/reset_password_screen.dart';
 import '../chat/screen/chat_list_screen.dart';
 import '../chat/screen/chat_screen.dart';
+import '../chat/screen/my_teams_screen.dart';
 import '../chat/screen/profile_update_screen.dart';
 import '../home/screen/club_profile_screen.dart';
 import '../home/screen/main_screen.dart';
@@ -43,6 +46,9 @@ class AppRoute {
       name: RouteName.otp,
       page: () => const OtpScreen(),
     ),GetPage(
+      name: RouteName.premium,
+      page: () => const PremiumUpgradeScreen(),
+    ),GetPage(
       name: RouteName.notifications,
       page: () => const NotificationsScreen(),
     ),
@@ -53,6 +59,12 @@ class AppRoute {
     GetPage(
       name: RouteName.home,
       page: () => const MainScreen(),
+    ), GetPage(
+      name: RouteName.home1,
+      page: () => const MainScreen1(),
+    ), GetPage(
+      name: RouteName.myteam,
+      page: () => const MyTeamsScreen(),
     ),
 
     GetPage(
@@ -61,7 +73,7 @@ class AppRoute {
     ),
     GetPage(
       name: RouteName.schedule,
-      page: () => const ScheduleScreen(),
+      page: () => const ScheduleScreen(activeTabIndex: 0,),
     ),
     GetPage(
       name: RouteName.team,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/route_name.dart';
 
-// ✅ Fixed: Changed to StatefulWidget to handle selection state
 class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
 
@@ -62,7 +61,6 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              // ✅ Fixed: Updated subtitle to make sense
               const Text(
                 'Select your primary role to customize your dashboard.',
                 style: TextStyle(
@@ -72,7 +70,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
               ),
               const SizedBox(height: 24),
 
-              // ✅ Fixed: Made tappable with visual feedback
+              // Club Administrator Card
               GestureDetector(
                 onTap: () => setState(() => _selectedRole = 'admin'),
                 child: Container(
@@ -115,7 +113,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
               ),
               const SizedBox(height: 16),
 
-              // ✅ Fixed: Made tappable with visual feedback
+              // Trainer Card
               GestureDetector(
                 onTap: () => setState(() => _selectedRole = 'trainer'),
                 child: Container(
@@ -194,7 +192,13 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                           );
                           return;
                         }
-                        Get.toNamed(RouteName.home); // ✅ Navigates to home
+
+                        // ✅ Route based on selected role
+                        if (_selectedRole == 'admin') {
+                          Get.toNamed(RouteName.home1); // Club Administrator route
+                        } else if (_selectedRole == 'trainer') {
+                          Get.toNamed(RouteName.home);  // Trainer route
+                        }
                       },
                       child: Container(
                         height: 56,

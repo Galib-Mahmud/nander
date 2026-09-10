@@ -3,10 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-
-import '../../../trainer/routes/route_name.dart';
-import '../../../trainer/widget/controller/app_drawer_controller.dart';
-
+import '../../routes/route_name.dart';
+import '../../widget/controller/app_drawer_controller.dart';
 
 class TeamScreen extends StatelessWidget {
   const TeamScreen({super.key});
@@ -18,73 +16,33 @@ class TeamScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF050810),
         foregroundColor: Colors.white,
-        title: Row(
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ Logo Image Asset
-            Container(
-              width: 50.w,
-              height: 50.w,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A1628),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/images/logo.png', // ✅ Your logo image path
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // Fallback to text if image not found
-                    return const Center(
-                      child: Text(
-                        'TU',
-                        style: TextStyle(
-                          color: Color(0xFF4D94FF),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+            Text(
+              'Team',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(width: 12.w),
-            // Title and Subtitle
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Team',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                const Text(
-                  'Nordkap U18 Elite',
-                  style: TextStyle(
-                    color: Color(0xFF8B95A5),
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ],
+            SizedBox(height: 4),
+            Text(
+              'Nordkap U18 Elite',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF8B95A5),
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ],
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
-          Row(
-            children: [
-              _buildNotificationBell(),
-              SizedBox(width: 12.w),
-              _buildMoreOptions(),
-              SizedBox(width: 12.w), // Right padding for better alignment
-            ],
-          ),
+          _buildNotificationBell(),
+          SizedBox(width: 12.w),
+          _buildMoreOptions(),
+          SizedBox(width: 20.w),
         ],
         elevation: 0,
       ),
@@ -95,7 +53,7 @@ class TeamScreen extends StatelessWidget {
           return _buildTeamCard();
         },
       ),
-
+      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -222,6 +180,63 @@ class TeamScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildBottomNav() {
+    return Container(
+      height: 80.h,
+      decoration: const BoxDecoration(
+        color: Color(0xFF0B1120),
+        border: Border(top: BorderSide(color: Color(0xFF1F2937))),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _navItem(Icons.home_outlined, 'Home', false),
+              _navItem(Icons.calendar_today_outlined, 'Schedule', false),
+              SizedBox(width: 40.w), // Space for FAB
+              _navItem(Icons.bar_chart, 'Team', true), // Active
+              _navItem(Icons.layers_outlined, 'More', false),
+            ],
+          ),
+          Positioned(
+            top: -25.h,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
+                  // Handle FAB tap
+                },
+                child: Container(
+                  width: 70.w,
+                  height: 70.w,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4D94FF),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4D94FF).withOpacity(0.4),
+                        blurRadius: 15,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.auto_awesome,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _navItem(IconData icon, String label, bool isActive) {
     return Column(

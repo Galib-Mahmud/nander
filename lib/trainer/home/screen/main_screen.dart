@@ -75,7 +75,7 @@ class _MainScreenState extends State<MainScreen>
 
   final List<Widget> _pages = [
     const HomeDashboardScreen(),
-    const ScheduleScreen(),
+    const ScheduleScreen(activeTabIndex: 0,),
     const TeamScreen(),
     const MoreScreen(),
   ];

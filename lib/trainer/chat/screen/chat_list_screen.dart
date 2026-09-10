@@ -133,7 +133,7 @@ class ChatListScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(),
+
     );
   }
 
@@ -217,57 +217,7 @@ class ChatListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav() {
-    return Container(
-      height: 80.h,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0B1120),
-        border: Border(top: BorderSide(color: Color(0xFF1F2937))),
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _navItem(Icons.home_outlined, 'Home', false),
-              _navItem(Icons.calendar_today_outlined, 'Schedule', false),
-              SizedBox(width: 40.w),
-              _navItem(Icons.bar_chart, 'Team', false),
-              _navItem(Icons.layers_outlined, 'More', false),
-            ],
-          ),
-          Positioned(
-            top: -25.h,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                width: 70.w,
-                height: 70.w,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4D94FF),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _navItem(IconData icon, String label, bool isActive) {
     return Column(

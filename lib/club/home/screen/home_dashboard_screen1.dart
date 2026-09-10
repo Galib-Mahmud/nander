@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
-import '../../routes/route_name.dart';
-import '../../widget/controller/app_drawer_controller.dart';
-class HomeDashboardScreen extends StatelessWidget {
-  const HomeDashboardScreen({super.key});
+import '../../../trainer/routes/route_name.dart';
+import '../../../trainer/widget/controller/app_drawer_controller.dart';
+
+
+class HomeDashboardScreen1 extends StatelessWidget {
+  const HomeDashboardScreen1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,24 +25,60 @@ class HomeDashboardScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(
-                        'Today',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32.sp,
-                          fontWeight: FontWeight.bold,
+                      // Logo Image Asset
+                      Container(
+                        width: 50.w,
+                        height: 50.w,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0A1628),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/logo.png', // ✅ Your logo image path
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback to text if image not found
+                              return const Center(
+                                child: Text(
+                                  'TU',
+                                  style: TextStyle(
+                                    color: Color(0xFF4D94FF),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        'Nordkap Hockey Club • season 2026/27',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14.sp,
-                        ),
+                      SizedBox(width: 12.w),
+                      // Title and Subtitle
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Today',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            'Nordkap Hockey Club',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.6),
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -58,13 +98,13 @@ class HomeDashboardScreen extends StatelessWidget {
                               ),
                             ),
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Get.toNamed(RouteName.notifications);
                               },
                               child: Icon(
                                 Icons.notifications_outlined,
                                 color: Colors.white,
-                                size: 22.w,
+                                size: 20.w,
                               ),
                             ),
                           ),
@@ -72,8 +112,8 @@ class HomeDashboardScreen extends StatelessWidget {
                             right: 0,
                             top: 0,
                             child: Container(
-                              width: 20.w,
-                              height: 20.w,
+                              width: 18.w,
+                              height: 18.w,
                               decoration: const BoxDecoration(
                                 color: Color(0xFFFF5252),
                                 shape: BoxShape.circle,
@@ -83,7 +123,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                   '3',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12.sp,
+                                    fontSize: 10.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -95,7 +135,7 @@ class HomeDashboardScreen extends StatelessWidget {
                       SizedBox(width: 12.w),
                       // More Options
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Get.find<AppDrawerController>().open();
                         },
                         child: Container(
@@ -111,7 +151,7 @@ class HomeDashboardScreen extends StatelessWidget {
                           child: Icon(
                             Icons.more_vert,
                             color: Colors.white,
-                            size: 22.w,
+                            size: 20.w,
                           ),
                         ),
                       ),
@@ -125,86 +165,130 @@ class HomeDashboardScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Container(
-                padding: EdgeInsets.all(20.w),
+                height: 280.h, // Fixed height for the card
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A2236),
                   borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(
-                    color: const Color(0xFF2A3550),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/b.jpg'), // ✅ Your background image
+                    fit: BoxFit.cover,
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Next on the ice',
-                          style: TextStyle(
-                            color: const Color(0xFF4D94FF),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
+                    // Dark overlay gradient
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.black.withOpacity(0.85),
+                          ],
                         ),
-                        Text(
-                          '16:30',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12.h),
-                    const Text(
-                      'Power play entries & net front',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Nordkap U18 Elite • Tue 25 Aug',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 14.sp,
+                    // Content
+                    Padding(
+                      padding: EdgeInsets.all(20.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Next on the Field Hockey',
+                                style: TextStyle(
+                                  color: const Color(0xFF4D94FF),
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                '16:30',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12.h),
+                          const Text(
+                            'Power play entries & net front',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            'Nordkap U18 Elite • Tue 25 Aug',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 16.w,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                '75 min',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                              SizedBox(width: 20.w),
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 16.w,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                'Nordkap Arena • Main',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16.h),
+                          // View Session Button
+                          GestureDetector(
+                            onTap: (){
+
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF4D94FF),
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: const Text(
+                                'View Session',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 12.h),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: Colors.white.withOpacity(0.6),
-                          size: 16.w,
-                        ),
-                        SizedBox(width: 6.w),
-                        Text(
-                          '75 min',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                        SizedBox(width: 20.w),
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: Colors.white.withOpacity(0.6),
-                          size: 16.w,
-                        ),
-                        SizedBox(width: 6.w),
-                        Text(
-                          'Nordkap Arena • Main',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -267,12 +351,17 @@ class HomeDashboardScreen extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(
-                        'All',
-                        style: TextStyle(
-                          color: const Color(0xFF4D94FF),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: (){
+                          Get.toNamed(RouteName.topClubs);
+                        },
+                        child: Text(
+                          'All',
+                          style: TextStyle(
+                            color: const Color(0xFF4D94FF),
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:nander/club/routes/route_name.dart';
+
+import '../../routes/route_name.dart';
 
 class CustomDrawer extends StatelessWidget {
   final VoidCallback onClose;
@@ -40,50 +41,14 @@ class CustomDrawer extends StatelessWidget {
                 children: [
                   // ✅ Logo Image Asset
                   Container(
-                    width: 100.w,
-                    height: 100.w,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0A1628),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF4D94FF).withOpacity(0.3),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
+
+
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
-                        'assets/images/trainup_logo.png', // ✅ Your logo image path
+                        'assets/images/logo.png', // ✅ Your logo image path
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          // Fallback to text if image not found
-                          return const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'TU',
-                                style: TextStyle(
-                                  color: Color(0xFF4D94FF),
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              Text(
-                                'TRAIN UP',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+
                       ),
                     ),
                   ),
@@ -91,8 +56,8 @@ class CustomDrawer extends StatelessWidget {
                   GestureDetector(
                     onTap: onClose,
                     child: Container(
-                      width: 40.w,
-                      height: 40.w,
+                      width: 36.w,
+                      height: 36.w,
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: Colors.white.withOpacity(0.2),
@@ -103,7 +68,7 @@ class CustomDrawer extends StatelessWidget {
                       child: Icon(
                         Icons.close,
                         color: Colors.white.withOpacity(0.9),
-                        size: 20.w,
+                        size: 18.w,
                       ),
                     ),
                   ),
@@ -111,7 +76,34 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 30.h),
+            // Club Name and Season Text
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Nordkap Hockey Club',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Season 2026/27',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 24.h),
 
             // Menu Items
             Expanded(
@@ -122,7 +114,6 @@ class CustomDrawer extends StatelessWidget {
                       icon: Icons.dashboard_outlined,
                       label: 'Dashboard',
                       onTap: () {
-
                         Get.toNamed(RouteName.home);
                       },
                     ),
@@ -130,22 +121,21 @@ class CustomDrawer extends StatelessWidget {
                       icon: Icons.groups_outlined,
                       label: 'My Teams',
                       onTap: () {
-
-                        Get.toNamed(RouteName.team);
+                        Get.toNamed(RouteName.myteam);
                       },
                     ),
                     _buildMenuItem(
                       icon: Icons.sports_mma_outlined,
                       label: 'Training',
                       onTap: () {
-                       Get.toNamed(RouteName.scheduler);
+                        Get.toNamed(RouteName.scheduler);
                       },
                     ),
                     _buildMenuItem(
                       icon: Icons.chat_bubble_outline,
                       label: 'Chats',
                       onTap: () {
-                       Get.toNamed(RouteName.chat);
+                        Get.toNamed(RouteName.chat);
                       },
                     ),
                     _buildMenuItem(

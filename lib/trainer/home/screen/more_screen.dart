@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../../trainer/routes/route_name.dart';
-import '../../../trainer/widget/controller/app_drawer_controller.dart';
-
-
+import '../../routes/route_name.dart';
+import '../../widget/controller/app_drawer_controller.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -20,8 +18,8 @@ class MoreScreen extends StatelessWidget {
           children: [
             // ✅ Logo Image Asset
             Container(
-              width: 50.w,
-              height: 50.w,
+              width: 40.w,
+              height: 40.w,
               decoration: BoxDecoration(
                 color: const Color(0xFF0A1628),
                 borderRadius: BorderRadius.circular(8),
@@ -57,7 +55,7 @@ class MoreScreen extends StatelessWidget {
                   'More',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 20, // ✅ Reduced from 24 to fit nicely with logo
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -66,7 +64,7 @@ class MoreScreen extends StatelessWidget {
                   'Nordkap U18 Elite',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.6),
-                    fontSize: 12,
+                    fontSize: 12, // ✅ Reduced from 14 for better proportion
                   ),
                 ),
               ],
@@ -94,7 +92,7 @@ class MoreScreen extends StatelessWidget {
                   child: Icon(
                     Icons.notifications_outlined,
                     color: Colors.white,
-                    size: 20.w,
+                    size: 20.w, // ✅ Reduced from 22.w for consistency
                   ),
                 ),
               ),
@@ -102,7 +100,7 @@ class MoreScreen extends StatelessWidget {
                 right: 0,
                 top: 0,
                 child: Container(
-                  width: 18.w,
+                  width: 18.w, // ✅ Reduced from 20.w for consistency
                   height: 18.w,
                   decoration: const BoxDecoration(
                     color: Color(0xFFFF5252),
@@ -113,7 +111,7 @@ class MoreScreen extends StatelessWidget {
                       '3',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 10.sp,
+                        fontSize: 10.sp, // ✅ Reduced from 12.sp for consistency
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -141,10 +139,11 @@ class MoreScreen extends StatelessWidget {
               child: Icon(
                 Icons.more_vert,
                 color: Colors.white,
-                size: 20.w,
+                size: 20.w, // ✅ Reduced from 22.w for consistency
               ),
             ),
           ),
+          SizedBox(width: 12.w), // ✅ Right padding for better alignment
         ],
       ),
       body: SingleChildScrollView(
@@ -258,7 +257,7 @@ class MoreScreen extends StatelessWidget {
             // Log Out Button
             GestureDetector(
               onTap: () {
-              Get.toNamed(RouteName.wellcome1);
+                Get.toNamed(RouteName.wellcome1);
               },
               child: Container(
                 width: double.infinity,

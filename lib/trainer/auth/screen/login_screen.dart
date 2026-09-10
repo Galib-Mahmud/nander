@@ -244,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: GestureDetector(
                   onTap: () {
 
-                  Get.toNamed(RouteName.home);
+                  Get.toNamed(RouteName.premium);
                   },
                   child: Center(
                     child: Text(

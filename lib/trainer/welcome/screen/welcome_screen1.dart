@@ -65,7 +65,7 @@ class WelcomeScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(30),
                   child: GestureDetector(
-                    onTap: () => Get.toNamed(RouteName.wellcome2),
+                    onTap: () => Get.toNamed(RouteName.login),
                     child: Container(
                       width: double.infinity,
                       height: 56,

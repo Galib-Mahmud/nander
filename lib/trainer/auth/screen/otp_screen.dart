@@ -144,7 +144,7 @@ class _OtpScreenState extends State<OtpScreen> {
               // Submit Button
               GestureDetector(
                 onTap: (){
-                  Get.toNamed(RouteName.home);
+                  Get.toNamed(RouteName.login);
                 },
                 child: Container(
                   width: double.infinity,

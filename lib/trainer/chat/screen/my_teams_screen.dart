@@ -36,7 +36,7 @@ class MyTeamsScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.85,
+                  childAspectRatio: 0.75, // ✅ Increased height ratio to prevent overflow
                 ),
                 itemCount: 6,
                 itemBuilder: (context, index) {
@@ -52,7 +52,7 @@ class MyTeamsScreen extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 height: 56.h,
-                margin: EdgeInsets.only(bottom: 20.h),
+                margin: EdgeInsets.only(bottom: 20.h, top: 10.h),
                 decoration: BoxDecoration(
                   color: const Color(0xFF4D94FF),
                   borderRadius: BorderRadius.circular(14.r),
@@ -77,38 +77,44 @@ class MyTeamsScreen extends StatelessWidget {
 
   Widget _buildTeamCard() {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(12.w), // ✅ Slightly reduced padding for better fit
       decoration: BoxDecoration(
         color: const Color(0xFF111827),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: const Color(0xFF1F2937)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // ✅ Prevents column from expanding infinitely
         children: [
           Container(
-            width: 70.w,
-            height: 70.w,
-            decoration: BoxDecoration(
+            width: 60.w, // ✅ Slightly smaller to save vertical space
+            height: 60.w,
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/avatar1.png'),
+              image: DecorationImage(
+                image: AssetImage('assets/images/avatar1.png'), // ✅ Your custom profile picture
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 10.h),
           const Text(
             'Manchester',
+            textAlign: TextAlign.center,
+            maxLines: 1, // ✅ Prevents title overflow
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 6.h),
           Text(
             'A community-focused hockey club dedicated to developing players, building strong teams, and creating opportunities for athletes of all skill levels.',
             textAlign: TextAlign.center,
+            maxLines: 4, // ✅ Limits description lines to prevent flex overflow
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: 11.sp,

@@ -7,9 +7,12 @@ class RouteName {
   static const String forgotPassword = '/forgotPassword';
   static const String otp = '/otp';
   static const String notifications = '/notifications';
+  static const String premium = '/premium';
+  static const String myteam = '/myteam';
 
   static const String onboarding = '/onboarding';
   static const String home = '/home';
+  static const String home1 = '/home1';
   static const String profile = '/profile';
   static const String schedule = '/schedule';
   static const String scheduler = '/scheduler';
