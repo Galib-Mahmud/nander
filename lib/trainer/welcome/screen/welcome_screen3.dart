@@ -195,9 +195,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
 
                         // ✅ Route based on selected role
                         if (_selectedRole == 'admin') {
-                          Get.toNamed(RouteName.home1); // Club Administrator route
+                          Get.toNamed(RouteName.main1); // Club Administrator route
                         } else if (_selectedRole == 'trainer') {
-                          Get.toNamed(RouteName.home);  // Trainer route
+                          Get.toNamed(RouteName.main);  // Trainer route
                         }
                       },
                       child: Container(

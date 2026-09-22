@@ -1,5 +1,4 @@
 class RouteName {
-
   static const String wellcome1 = '/wellcome1';
   static const String wellcome2 = '/wellcome2';
   static const String wellcome3 = '/wellcome3';
@@ -9,10 +8,11 @@ class RouteName {
   static const String notifications = '/notifications';
   static const String premium = '/premium';
   static const String myteam = '/myteam';
-
   static const String onboarding = '/onboarding';
-  static const String home = '/home';
-  static const String home1 = '/home1';
+
+  //Main Screen
+  static const String main = '/main';
+  static const String main1 = '/main1';
   static const String profile = '/profile';
   static const String schedule = '/schedule';
   static const String scheduler = '/scheduler';

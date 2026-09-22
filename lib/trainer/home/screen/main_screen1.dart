@@ -3,9 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nander/club/home/screen/schedule_screen.dart';
 import 'package:nander/club/home/screen/team_screen.dart';
+import '../../../club/home/screen/home_dashboard_screen1.dart';
 import '../../../trainer/widget/controller/app_drawer_controller.dart';
 import '../../../trainer/widget/screen/custom_drawer.dart';
-import 'home_dashboard_screen1.dart';
+
 import 'more_screen.dart';
 
 class MainScreen1 extends StatefulWidget {

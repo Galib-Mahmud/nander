@@ -17,6 +17,9 @@ dependencies:
   get: ^4.6.6
   flutter_screenutil: ^5.9.3
   syncfusion_flutter_charts:
+  shared_preferences:
+  http:
+  socket_io_client:
 
 dev_dependencies:
   flutter_test:

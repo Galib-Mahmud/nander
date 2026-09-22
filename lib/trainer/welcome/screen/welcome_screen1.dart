@@ -93,7 +93,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
 
                 GestureDetector(
-                  onTap: () => Get.toNamed(RouteName.home),
+                  onTap: () => Get.toNamed(RouteName.main),
                   child: const Padding(
                     padding: EdgeInsets.only(bottom: 30),
                     child: Text(

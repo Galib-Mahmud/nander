@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/route_name.dart';
+import '../controller/auth_controller.dart'; // adjust path if your folder layout differs
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,17 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
   bool isReTypePasswordVisible = false;
 
-  final TextEditingController emailController = TextEditingController(text: 'Rhebhek@gmail.com');
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController retypePasswordController = TextEditingController();
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    retypePasswordController.dispose();
-    super.dispose();
-  }
+  final AuthController controller = AuthController.to;
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +28,12 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-
-              // ✅ একদম ক্লিন লোগো (কোনো Container, Shadow বা Error Builder নেই)
               Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 120, // লোগোটি যেন স্ক্রিন জুড়ে বড় না হয়ে যায়, তাই শুধু এইটুকু দেওয়া হলো
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset('assets/images/logo.png', width: 120, fit: BoxFit.contain),
               ),
               const SizedBox(height: 50),
 
-              // Tab Toggle (Login / Sign Up)
+              // Tab Toggle
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
@@ -69,14 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: isLogin ? Border.all(color: const Color(0xFF2A3550)) : null,
                           ),
                           child: Center(
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                color: isLogin ? Colors.white : Colors.white54,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text('Login', style: TextStyle(
+                              color: isLogin ? Colors.white : Colors.white54,
+                              fontSize: 16, fontWeight: FontWeight.w600,
+                            )),
                           ),
                         ),
                       ),
@@ -92,14 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: !isLogin ? Border.all(color: const Color(0xFF2A3550)) : null,
                           ),
                           child: Center(
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                color: !isLogin ? Colors.white : Colors.white54,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text('Sign Up', style: TextStyle(
+                              color: !isLogin ? Colors.white : Colors.white54,
+                              fontSize: 16, fontWeight: FontWeight.w600,
+                            )),
                           ),
                         ),
                       ),
@@ -109,45 +86,61 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Email Field
-              const Text(
-                  'Email Address',
-                  style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)
-              ),
+              if (!isLogin) ...[
+                const Text('Full Name', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A2236),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF2A3550)),
+                  ),
+                  child: TextField(
+                    controller: controller.nameController,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                      hintText: 'Your full name',
+                      hintStyle: TextStyle(color: Color(0xFF8B95A5), fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              const Text('Email Address', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
-                    color: const Color(0xFF1A2236),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2A3550))
+                  color: const Color(0xFF1A2236),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF2A3550)),
                 ),
                 child: TextField(
-                  controller: emailController,
+                  controller: controller.emailController,
+                  keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    hintText: 'Rhebhek@gmail.com',
+                    hintText: 'you@example.com',
                     hintStyle: TextStyle(color: Color(0xFF8B95A5), fontSize: 16),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
 
-              // Password Field
-              const Text(
-                  'Password',
-                  style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)
-              ),
+              const Text('Password', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
-                    color: const Color(0xFF1A2236),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2A3550))
+                  color: const Color(0xFF1A2236),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF2A3550)),
                 ),
                 child: TextField(
-                  controller: passwordController,
+                  controller: controller.passwordController,
                   obscureText: !isPasswordVisible,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   decoration: InputDecoration(
@@ -158,60 +151,39 @@ class _LoginScreenState extends State<LoginScreen> {
                     suffixIcon: GestureDetector(
                       onTap: () => setState(() => isPasswordVisible = !isPasswordVisible),
                       child: Icon(
-                          isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                          color: const Color(0xFF8B95A5)
+                        isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: const Color(0xFF8B95A5),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              // Login Mode: Forgot Password & Error
               if (isLogin) ...[
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Get.toNamed(RouteName.forgotPassword);
-                      },
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Color(0xFF4D94FF), fontSize: 14, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Row(
-                  children: [
-                    Icon(Icons.warning_amber_rounded, color: Color(0xFFFF4444), size: 18),
-                    SizedBox(width: 6),
-                    Text(
-                        'Please enter correct password',
-                        style: TextStyle(color: Color(0xFFFF4444), fontSize: 14)
+                      onTap: () => Get.toNamed(RouteName.forgotPassword),
+                      child: const Text('Forgot Password?', style: TextStyle(color: Color(0xFF4D94FF), fontSize: 14, fontWeight: FontWeight.w500)),
                     ),
                   ],
                 ),
               ],
 
-              // Signup Mode: Re-Type Password
               if (!isLogin) ...[
                 const SizedBox(height: 20),
-                const Text(
-                    'Re Type Password',
-                    style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)
-                ),
+                const Text('Re Type Password', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
-                      color: const Color(0xFF1A2236),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF2A3550))
+                    color: const Color(0xFF1A2236),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF2A3550)),
                   ),
                   child: TextField(
-                    controller: retypePasswordController,
+                    controller: controller.retypePasswordController,
                     obscureText: !isReTypePasswordVisible,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                     decoration: InputDecoration(
@@ -222,40 +194,66 @@ class _LoginScreenState extends State<LoginScreen> {
                       suffixIcon: GestureDetector(
                         onTap: () => setState(() => isReTypePasswordVisible = !isReTypePasswordVisible),
                         child: Icon(
-                            isReTypePasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                            color: const Color(0xFF8B95A5)
+                          isReTypePasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          color: const Color(0xFF8B95A5),
                         ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
+
+                const Text('I am a', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 10),
+                Obx(() => Row(
+                  children: [
+                    Expanded(child: _roleChip('CLUB_ADMIN', 'Club Admin')),
+                    const SizedBox(width: 12),
+                    Expanded(child: _roleChip('TRAINER', 'Trainer')),
+                  ],
+                )),
               ],
 
               const SizedBox(height: 30),
 
-              // Login/Signup Button
-              Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
+              Obx(
+                    () => Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
                     color: const Color(0xFF4D94FF),
-                    borderRadius: BorderRadius.circular(14)
-                ),
-                child: GestureDetector(
-                  onTap: () {
-
-                  Get.toNamed(RouteName.premium);
-                  },
-                  child: Center(
-                    child: Text(
-                      isLogin ? 'Login' : 'Sign up',
-                      style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: controller.isLoading.value
+                        ? null
+                        : () => isLogin
+                        ? controller.login()
+                        : controller.signup(),
+                    child: Center(
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                          : Text(
+                        isLogin ? 'Login' : 'Sign up',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
 
-              // Signup Mode: Privacy Policy
               if (!isLogin) ...[
                 const SizedBox(height: 20),
                 const Text(
@@ -265,6 +263,24 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _roleChip(String value, String label) {
+    final selected = controller.role.value == value;
+    return GestureDetector(
+      onTap: () => controller.role.value = value,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF4D94FF) : const Color(0xFF1A2236),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: selected ? const Color(0xFF4D94FF) : const Color(0xFF2A3550)),
+        ),
+        child: Center(
+          child: Text(label, style: TextStyle(color: selected ? Colors.white : Colors.white54, fontSize: 14, fontWeight: FontWeight.w600)),
         ),
       ),
     );

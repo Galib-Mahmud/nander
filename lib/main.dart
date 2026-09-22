@@ -4,24 +4,41 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nander/trainer/routes/app_route.dart';
 import 'package:nander/trainer/routes/route_name.dart';
+import 'package:nander/trainer/core/local_storage/user_info.dart'; // adjust to your actual path
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
   ));
-  runApp(const MyApp());
+
+  final isAuthenticated = await UserInfo.isLoggedIn();
+  String? role;
+  if (isAuthenticated) {
+    role = await UserInfo.getUserRole();
+  }
+
+  runApp(MyApp(isAuthenticated: isAuthenticated, role: role));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final bool isAuthenticated;
+  final String? role;
+  const MyApp({super.key, this.isAuthenticated = false, this.role});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  String get initialRoute {
+    if (!widget.isAuthenticated) return RouteName.wellcome1;
+    return widget.role == 'CLUB_ADMIN' ? RouteName.main1 : RouteName.main;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -31,10 +48,9 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: RouteName.wellcome1,
+          initialRoute: initialRoute,
           getPages: AppRoute.pages,
           theme: ThemeData(
-            // ✅ এই লাইনটি যোগ করুন (এটি পুরো অ্যাপকে ডার্ক থিম হিসেবে সেট করবে)
             brightness: Brightness.dark,
             appBarTheme: const AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
