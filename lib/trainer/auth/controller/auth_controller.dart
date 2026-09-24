@@ -6,6 +6,7 @@ import '../../core/endpoint/api_client.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../core/local_storage/user_info.dart';
 import '../../routes/route_name.dart';
+import 'club_controller.dart';
 
 class AuthController extends GetxController {
   static AuthController get to => Get.put(AuthController());
@@ -56,14 +57,24 @@ class AuthController extends GetxController {
 
     isLoading.value = true;
     try {
+      final body = {
+        'name'    : nameController.text.trim(),
+        'email'   : emailController.text.trim(),
+        'password': passwordController.text,
+        'role'    : role.value,
+      };
+
+      // ✅ clubAdminId is optional, and only relevant for TRAINER signups
+      if (role.value == 'TRAINER') {
+        final selectedClub = ClubController.to.selectedClubId.value;
+        if (selectedClub.isNotEmpty) {
+          body['clubAdminId'] = selectedClub;
+        }
+      }
+
       final response = await _apiClient.post(
         ApiEndpoint.signup,
-        body: {
-          'name'    : nameController.text.trim(),
-          'email'   : emailController.text.trim(),
-          'password': passwordController.text,
-          'role'    : role.value,
-        },
+        body: body,
         requiresAuth: false,
       );
 

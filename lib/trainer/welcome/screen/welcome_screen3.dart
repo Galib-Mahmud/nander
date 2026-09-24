@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../auth/controller/auth_controller.dart';
+import '../../auth/controller/club_controller.dart';
 import '../../routes/route_name.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
@@ -10,7 +12,8 @@ class RoleSelectionScreen extends StatefulWidget {
 }
 
 class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
-  String? _selectedRole;
+  String? _selectedRole; // 'admin' | 'trainer'
+  final AuthController authController = AuthController.to;
 
   @override
   Widget build(BuildContext context) {
@@ -23,50 +26,34 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
+              // 3-segment progress bar — step 2 of 3
               Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(2),
+                children: List.generate(3, (i) {
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
+                      child: Container(
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: i < 2 ? Colors.white : Colors.white24,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                }),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Step 3 of 3',
-                style: TextStyle(color: Colors.white54, fontSize: 14),
-              ),
+              const Text('Step 2 of 3', style: TextStyle(color: Colors.white54, fontSize: 14)),
               const SizedBox(height: 24),
               const Text(
                 'How will you use Train Up?',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               const Text(
                 'Select your primary role to customize your dashboard.',
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 15,
-                ),
+                style: TextStyle(color: Colors.white54, fontSize: 15),
               ),
               const SizedBox(height: 24),
 
@@ -82,31 +69,16 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         : const Color(0xFF1A2236),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _selectedRole == 'admin'
-                          ? const Color(0xFF4D94FF)
-                          : const Color(0xFF2A3550),
+                      color: _selectedRole == 'admin' ? const Color(0xFF4D94FF) : const Color(0xFF2A3550),
                       width: 1,
                     ),
                   ),
                   child: const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Club Administrator',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Text('Club Administrator', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
-                      Text(
-                        'Manage your club, teams, trainers, schedules, and performance.',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
-                        ),
-                      ),
+                      Text('Manage your club, teams, trainers, schedules, and performance.', style: TextStyle(color: Colors.white54, fontSize: 14)),
                     ],
                   ),
                 ),
@@ -125,31 +97,16 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         : const Color(0xFF1A2236),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _selectedRole == 'trainer'
-                          ? const Color(0xFF4D94FF)
-                          : const Color(0xFF2A3550),
+                      color: _selectedRole == 'trainer' ? const Color(0xFF4D94FF) : const Color(0xFF2A3550),
                       width: 1,
                     ),
                   ),
                   child: const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Trainer',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Text('Trainer', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
-                      Text(
-                        'Create training plans, track player progress, and run sessions.',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
-                        ),
-                      ),
+                      Text('Create training plans, track player progress, and run sessions.', style: TextStyle(color: Colors.white54, fontSize: 14)),
                     ],
                   ),
                 ),
@@ -167,14 +124,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         borderRadius: BorderRadius.circular(28),
                       ),
                       child: const Center(
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: Text('Back', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ),
@@ -193,11 +143,17 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                           return;
                         }
 
-                        // ✅ Route based on selected role
+                        // Persist the choice onto AuthController — signup()
+                        // will send this value as-is.
+                        authController.role.value = _selectedRole == 'admin' ? 'CLUB_ADMIN' : 'TRAINER';
+
                         if (_selectedRole == 'admin') {
-                          Get.toNamed(RouteName.main1); // Club Administrator route
-                        } else if (_selectedRole == 'trainer') {
-                          Get.toNamed(RouteName.main);  // Trainer route
+                          // Club admins skip club selection entirely
+                          Get.toNamed(RouteName.login, arguments: {'startTab': 'signup'});
+                        } else {
+                          // Trainers get an optional club-picking step
+                          ClubController.to.reset();
+                          Get.toNamed(RouteName.selectClub);
                         }
                       },
                       child: Container(
@@ -209,14 +165,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Continue',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            Text('Continue', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                             SizedBox(width: 8),
                             Icon(Icons.arrow_forward, color: Colors.white, size: 20),
                           ],

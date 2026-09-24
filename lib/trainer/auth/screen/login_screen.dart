@@ -18,6 +18,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthController controller = AuthController.to;
 
   @override
+  void initState() {
+    super.initState();
+    // Coming from onboarding (name + role already set) → land on Sign Up tab
+    final args = Get.arguments;
+    if (args is Map && args['startTab'] == 'signup') {
+      isLogin = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
@@ -64,7 +74,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => setState(() => isLogin = false),
+                        onTap: () {
+                          if (!isLogin) return;
+                          setState(() => isLogin = false);
+                          if (controller.role.value.trim().isEmpty) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _showRoleRequiredDialog();
+                            });
+                          }
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
@@ -201,17 +219,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                const Text('I am a', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
-                const SizedBox(height: 10),
-                Obx(() => Row(
-                  children: [
-                    Expanded(child: _roleChip('CLUB_ADMIN', 'Club Admin')),
-                    const SizedBox(width: 12),
-                    Expanded(child: _roleChip('TRAINER', 'Trainer')),
-                  ],
-                )),
+                // ✅ Role chip removed — role is now selected earlier in
+                // RoleSelectionScreen and carried here via AuthController.role
               ],
 
               const SizedBox(height: 30),
@@ -228,9 +237,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     behavior: HitTestBehavior.opaque,
                     onTap: controller.isLoading.value
                         ? null
-                        : () => isLogin
-                        ? controller.login()
-                        : controller.signup(),
+                        : () {
+                      if (isLogin) {
+                        controller.login();
+                        return;
+                      }
+                      // Safety net: role must come from onboarding.
+                      if (controller.role.value.trim().isEmpty) {
+                        _showRoleRequiredDialog();
+                        return;
+                      }
+                      controller.signup();
+                    },
                     child: Center(
                       child: controller.isLoading.value
                           ? const SizedBox(
@@ -268,21 +286,27 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _roleChip(String value, String label) {
-    final selected = controller.role.value == value;
-    return GestureDetector(
-      onTap: () => controller.role.value = value,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFF4D94FF) : const Color(0xFF1A2236),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selected ? const Color(0xFF4D94FF) : const Color(0xFF2A3550)),
+  void _showRoleRequiredDialog() {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: const Color(0xFF1A2236),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Role Not Selected', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          "We couldn't find your role. Please go back and choose whether you're a Club Administrator or a Trainer before signing up.",
+          style: TextStyle(color: Color(0xFF8B95A5)),
         ),
-        child: Center(
-          child: Text(label, style: TextStyle(color: selected ? Colors.white : Colors.white54, fontSize: 14, fontWeight: FontWeight.w600)),
-        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(); // close dialog
+              Get.offAllNamed(RouteName.wellcome1); // restart onboarding
+            },
+            child: const Text('Start Over', style: TextStyle(color: Color(0xFF4D94FF), fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
+      barrierDismissible: false,
     );
   }
 }

@@ -8,7 +8,10 @@ class RouteName {
   static const String notifications = '/notifications';
   static const String premium = '/premium';
   static const String myteam = '/myteam';
+  // route_name.dart-এ যোগ করো
+  static const String selectClub = '/selectClub';
   static const String onboarding = '/onboarding';
+  static const String announcements = '/announcements';
 
   //Main Screen
   static const String main = '/main';

@@ -1,33 +1,47 @@
 class ApiEndpoint {
-  static const String baseUrl =
-      "http://10.10.26.235:8000/api/v1"; // e.g. https://api.trainup.com
+  static const String host    = "http://10.10.26.235:8000";
+  static const String baseUrl = "$host/api/v1";
 
-  static const String signup = "/auth/user/signup";
-  static const String verifyEmail = "/auth/user/verify-email";
-  static const String resendCode = "/auth/user/resend-code";
-  static const String signin = "/auth/user/signin";
+  static const String signup         = "/auth/user/signup";
+  static const String verifyEmail    = "/auth/user/verify-email";
+  static const String resendCode     = "/auth/user/resend-code";
+  static const String signin         = "/auth/user/signin";
   static const String forgotPassword = "/auth/user/forgot-password";
-  static const String verifyOtp = "/auth/user/verify-otp";
-  static const String setPassword = "/auth/user/set-password";
+  static const String verifyOtp      = "/auth/user/verify-otp";
+  static const String setPassword    = "/auth/user/set-password";
+  static const String profile        = "/auth/user/profile";
 
-  //Profile
+  static const String clubList = "$baseUrl/club/list";
 
-  static const String profile = "/auth/user/profile";
-}
 
-class ChatEndpoint {
-  static const String baseUrl = "https://8379-103-186-20-2.ngrok-free.app";
+  // ─── Notifications ────────────────────────────────────────────
+  static const String notifications = "/notification";
+  static String notificationRead(String id) => "/notification/read/$id";
+  static const String notificationAcceptRejected = '/notification/accept-rejected';
 
-  static const String conversations =
-      "http://10.10.26.235:8000/api/v1/chat/conversations";
+  //Announcement
 
-  static String messages(String peerId) =>
-      "http://10.10.26.235:8000/api/v1/chat/messages/$peerId";
+  static const String announcements = '/announcement';
+  static const String announcementCreate = '/announcement/create';
+  static const String announcementUpdate = '/announcement/update';
+// Delete is handled dynamically in controller as /announcement/{id}
 
+  /// Server returns relative image paths like "/images/xxx.webp" —
+  /// images live at the host root (NOT under /api/v1), so we prefix
+  /// with `host`, matching ChatEndpoint's working implementation.
   static String? resolveImageUrl(String? path) {
     if (path == null || path.trim().isEmpty) return null;
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
     final normalizedPath = path.startsWith('/') ? path : '/$path';
-    return 'http://10.10.26.235:8000$normalizedPath';
+    return '$host$normalizedPath';
   }
+}
+
+class ChatEndpoint {
+  static const String baseUrl = ApiEndpoint.host;
+
+  static const String conversations = "$baseUrl/api/v1/chat/conversations";
+  static String messages(String peerId) => "$baseUrl/api/v1/chat/messages/$peerId";
+
+  static String? resolveImageUrl(String? path) => ApiEndpoint.resolveImageUrl(path);
 }

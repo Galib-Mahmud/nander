@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../announcement/screen/announcement_list.dart';
+import '../auth/screen/club_list_screen.dart';
 import '../auth/screen/login_screen.dart';
 import '../auth/screen/otp_screen.dart';
 import '../auth/screen/premium_screen.dart';
@@ -29,7 +31,10 @@ class AppRoute {
   static final pages = [
     GetPage(name: RouteName.wellcome1, page: () => const WelcomeScreen()),
     GetPage(name: RouteName.wellcome2, page: () => const NameInputScreen()),
+    GetPage(name: RouteName.selectClub, page: () => const ClubListScreen()),
     GetPage(name: RouteName.login, page: () => const LoginScreen()),
+    GetPage(name: RouteName.announcements, page: () => const AnnouncementListScreen()
+    ),
     GetPage(name: RouteName.forgotPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: RouteName.otp, page: () => const OtpScreen()),
     GetPage(name: RouteName.premium, page: () => const PremiumUpgradeScreen()),

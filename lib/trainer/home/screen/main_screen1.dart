@@ -7,6 +7,7 @@ import '../../../club/home/screen/home_dashboard_screen1.dart';
 import '../../../trainer/widget/controller/app_drawer_controller.dart';
 import '../../../trainer/widget/screen/custom_drawer.dart';
 
+import 'home_dashboard_screen.dart';
 import 'more_screen.dart';
 
 class MainScreen1 extends StatefulWidget {
@@ -74,7 +75,7 @@ class _MainScreen1State extends State<MainScreen1>
   }
 
   final List<Widget> _pages = [
-    const HomeDashboardScreen1(),
+    const HomeDashboardScreen(),
     const ScheduleScreen(activeTabIndex: 0),
     const TeamScreen(),
     const MoreScreen(),
