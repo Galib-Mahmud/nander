@@ -30,23 +30,37 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
   }
 
   @override
+  void dispose() {
+    titleCtrl.dispose();
+    descCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: Text(isEditing ? 'Edit Announcement' : 'New Announcement',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          isEditing ? 'Edit Announcement' : 'New Announcement',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => Get.back(),
+        ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Keep up with your rewards and rankings.',
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14.sp)),
+            Text(
+              'Keep up with your rewards and rankings.',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14.sp),
+            ),
             SizedBox(height: 30.h),
 
             // Title Field
@@ -57,7 +71,7 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Enter title',
-                hintStyle: TextStyle(color: Colors.white38),
+                hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: const Color(0xFF1A2236),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r), borderSide: BorderSide.none),
@@ -75,7 +89,7 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Enter description....',
-                hintStyle: TextStyle(color: Colors.white38),
+                hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: const Color(0xFF1A2236),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r), borderSide: BorderSide.none),
@@ -84,31 +98,57 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
             ),
             SizedBox(height: 30.h),
 
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (titleCtrl.text.isEmpty || descCtrl.text.isEmpty) {
-                    Get.snackbar('Error', 'Please fill all fields');
-                    return;
-                  }
+            // Save / Update Button
+            Obx(() {
+              final isBusy = controller.isSubmitting.value;
+              return SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: ElevatedButton(
+                  onPressed: isBusy
+                      ? null
+                      : () {
+                          if (titleCtrl.text.trim().isEmpty || descCtrl.text.trim().isEmpty) {
+                            Get.snackbar(
+                              'Error',
+                              'Please fill all fields',
+                              backgroundColor: const Color(0xFF1A2236),
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
 
-                  if (isEditing && widget.announcement != null) {
-                    controller.updateAnnouncement(widget.announcement!.id, titleCtrl.text, descCtrl.text);
-                  } else {
-                    controller.createAnnouncement(titleCtrl.text, descCtrl.text);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4D94FF),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                          if (isEditing && widget.announcement != null) {
+                            controller.updateAnnouncement(
+                              widget.announcement!.id,
+                              titleCtrl.text,
+                              descCtrl.text,
+                            );
+                          } else {
+                            controller.createAnnouncement(
+                              titleCtrl.text,
+                              descCtrl.text,
+                            );
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4D94FF),
+                    disabledBackgroundColor: const Color(0xFF4D94FF).withValues(alpha: 0.5),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  ),
+                  child: isBusy
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text(
+                          isEditing ? 'Update' : 'Save',
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                 ),
-                child: Text(isEditing ? 'Update' : 'Save',
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

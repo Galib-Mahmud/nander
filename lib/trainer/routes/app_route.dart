@@ -7,9 +7,8 @@ import '../auth/screen/otp_screen.dart';
 import '../auth/screen/premium_screen.dart';
 import '../auth/screen/reset_password_screen.dart';
 import '../chat/screen/chat_list_screen.dart';
-import '../chat/screen/chat_screen.dart';
 import '../chat/screen/my_teams_screen.dart';
-import '../chat/screen/profile_update_screen.dart';
+import '../profile/screen/profile_update_screen.dart';
 import '../home/screen/club_profile_screen.dart';
 import '../home/screen/main_screen.dart';
 import '../home/screen/main_screen1.dart';
@@ -22,6 +21,9 @@ import '../home/screen/top_class_screen.dart';
 import '../profile/screen/faq_screen.dart';
 import '../profile/screen/privacy_policy_screen.dart';
 import '../profile/screen/terms_and_condition_screen.dart';
+import '../trainers/screen/add_trainer_screen.dart';
+import '../trainers/screen/invite_trainer_screen.dart';
+import '../trainers/screen/trainers_screen.dart';
 import '../welcome/screen/welcome_screen1.dart';
 import '../welcome/screen/welcome_screen2.dart';
 import '../welcome/screen/welcome_screen3.dart';
@@ -54,5 +56,8 @@ class AppRoute {
     GetPage(name: RouteName.terms, page: () => const TermsScreen()),
     GetPage(name: RouteName.privacy, page: () => const PrivacyPolicyScreen()),
     GetPage(name: RouteName.faq, page: () => const FaqScreen()),
+    GetPage(name: RouteName.trainers, page: () => const TrainersScreen()),
+    GetPage(name: RouteName.addTrainer, page: () => const AddTrainerScreen()),
+    GetPage(name: RouteName.inviteTrainer, page: () => const InviteTrainerScreen()),
   ];
 }

@@ -10,6 +10,9 @@ class ApiEndpoint {
   static const String verifyOtp      = "/auth/user/verify-otp";
   static const String setPassword    = "/auth/user/set-password";
   static const String profile        = "/auth/user/profile";
+  static const String updateProfile  = "/user/update-profile";
+  static const String accountDelete  = "/auth/user/account-delete";
+  static const String accountDeleteConfirm = "/auth/user/account-delete-confirm";
 
   static const String clubList = "$baseUrl/club/list";
 
@@ -17,14 +20,30 @@ class ApiEndpoint {
   // ─── Notifications ────────────────────────────────────────────
   static const String notifications = "/notification";
   static String notificationRead(String id) => "/notification/read/$id";
-  static const String notificationAcceptRejected = '/notification/accept-rejected';
+  // ─── Trainers ──────────────────────────────────────────────────
+  static const String trainerList = "/trainer/list";
+  static const String myClubTrainers = "/trainer/my-club-trainers";
+  static const String myClubs = "/trainer/my-clubs";
+  static const String sendRequestByClubAdmin = "/trainer/send-request-by-club-admin";
+  static const String sendRequestByTrainer = "/trainer/send-request-by-trainer";
+  static const String trainerAcceptReject = "/trainer/trainer-accept-reject";
+  static const String clubAdminAcceptReject = "/trainer/club-admin-accept-reject";
+  static const String notificationAcceptRejected = trainerAcceptReject;
+  static const String myClubTrainersRequest = "/trainer/my-club-trainers-request";
+  static const String myClubsRequest = "/trainer/my-clubs-request";
 
   //Announcement
-
   static const String announcements = '/announcement';
   static const String announcementCreate = '/announcement/create';
   static const String announcementUpdate = '/announcement/update';
-// Delete is handled dynamically in controller as /announcement/{id}
+  // Delete is handled dynamically in controller as /announcement/{id}
+
+  // ─── Teams ────────────────────────────────────────────────────
+  static const String team       = "/team";
+  static const String teamCreate = "/team/create";
+  static const String teamUpdate = "/team/update";
+  static String teamDetail(String id) => "/team/$id";
+  static String teamDelete(String id) => "/team/$id";
 
   /// Server returns relative image paths like "/images/xxx.webp" —
   /// images live at the host root (NOT under /api/v1), so we prefix

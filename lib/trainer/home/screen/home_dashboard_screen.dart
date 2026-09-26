@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../announcement/controller/announcement_controller.dart';
+import '../../announcement/screen/announcement_details.dart';
 import '../../routes/route_name.dart';
 import '../../widget/controller/app_drawer_controller.dart';
 // ✅ Import the announcement controller
@@ -193,7 +194,12 @@ class HomeDashboardScreen extends StatelessWidget {
                     final recentItems = announcementController.announcements.take(3).toList();
 
                     return Column(
-                      children: recentItems.map((item) => _buildAnnouncementItem(item.title, item.description)).toList(),
+                      children: recentItems
+                          .map((item) => GestureDetector(
+                                onTap: () => Get.to(() => AnnouncementDetailScreen(announcement: item)),
+                                child: _buildAnnouncementItem(item.title, item.description),
+                              ))
+                          .toList(),
                     );
                   }),
                 ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/endpoint/api_client.dart';
 import '../../core/endpoint/api_endpoint.dart';
+import '../../core/local_storage/user_info.dart';
 import 'announcement_model.dart';
 
 class AnnouncementController extends GetxController {
@@ -11,85 +12,173 @@ class AnnouncementController extends GetxController {
 
   final RxList<AnnouncementModel> announcements = <AnnouncementModel>[].obs;
   final RxBool isLoading = false.obs;
-
-  // Check if current user is admin (You might want to get this from AuthController)
-  // For now, assuming you have a way to check role.
-  // If you don't have AuthController integrated yet, you can hardcode or fetch user profile.
+  final RxBool isSubmitting = false.obs;
   final RxBool isAdmin = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // TODO: Initialize isAdmin based on your Auth state
-    // Example: isAdmin.value = Get.find<AuthController>().user.role == 'CLUB_ADMIN';
+    checkAdminRole();
     fetchAnnouncements();
   }
 
+  /// Checks if current user has the CLUB_ADMIN role based on persistent local storage
+  Future<void> checkAdminRole() async {
+    final role = await UserInfo.getUserRole();
+    isAdmin.value = (role == 'CLUB_ADMIN');
+    debugPrint('📢 Current user role: $role, isAdmin: ${isAdmin.value}');
+  }
+
+  /// Fetches all announcements from the backend and safely parses them
   Future<void> fetchAnnouncements() async {
     isLoading.value = true;
     try {
       final response = await _apiClient.get(ApiEndpoint.announcements, requiresAuth: true);
 
       if (response?['success'] == true) {
-        final List<dynamic> data = response['data'] ?? [];
-        final parsed = data.map((e) => AnnouncementModel.fromJson(e)).toList();
+        final dynamic rawData = response['data'];
+        final List<dynamic> list = (rawData is List)
+            ? rawData
+            : (rawData is Map && rawData['announcements'] is List)
+                ? rawData['announcements']
+                : [];
+
+        final parsed = <AnnouncementModel>[];
+        for (final item in list) {
+          if (item is Map<String, dynamic>) {
+            try {
+              parsed.add(AnnouncementModel.fromJson(item));
+            } catch (e) {
+              debugPrint('⚠️ Error parsing announcement item: $item — $e');
+            }
+          }
+        }
+
         // Sort by newest first
         parsed.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         announcements.assignAll(parsed);
+        debugPrint('✅ Loaded ${announcements.length} announcements');
       }
     } catch (e) {
       debugPrint('❌ Fetch announcements error: $e');
-      Get.snackbar('Error', 'Failed to load announcements');
+      Get.snackbar(
+        'Error',
+        'Failed to load announcements',
+        backgroundColor: const Color(0xFF1A2236),
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> createAnnouncement(String title, String description) async {
+  /// Create a new announcement (POST /announcement/create)
+  Future<bool> createAnnouncement(String title, String description) async {
+    isSubmitting.value = true;
     try {
-      final body = {"title": title, "description": description};
-      final response = await _apiClient.post(ApiEndpoint.announcementCreate, body: body, requiresAuth: true);
+      final body = {
+        "title": title.trim(),
+        "description": description.trim(),
+      };
+      final response = await _apiClient.post(
+        ApiEndpoint.announcementCreate,
+        body: body,
+        requiresAuth: true,
+      );
 
       if (response?['success'] == true) {
         Get.back(); // Go back to list
-        Get.snackbar('Success', 'Announcement created', backgroundColor: Colors.green, colorText: Colors.white);
-        fetchAnnouncements(); // Refresh list
+        Get.snackbar(
+          'Success',
+          response?['message'] ?? 'Announcement created',
+          backgroundColor: Colors.green.shade700,
+          colorText: Colors.white,
+        );
+        await fetchAnnouncements(); // Refresh list
+        return true;
       }
+      return false;
     } catch (e) {
       debugPrint('❌ Create announcement error: $e');
-      Get.snackbar('Error', 'Failed to create announcement');
+      Get.snackbar(
+        'Error',
+        'Failed to create announcement',
+        backgroundColor: const Color(0xFF1A2236),
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isSubmitting.value = false;
     }
   }
 
-  Future<void> updateAnnouncement(String id, String title, String description) async {
+  /// Update an existing announcement (PATCH /announcement/update)
+  Future<bool> updateAnnouncement(String id, String title, String description) async {
+    isSubmitting.value = true;
     try {
-      final body = {"id": id, "title": title, "description": description};
-      final response = await _apiClient.patch(ApiEndpoint.announcementUpdate, body: body, requiresAuth: true);
+      final body = {
+        "id": id,
+        "title": title.trim(),
+        "description": description.trim(),
+      };
+      final response = await _apiClient.patch(
+        ApiEndpoint.announcementUpdate,
+        body: body,
+        requiresAuth: true,
+      );
 
       if (response?['success'] == true) {
         Get.back();
-        Get.snackbar('Success', 'Announcement updated', backgroundColor: Colors.green, colorText: Colors.white);
-        fetchAnnouncements();
+        Get.snackbar(
+          'Success',
+          response?['message'] ?? 'Announcement updated',
+          backgroundColor: Colors.green.shade700,
+          colorText: Colors.white,
+        );
+        await fetchAnnouncements();
+        return true;
       }
+      return false;
     } catch (e) {
       debugPrint('❌ Update announcement error: $e');
-      Get.snackbar('Error', 'Failed to update announcement');
+      Get.snackbar(
+        'Error',
+        'Failed to update announcement',
+        backgroundColor: const Color(0xFF1A2236),
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isSubmitting.value = false;
     }
   }
 
-  Future<void> deleteAnnouncement(String id) async {
+  /// Delete an announcement (DELETE /announcement/:id)
+  Future<bool> deleteAnnouncement(String id) async {
     try {
-      // Note: Endpoint is /announcement/{id}, so we append ID manually if not in ApiEndpoint
       final endpoint = '${ApiEndpoint.announcements}/$id';
       final response = await _apiClient.delete(endpoint, requiresAuth: true);
 
       if (response?['success'] == true) {
         announcements.removeWhere((a) => a.id == id);
-        Get.snackbar('Deleted', 'Announcement removed', backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          'Deleted',
+          response?['message'] ?? 'Announcement removed',
+          backgroundColor: Colors.red.shade700,
+          colorText: Colors.white,
+        );
+        return true;
       }
+      return false;
     } catch (e) {
       debugPrint('❌ Delete announcement error: $e');
-      Get.snackbar('Error', 'Failed to delete announcement');
+      Get.snackbar(
+        'Error',
+        'Failed to delete announcement',
+        backgroundColor: const Color(0xFF1A2236),
+        colorText: Colors.white,
+      );
+      return false;
     }
   }
 }

@@ -4,8 +4,9 @@ import 'package:get/get.dart';
 import '../../../trainer/routes/route_name.dart';
 import '../../../trainer/widget/controller/app_drawer_controller.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../profile/controller/profile_controller.dart';        // ← new, adjust path
-import '../../../trainer/core/local_storage/user_info.dart';      // ← new, adjust path
+import '../../profile/controller/profile_controller.dart'; // ← new, adjust path
+import '../../../trainer/core/local_storage/user_info.dart'; // ← new, adjust path
+import '../../../trainer/core/endpoint/api_endpoint.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -60,17 +61,25 @@ class MoreScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'More',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   SizedBox(height: 2.h),
                   Obx(() => Text(
-                      controller.nameController.text.isNotEmpty
-                          ? controller.nameController.text
-                          : 'Loading...',
-
-                  )),
+                        controller.name.value.isNotEmpty
+                            ? controller.name.value
+                            : (controller.isLoading.value
+                                ? 'Loading...'
+                                : 'Profile'),
+                        style: TextStyle(
+                            color: const Color(0xFF8B95A5), fontSize: 13.sp),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      )),
                 ],
               ),
             ),
@@ -92,7 +101,8 @@ class MoreScreen extends StatelessWidget {
                   onTap: () {
                     Get.toNamed(RouteName.notifications);
                   },
-                  child: Icon(Icons.notifications_outlined, color: Colors.white, size: 20.w),
+                  child: Icon(Icons.notifications_outlined,
+                      color: Colors.white, size: 20.w),
                 ),
               ),
               Positioned(
@@ -101,9 +111,14 @@ class MoreScreen extends StatelessWidget {
                 child: Container(
                   width: 18.w,
                   height: 18.w,
-                  decoration: const BoxDecoration(color: Color(0xFFFF5252), shape: BoxShape.circle),
+                  decoration: const BoxDecoration(
+                      color: Color(0xFFFF5252), shape: BoxShape.circle),
                   child: Center(
-                    child: Text('3', style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                    child: Text('3',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
@@ -146,83 +161,107 @@ class MoreScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(color: const Color(0xFF1F2937)),
                   ),
-                  child: controller.isLoading.value && controller.nameController.text.isEmpty
+                  child: controller.isLoading.value &&
+                          controller.nameController.text.isEmpty
                       ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF4D94FF))),
-                  )
-                      : Column(
-                    children: [
-                      Container(
-                        width: 70.w,
-                        height: 70.w,
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                        child: controller.profileImageUrl.value.isNotEmpty
-                            ? ClipOval(
-                          child: Image.network(
-                            controller.profileImageUrl.value,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.shield, color: Color(0xFF050810), size: 40),
-                          ),
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                                  color: Color(0xFF4D94FF))),
                         )
-                            : const Icon(Icons.shield, color: Color(0xFF050810), size: 40),
-                      ),
-                      SizedBox(height: 12.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: Text(
-                          controller.nameController.text.isNotEmpty
-                              ? controller.nameController.text
-                              : '—',
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      : Column(
+                          children: [
+                            Container(
+                              width: 70.w,
+                              height: 70.w,
+                              decoration: const BoxDecoration(
+                                  color: Colors.white, shape: BoxShape.circle),
+                              child: controller.profileImageUrl.value.isNotEmpty
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        ApiEndpoint.resolveImageUrl(controller
+                                                .profileImageUrl.value) ??
+                                            '',
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(Icons.shield,
+                                                color: Color(0xFF050810),
+                                                size: 40),
+                                      ),
+                                    )
+                                  : const Icon(Icons.shield,
+                                      color: Color(0xFF050810), size: 40),
+                            ),
+                            SizedBox(height: 12.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: Text(
+                                controller.name.value.isNotEmpty
+                                    ? controller.name.value
+                                    : '—',
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: Text(
+                                controller.email.value,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 13),
+                              ),
+                            ),
+                            SizedBox(height: 12.h),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 6.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF050810),
+                                borderRadius: BorderRadius.circular(20.r),
+                                border:
+                                    Border.all(color: const Color(0xFF1F2937)),
+                              ),
+                              child: Text(
+                                '${controller.role.value} · ${controller.status.value}',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 12.sp),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: Text(
-                          controller.email.value,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF050810),
-                          borderRadius: BorderRadius.circular(20.r),
-                          border: Border.all(color: const Color(0xFF1F2937)),
-                        ),
-                        child: Text(
-                          '${controller.role.value} · ${controller.status.value}',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12.sp),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
 
                 SizedBox(height: 30.h),
 
                 const Text(
                   'MY DEVICE · ACCOUNT',
-                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5),
                 ),
                 SizedBox(height: 16.h),
-                _buildMenuItem('Profile Update', Icons.chevron_right, onTap: () {
+                _buildMenuItem('Profile Update', Icons.chevron_right,
+                    onTap: () {
                   Get.toNamed(RouteName.updateprofile);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Change Password', Icons.chevron_right, onTap: () {
+                _buildMenuItem('Change Password', Icons.chevron_right,
+                    onTap: () {
                   final auth = AuthController.to;
                   auth.resetOtpVerified.value = false;
                   auth.forgotEmailController.clear();
@@ -232,19 +271,29 @@ class MoreScreen extends StatelessWidget {
                 }),
                 SizedBox(height: 12.h),
                 _buildMenuItem('Language', Icons.chevron_right, onTap: () {}),
+                SizedBox(height: 12.h),
+                _buildMenuItem('Trainer', Icons.chevron_right, onTap: () {
+                  Get.toNamed(RouteName.trainers);
+                }),
 
                 SizedBox(height: 30.h),
 
                 const Text(
                   'PRIVACY',
-                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5),
                 ),
                 SizedBox(height: 16.h),
-                _buildMenuItem('Terms & Conditions', Icons.chevron_right, onTap: () {
+                _buildMenuItem('Terms & Conditions', Icons.chevron_right,
+                    onTap: () {
                   Get.toNamed(RouteName.terms);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Privacy Policy', Icons.chevron_right, onTap: () {
+                _buildMenuItem('Privacy Policy', Icons.chevron_right,
+                    onTap: () {
                   Get.toNamed(RouteName.privacy);
                 }),
                 SizedBox(height: 12.h),
@@ -252,7 +301,10 @@ class MoreScreen extends StatelessWidget {
                   Get.toNamed(RouteName.faq);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Delete Account', Icons.chevron_right, isDestructive: true, onTap: () {}),
+                _buildMenuItem('Delete Account', Icons.chevron_right,
+                    isDestructive: true, onTap: () {
+                  controller.requestDeleteAccount();
+                }),
 
                 SizedBox(height: 30.h),
 
@@ -277,12 +329,16 @@ class MoreScreen extends StatelessWidget {
                           padding: EdgeInsets.only(left: 20.w),
                           child: const Text(
                             'Log Out',
-                            style: TextStyle(color: Color(0xFFEF4444), fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Color(0xFFEF4444),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(right: 20.w),
-                          child: Icon(Icons.logout, color: const Color(0xFFEF4444), size: 22.w),
+                          child: Icon(Icons.logout,
+                              color: const Color(0xFFEF4444), size: 22.w),
                         ),
                       ],
                     ),
@@ -299,11 +355,11 @@ class MoreScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItem(
-      String title,
-      IconData icon, {
-        bool isDestructive = false,
-        required VoidCallback onTap,
-      }) {
+    String title,
+    IconData icon, {
+    bool isDestructive = false,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -326,7 +382,9 @@ class MoreScreen extends StatelessWidget {
             ),
             Icon(
               icon,
-              color: isDestructive ? const Color(0xFFEF4444) : Colors.white.withOpacity(0.7),
+              color: isDestructive
+                  ? const Color(0xFFEF4444)
+                  : Colors.white.withOpacity(0.7),
               size: 20.w,
             ),
           ],

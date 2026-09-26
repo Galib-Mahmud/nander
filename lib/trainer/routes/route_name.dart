@@ -29,4 +29,7 @@ class RouteName {
   static const String faq = '/faq';
   static const String updateprofile = '/updateprofile';
   static const String settings = '/settings';
+  static const String trainers = '/trainers';
+  static const String addTrainer = '/addTrainer';
+  static const String inviteTrainer = '/inviteTrainer';
 }

@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../local_storage/user_info.dart';
 
@@ -132,7 +133,16 @@ class ApiClient {
     if (fields != null) request.fields.addAll(fields);
     if (files != null) {
       for (final entry in files.entries) {
-        request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
+        final mediaType = _resolveMediaType(entry.value);
+        final filename = _resolveFilename(entry.value, mediaType);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            entry.key,
+            entry.value.path,
+            filename: filename,
+            contentType: mediaType,
+          ),
+        );
       }
     }
     print("🌐 [$method MULTIPART] URL: $url");
@@ -141,6 +151,82 @@ class ApiClient {
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
     return _handleResponse(response, url, method: "$method MULTIPART");
+  }
+
+  MediaType _resolveMediaType(File file) {
+    final path = file.path.toLowerCase();
+    if (path.endsWith('.png')) {
+      return MediaType('image', 'png');
+    } else if (path.endsWith('.webp')) {
+      return MediaType('image', 'webp');
+    } else if (path.endsWith('.gif')) {
+      return MediaType('image', 'gif');
+    } else if (path.endsWith('.svg')) {
+      return MediaType('image', 'svg+xml');
+    } else if (path.endsWith('.avif')) {
+      return MediaType('image', 'avif');
+    } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      return MediaType('image', 'jpeg');
+    }
+
+    try {
+      final bytes = file.openSync().readSync(12);
+      if (bytes.length >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF) {
+        return MediaType('image', 'jpeg');
+      }
+      if (bytes.length >= 8 &&
+          bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 &&
+          bytes[4] == 0x0D && bytes[5] == 0x0A && bytes[6] == 0x1A && bytes[7] == 0x0A) {
+        return MediaType('image', 'png');
+      }
+      if (bytes.length >= 12 &&
+          bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46 &&
+          bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50) {
+        return MediaType('image', 'webp');
+      }
+      if (bytes.length >= 6 &&
+          bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 &&
+          bytes[3] == 0x38 && (bytes[4] == 0x37 || bytes[4] == 0x39) && bytes[5] == 0x61) {
+        return MediaType('image', 'gif');
+      }
+    } catch (_) {}
+
+    return MediaType('image', 'jpeg');
+  }
+
+  String _resolveFilename(File file, MediaType mediaType) {
+    String filename = file.path.split('/').last.split(r'\').last;
+    final lower = filename.toLowerCase();
+
+    // Map .jpg to .jpeg to satisfy backends that strictly check extensions
+    if (lower.endsWith('.jpg')) {
+      return filename.replaceAll(RegExp(r'\.jpg$', caseSensitive: false), '.jpeg');
+    }
+
+    if (lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.webp') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.avif') ||
+        lower.endsWith('.svg')) {
+      return filename;
+    }
+
+    switch ('${mediaType.type}/${mediaType.subtype}') {
+      case 'image/png':
+        return '$filename.png';
+      case 'image/webp':
+        return '$filename.webp';
+      case 'image/gif':
+        return '$filename.gif';
+      case 'image/svg+xml':
+        return '$filename.svg';
+      case 'image/avif':
+        return '$filename.avif';
+      case 'image/jpeg':
+      default:
+        return '$filename.jpeg';
+    }
   }
 
   // ─── Response Handler ──────────────────────────────────────────────

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../core/endpoint/api_client.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import 'notification_model.dart';
+import '../../core/local_storage/user_info.dart';
 
 class NotificationController extends GetxController {
   static NotificationController get to => Get.put(NotificationController());
@@ -14,7 +15,10 @@ class NotificationController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool showUnreadOnly = false.obs;
 
-  int get unreadCount => notifications.where((n) => !n.isRead).length;
+  int get unreadCount {
+    notifications.value; // ensure Obx registers listener even when list is empty
+    return notifications.where((n) => !n.isRead).length;
+  }
 
   @override
   void onInit() {
@@ -90,7 +94,7 @@ class NotificationController extends GetxController {
     }
   }
 
-  // ✅ NEW METHOD FOR APPROVE/REJECT
+  // ✅ METHOD FOR APPROVE/REJECT (Matching Postman)
   Future<void> handleNotificationAction({
     required String notificationId,
     required String referenceId,
@@ -105,22 +109,40 @@ class NotificationController extends GetxController {
     notifications.refresh();
 
     try {
+      final role = await UserInfo.getUserRole();
+      // Per Postman: 
+      // Admin accepts trainer request via /trainer/trainer-accept-reject
+      // Trainer accepts club admin request via /trainer/club-admin-accept-reject
+      final endpoint = (role == 'TRAINER')
+          ? ApiEndpoint.clubAdminAcceptReject
+          : ApiEndpoint.trainerAcceptReject;
+
+      // Body in Postman expects 'id' as the request/reference ID
+      final actionId = referenceId.isNotEmpty ? referenceId : notificationId;
       final body = {
-        "id": notificationId,
-        "referenceId": referenceId,
+        "id": actionId,
         "status": status,
       };
 
-      debugPrint('📤 Sending action: $body');
+      debugPrint('📤 Sending action to $endpoint: $body');
 
-      // Ensure you have this endpoint defined in ApiEndpoint
       await _apiClient.patch(
-        ApiEndpoint.notificationAcceptRejected,
+        endpoint,
         body: body,
         requiresAuth: true,
       );
 
       debugPrint('✅ Action successful');
+
+      // Also mark this notification as read
+      await markAsRead(notificationId);
+
+      Get.snackbar(
+        status == 'ACTIVE' ? 'Accepted' : 'Declined',
+        status == 'ACTIVE' ? 'Request accepted successfully' : 'Request declined',
+        backgroundColor: status == 'ACTIVE' ? Colors.green.shade700 : Colors.red.shade700,
+        colorText: Colors.white,
+      );
 
       // Remove from list if on Unread tab or refresh logic as needed
       if (showUnreadOnly.value) {
