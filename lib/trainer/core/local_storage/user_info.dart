@@ -40,6 +40,8 @@ class UserInfo {
     await prefs.setString(_kUserRole, role);
   }
 
+  static Future<String?> getUserId() async =>
+      (await SharedPreferences.getInstance()).getString(_kUserId);
   static Future<String?> getUserEmail() async =>
       (await SharedPreferences.getInstance()).getString(_kUserEmail);
   static Future<String?> getUserName() async =>

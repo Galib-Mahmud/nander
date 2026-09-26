@@ -39,11 +39,14 @@ class ApiEndpoint {
   // Delete is handled dynamically in controller as /announcement/{id}
 
   // ─── Teams ────────────────────────────────────────────────────
-  static const String team       = "/team";
-  static const String teamCreate = "/team/create";
-  static const String teamUpdate = "/team/update";
-  static String teamDetail(String id) => "/team/$id";
-  static String teamDelete(String id) => "/team/$id";
+  static const String team                     = "/team";
+  static const String myTeam                   = "/team/my-team";
+  static const String teamCreate               = "/team/create";
+  static const String teamUpdate               = "/team/update";
+  static const String teamAddMember            = "/team/add-member";
+  static const String teamJoinRequestByTrainer = "/team/join-request-by-trainer";
+  static String teamDetail(String id)          => "/team/$id";
+  static String teamDelete(String id)          => "/team/$id";
 
   /// Server returns relative image paths like "/images/xxx.webp" —
   /// images live at the host root (NOT under /api/v1), so we prefix

@@ -9,7 +9,9 @@ import '../../core/local_storage/user_info.dart';
 import 'team_model.dart';
 
 class TeamController extends GetxController {
-  static TeamController get to => Get.put(TeamController());
+  static TeamController get to => Get.isRegistered<TeamController>()
+      ? Get.find<TeamController>()
+      : Get.put(TeamController());
 
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
   final ImagePicker _picker = ImagePicker();
@@ -18,6 +20,10 @@ class TeamController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isSubmitting = false.obs;
   final RxBool isClubAdmin = false.obs;
+  final RxString currentUserId = ''.obs;
+
+  // Track pending join requests sent in current session
+  final RxSet<String> pendingJoinTeamIds = <String>{}.obs;
 
   // Selected image for adding/editing team
   final Rx<File?> selectedImage = Rx<File?>(null);
@@ -25,14 +31,20 @@ class TeamController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    checkUserRole();
-    fetchTeams();
+    initController();
+  }
+
+  Future<void> initController() async {
+    await checkUserRole();
+    await fetchTeams();
   }
 
   Future<void> checkUserRole() async {
     final role = await UserInfo.getUserRole();
     isClubAdmin.value = (role == 'CLUB_ADMIN');
-    debugPrint('👥 TeamController - User role: $role, isClubAdmin: ${isClubAdmin.value}');
+    final uid = await UserInfo.getUserId();
+    if (uid != null) currentUserId.value = uid;
+    debugPrint('👥 TeamController - User role: $role, isClubAdmin: ${isClubAdmin.value}, userId: ${currentUserId.value}');
   }
 
   // ─── Pick Image for Team ──────────────────────────────────────────
@@ -52,11 +64,16 @@ class TeamController extends GetxController {
     selectedImage.value = null;
   }
 
-  // ─── GET All Teams ────────────────────────────────────────────────
+  // ─── GET Teams (Role-based) ──────────────────────────────────────
+  // Club Admin: /team/my-team
+  // Trainer: /team
   Future<void> fetchTeams() async {
     isLoading.value = true;
     try {
-      final response = await _apiClient.get(ApiEndpoint.team, requiresAuth: true);
+      final endpoint = isClubAdmin.value ? ApiEndpoint.myTeam : ApiEndpoint.team;
+      debugPrint('📡 Fetching teams from: $endpoint (role: ${isClubAdmin.value ? "CLUB_ADMIN" : "TRAINER"})');
+
+      final response = await _apiClient.get(endpoint, requiresAuth: true);
 
       if (response?['success'] == true) {
         final dynamic raw = response['data'];
@@ -78,7 +95,7 @@ class TeamController extends GetxController {
         }
 
         teams.assignAll(parsed);
-        debugPrint('✅ Loaded ${teams.length} teams');
+        debugPrint('✅ Loaded ${teams.length} teams from $endpoint');
       }
     } catch (e) {
       debugPrint('❌ Fetch teams error: $e');
@@ -253,6 +270,93 @@ class TeamController extends GetxController {
       debugPrint('❌ Delete team error: $e');
       Get.snackbar('Error', 'Failed to delete team');
       return false;
+    }
+  }
+
+  // ─── POST Add Team Member (Club Admin only) ───────────────────────
+  Future<bool> addTeamMember({
+    required String teamId,
+    String? trainerId,
+    String? trainerName,
+    String? sendEmail,
+    bool isSendByEmail = false,
+  }) async {
+    isSubmitting.value = true;
+    try {
+      final body = <String, dynamic>{
+        'teamId': teamId,
+        if (trainerId != null && trainerId.isNotEmpty) 'trainerId': trainerId,
+        if (trainerName != null && trainerName.isNotEmpty) 'trainerName': trainerName,
+        if (sendEmail != null && sendEmail.isNotEmpty) 'sendEmail': sendEmail,
+        if (isSendByEmail) 'isSendByEmail': true,
+      };
+
+      debugPrint('📤 Adding team member: $body');
+      final response = await _apiClient.post(
+        ApiEndpoint.teamAddMember,
+        body: body,
+        requiresAuth: true,
+      );
+
+      if (response?['success'] == true) {
+        Get.snackbar(
+          'Success',
+          response?['message'] ?? 'Team member added successfully',
+          backgroundColor: Colors.green.shade700,
+          colorText: Colors.white,
+        );
+        await fetchTeams();
+        return true;
+      }
+      return false;
+    } on HttpException catch (e) {
+      debugPrint('❌ Add member error: $e');
+      Get.snackbar('Error', e.message, backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    } catch (e) {
+      debugPrint('❌ Add member error: $e');
+      Get.snackbar('Error', 'Failed to add member', backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
+
+  // ─── POST Join Request By Trainer (Trainer only) ──────────────────
+  Future<bool> joinTeamAsTrainer(String teamId) async {
+    isSubmitting.value = true;
+    try {
+      final body = {'teamId': teamId};
+      debugPrint('📤 Sending join request: $body');
+
+      final response = await _apiClient.post(
+        ApiEndpoint.teamJoinRequestByTrainer,
+        body: body,
+        requiresAuth: true,
+      );
+
+      if (response?['success'] == true) {
+        pendingJoinTeamIds.add(teamId);
+        Get.snackbar(
+          'Success',
+          response?['message'] ?? 'Join request sent successfully',
+          backgroundColor: Colors.green.shade700,
+          colorText: Colors.white,
+        );
+        await fetchTeams();
+        return true;
+      }
+      return false;
+    } on HttpException catch (e) {
+      debugPrint('❌ Join team error: $e');
+      Get.snackbar('Error', e.message, backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    } catch (e) {
+      debugPrint('❌ Join team error: $e');
+      Get.snackbar('Error', 'Failed to send join request', backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    } finally {
+      isSubmitting.value = false;
     }
   }
 }
