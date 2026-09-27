@@ -19,13 +19,19 @@ class ConversationModel {
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     return ConversationModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      profile: json['profile'],
-      isOnline: json['isOnline'] ?? false,
-      lastMessage: json['lastMessage'] ?? '',
-      lastMessageTime: DateTime.tryParse(json['lastMessageTime'] ?? '') ?? DateTime.now(),
-      unreadCount: json['unreadCount'] ?? 0,
+      id: ChatMessageModel.extractId(json['id'] ?? json['_id'] ?? json['peerId'] ?? json['user']),
+      name: (json['name'] ?? json['fullName'] ?? json['userName'] ?? 'User').toString(),
+      profile: json['profile']?.toString() ?? json['avatar']?.toString() ?? json['image']?.toString(),
+      isOnline: json['isOnline'] == true || json['online'] == true,
+      lastMessage: (json['lastMessage'] ?? json['last_message'] ?? '').toString(),
+      lastMessageTime: DateTime.tryParse(json['lastMessageTime']?.toString() ??
+              json['last_message_time']?.toString() ??
+              json['updatedAt']?.toString() ??
+              '') ??
+          DateTime.now(),
+      unreadCount: json['unreadCount'] is int
+          ? json['unreadCount']
+          : (int.tryParse(json['unreadCount']?.toString() ?? '0') ?? 0),
     );
   }
 }
@@ -47,14 +53,38 @@ class ChatMessageModel {
     required this.createdAt,
   });
 
+  static String extractId(dynamic val) {
+    if (val == null) return '';
+    if (val is String) return val.trim();
+    if (val is Map) {
+      return (val['_id'] ?? val['id'] ?? val['userId'] ?? '').toString().trim();
+    }
+    return val.toString().trim();
+  }
+
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    final rawSender = json['senderId'] ??
+        json['sender_id'] ??
+        json['sender'] ??
+        json['from'] ??
+        json['userId'];
+
+    final rawReceiver = json['receiverId'] ??
+        json['receiver_id'] ??
+        json['receiver'] ??
+        json['to'];
+
     return ChatMessageModel(
-      id: json['id'] ?? '',
-      senderId: json['senderId'] ?? '',
-      receiverId: json['receiverId'] ?? '',
-      message: json['message'] ?? '',
-      isRead: json['isRead'] ?? false,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      id: extractId(json['id'] ?? json['_id']),
+      senderId: extractId(rawSender),
+      receiverId: extractId(rawReceiver),
+      message: (json['message'] ?? json['text'] ?? json['content'] ?? '').toString(),
+      isRead: json['isRead'] == true || json['read'] == true || json['seen'] == true,
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ??
+              json['created_at']?.toString() ??
+              json['timestamp']?.toString() ??
+              '') ??
+          DateTime.now(),
     );
   }
 }

@@ -6,6 +6,7 @@ import '../../core/endpoint/api_client.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../core/local_storage/user_info.dart';
 import '../../routes/route_name.dart';
+import '../../chat/controller/chat_controller.dart';
 import 'club_controller.dart';
 
 class AuthController extends GetxController {
@@ -14,6 +15,7 @@ class AuthController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
 
   final RxBool isLoading = false.obs;
+
   /// 'signup' or 'forgot_password' — decides what verifyOtp() does next
   final RxString otpFlowType = 'signup'.obs;
 
@@ -23,22 +25,22 @@ class AuthController extends GetxController {
   final RxBool resetOtpVerified = false.obs;
 
   // ─── Login / Signup shared fields (from LoginScreen tabs) ───────
-  final nameController           = TextEditingController();
-  final emailController          = TextEditingController();
-  final passwordController       = TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final retypePasswordController = TextEditingController();
-  final RxString role            = 'CLUB_ADMIN'.obs; // CLUB_ADMIN | TRAINER
+  final RxString role = 'CLUB_ADMIN'.obs; // CLUB_ADMIN | TRAINER
 
   // ─── Forgot password ─────────────────────────────────────────────
   final forgotEmailController = TextEditingController();
 
   // ─── Reset password ──────────────────────────────────────────────
-  final newPasswordController        = TextEditingController();
+  final newPasswordController = TextEditingController();
   final confirmNewPasswordController = TextEditingController();
 
   // ─── OTP (6 digits, matches API) ─────────────────────────────────
   final List<TextEditingController> otpControllers =
-  List.generate(6, (_) => TextEditingController());
+      List.generate(6, (_) => TextEditingController());
 
   // ──────────────────────────────────────────────────────────────────
   // SIGNUP
@@ -58,10 +60,10 @@ class AuthController extends GetxController {
     isLoading.value = true;
     try {
       final body = {
-        'name'    : nameController.text.trim(),
-        'email'   : emailController.text.trim(),
+        'name': nameController.text.trim(),
+        'email': emailController.text.trim(),
         'password': passwordController.text,
-        'role'    : role.value,
+        'role': role.value,
       };
 
       // ✅ clubAdminId is optional, and only relevant for TRAINER signups
@@ -79,11 +81,13 @@ class AuthController extends GetxController {
       );
 
       final data = response?['data'];
-      await UserInfo.setPendingSignupEmail(data?['email'] ?? emailController.text.trim());
+      await UserInfo.setPendingSignupEmail(
+          data?['email'] ?? emailController.text.trim());
 
       otpFlowType.value = 'signup';
       _clearOtpFields();
-      _showSuccess(response?['message'] ?? 'Signup successful. Check your email for the code.');
+      _showSuccess(response?['message'] ??
+          'Signup successful. Check your email for the code.');
       Get.toNamed(RouteName.otp);
     } on HttpException catch (e) {
       _showError(_extractMessage(e.body) ?? e.message);
@@ -153,7 +157,8 @@ class AuthController extends GetxController {
         body: {'email': email},
         requiresAuth: false,
       );
-      _showSuccess(response?['message'] ?? 'A new code has been sent to your email');
+      _showSuccess(
+          response?['message'] ?? 'A new code has been sent to your email');
     } on HttpException catch (e) {
       _showError(_extractMessage(e.body) ?? e.message);
     } catch (e) {
@@ -168,7 +173,8 @@ class AuthController extends GetxController {
   // SIGN IN
   // ──────────────────────────────────────────────────────────────────
   Future<void> login() async {
-    if (emailController.text.trim().isEmpty || passwordController.text.isEmpty) {
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.isEmpty) {
       _showError('Please enter email and password');
       return;
     }
@@ -177,7 +183,7 @@ class AuthController extends GetxController {
       final response = await _apiClient.post(
         ApiEndpoint.signin,
         body: {
-          'email'   : emailController.text.trim(),
+          'email': emailController.text.trim(),
           'password': passwordController.text,
         },
         requiresAuth: false,
@@ -216,7 +222,8 @@ class AuthController extends GetxController {
       otpFlowType.value = 'forgot_password';
       resetOtpVerified.value = false;
       _clearOtpFields();
-      _showSuccess(response?['message'] ?? 'A code has been sent to your email');
+      _showSuccess(
+          response?['message'] ?? 'A code has been sent to your email');
       Get.toNamed(RouteName.otp);
     } on HttpException catch (e) {
       _showError(_extractMessage(e.body) ?? e.message);
@@ -261,7 +268,8 @@ class AuthController extends GetxController {
 
   // ─── step 3: finalize the new password ──────────────────────────
   Future<void> setNewPassword() async {
-    if (newPasswordController.text.isEmpty || confirmNewPasswordController.text.isEmpty) {
+    if (newPasswordController.text.isEmpty ||
+        confirmNewPasswordController.text.isEmpty) {
       _showError('Please fill in all fields');
       return;
     }
@@ -274,7 +282,7 @@ class AuthController extends GetxController {
       return;
     }
     final email = await UserInfo.getResetEmail();
-    final otp   = await UserInfo.getResetOtp();
+    final otp = await UserInfo.getResetOtp();
     if (email == null || otp == null) {
       _showError('Reset session expired. Please start over.');
       resetOtpVerified.value = false;
@@ -287,8 +295,8 @@ class AuthController extends GetxController {
       final response = await _apiClient.post(
         ApiEndpoint.setPassword,
         body: {
-          'email'   : email,
-          'otp'     : int.tryParse(otp),
+          'email': email,
+          'otp': int.tryParse(otp),
           'password': newPasswordController.text,
         },
         requiresAuth: false,
@@ -326,24 +334,28 @@ class AuthController extends GetxController {
   // SHARED HELPERS
   // ──────────────────────────────────────────────────────────────────
   Future<void> _persistSession(Map<String, dynamic>? response) async {
-    final data  = response?['data'];
+    final data = response?['data'];
     final token = data?['token'] as String?;
-    final user  = data?['user'] as Map<String, dynamic>?;
+    final user = data?['user'] as Map<String, dynamic>?;
     if (token != null) await UserInfo.setAccessToken(token);
     if (user != null) {
       await UserInfo.setUser(
-        id   : user['id'] ?? '',
-        email: user['email'] ?? '',
-        name : user['name'] ?? '',
-        role : user['role'] ?? '',
+        id: (user['id'] ?? user['_id'] ?? '').toString(),
+        email: (user['email'] ?? '').toString(),
+        name: (user['name'] ?? '').toString(),
+        role: (user['role'] ?? '').toString(),
       );
+      if (Get.isRegistered<ChatController>()) {
+        ChatController.to.reconnectSocket();
+      }
     }
   }
 
   /// CLUB_ADMIN → home1 (MainScreen1), everyone else (e.g. TRAINER) → home
   Future<void> _navigateHome() async {
     final userRole = await UserInfo.getUserRole();
-    Get.offAllNamed(userRole == 'CLUB_ADMIN' ? RouteName.main1 : RouteName.main);
+    Get.offAllNamed(
+        userRole == 'CLUB_ADMIN' ? RouteName.main1 : RouteName.main);
   }
 
   String _getOtpCode() => otpControllers.map((c) => c.text).join('');
@@ -359,15 +371,18 @@ class AuthController extends GetxController {
     try {
       final decoded = jsonDecode(body);
       if (decoded is Map<String, dynamic>) {
-        if (decoded.containsKey('message')) return decoded['message'].toString();
+        if (decoded.containsKey('message'))
+          return decoded['message'].toString();
         if (decoded.containsKey('detail')) return decoded['detail'].toString();
       }
     } catch (_) {}
     return null;
   }
 
-  void _showError(String message) => _snack(message, Icons.error_outline, Colors.red.shade700);
-  void _showSuccess(String message) => _snack(message, Icons.check_circle_outline, Colors.green.shade700);
+  void _showError(String message) =>
+      _snack(message, Icons.error_outline, Colors.red.shade700);
+  void _showSuccess(String message) =>
+      _snack(message, Icons.check_circle_outline, Colors.green.shade700);
 
   void _snack(String message, IconData icon, Color color) {
     final context = Get.context;
@@ -378,7 +393,9 @@ class AuthController extends GetxController {
           children: [
             Icon(icon, color: Colors.white),
             const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
+            Expanded(
+                child:
+                    Text(message, style: const TextStyle(color: Colors.white))),
           ],
         ),
         backgroundColor: color,

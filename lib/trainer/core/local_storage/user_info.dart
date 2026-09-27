@@ -77,9 +77,7 @@ class UserInfo {
     await prefs.remove(_kResetEmail);
     await prefs.remove(_kResetOtp);
   }
-// user_info.dart-তে যোগ করো
-  static Future<String?> getUserId() async =>
-      (await SharedPreferences.getInstance()).getString(_kUserId);
+
   // ─── Logout ───────────────────────────────────────────────────
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();

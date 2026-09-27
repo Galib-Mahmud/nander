@@ -48,7 +48,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
-    final isToday = dt.year == now.year && dt.month == now.month && dt.day == now.day;
+    final isToday =
+        dt.year == now.year && dt.month == now.month && dt.day == now.day;
     final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
     final m = dt.minute.toString().padLeft(2, '0');
     final ampm = dt.hour >= 12 ? 'PM' : 'AM';
@@ -65,36 +66,45 @@ class _ChatListScreenState extends State<ChatListScreen> {
         elevation: 0,
         titleSpacing: 8.w,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              color: Colors.white, size: 20),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Chats',
-          style: TextStyle(color: Colors.white, fontSize: 22.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold),
         ),
         actions: [
           Obx(() => Padding(
-            padding: EdgeInsets.only(right: 8.w),
-            child: Center(
-              child: Row(
-                children: [
-                  Container(
-                    width: 8.w,
-                    height: 8.w,
-                    decoration: BoxDecoration(
-                      color: controller.isSocketConnected.value ? onlineColor : Colors.white24,
-                      shape: BoxShape.circle,
-                    ),
+                padding: EdgeInsets.only(right: 8.w),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8.w,
+                        height: 8.w,
+                        decoration: BoxDecoration(
+                          color: controller.isSocketConnected.value
+                              ? onlineColor
+                              : Colors.white24,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        controller.isSocketConnected.value
+                            ? 'Online'
+                            : 'Offline',
+                        style:
+                            TextStyle(color: Colors.white54, fontSize: 11.sp),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 6.w),
-                  Text(
-                    controller.isSocketConnected.value ? 'Online' : 'Offline',
-                    style: TextStyle(color: Colors.white54, fontSize: 11.sp),
-                  ),
-                ],
-              ),
-            ),
-          )),
+                ),
+              )),
           GestureDetector(
             onTap: () => Get.to(() => const MyTeamsScreen()),
             child: Container(
@@ -152,7 +162,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         margin: EdgeInsets.only(right: 12.w),
                         width: 22.w,
                         height: 22.w,
-                        decoration: const BoxDecoration(color: Color(0xFF1F2937), shape: BoxShape.circle),
+                        decoration: const BoxDecoration(
+                            color: Color(0xFF1F2937), shape: BoxShape.circle),
                         child: Icon(Icons.close, color: accent, size: 13.w),
                       ),
                     )
@@ -166,8 +177,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
           // ─── List ─────────────────────────────────────────────
           Expanded(
             child: Obx(() {
-              if (controller.isLoadingConversations.value && controller.conversations.isEmpty) {
-                return const Center(child: CircularProgressIndicator(color: accent));
+              if (controller.isLoadingConversations.value &&
+                  controller.conversations.isEmpty) {
+                return const Center(
+                    child: CircularProgressIndicator(color: accent));
               }
               if (controller.conversations.isEmpty) {
                 return _EmptyState(searchTerm: searchController.text);
@@ -175,7 +188,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
               return RefreshIndicator(
                 color: accent,
                 backgroundColor: cardColor,
-                onRefresh: () => controller.fetchConversations(search: searchController.text),
+                onRefresh: () => controller.fetchConversations(
+                    search: searchController.text),
                 child: ListView.builder(
                   padding: EdgeInsets.only(top: 4.h, bottom: 20.h),
                   itemCount: controller.conversations.length,
@@ -186,11 +200,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       timeLabel: _formatTime(convo.lastMessageTime),
                       onTap: () {
                         Get.to(() => ChatScreen(
-                          peerId: convo.id,
-                          peerName: convo.name,
-                          peerAvatar: convo.profile,
-                          isPeerOnline: convo.isOnline,
-                        ));
+                              peerId: convo.id,
+                              peerName: convo.name,
+                              peerAvatar: convo.profile,
+                              isPeerOnline: convo.isOnline,
+                            ));
                       },
                     );
                   },
@@ -233,13 +247,20 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Text(
-              isSearching ? 'No results for "$searchTerm"' : 'No conversations yet',
+              isSearching
+                  ? 'No results for "$searchTerm"'
+                  : 'No conversations yet',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 15.sp, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 6.h),
             Text(
-              isSearching ? 'Try a different name' : 'Start a conversation from your team',
+              isSearching
+                  ? 'Try a different name'
+                  : 'Start a conversation from your team',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white38, fontSize: 13.sp),
             ),
@@ -255,7 +276,8 @@ class _ConversationTile extends StatelessWidget {
   final String timeLabel;
   final VoidCallback onTap;
 
-  const _ConversationTile({required this.convo, required this.timeLabel, required this.onTap});
+  const _ConversationTile(
+      {required this.convo, required this.timeLabel, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -279,16 +301,21 @@ class _ConversationTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: const Color(0xFF1F2937),
                     image: avatarUrl != null
-                        ? DecorationImage(image: NetworkImage(avatarUrl), fit: BoxFit.cover)
+                        ? DecorationImage(
+                            image: NetworkImage(avatarUrl), fit: BoxFit.cover)
                         : null,
                   ),
                   child: avatarUrl == null
                       ? Center(
-                    child: Text(
-                      (convo.name.isNotEmpty ? convo.name[0] : '?').toUpperCase(),
-                      style: TextStyle(color: Colors.white70, fontSize: 20.sp, fontWeight: FontWeight.w600),
-                    ),
-                  )
+                          child: Text(
+                            (convo.name.isNotEmpty ? convo.name[0] : '?')
+                                .toUpperCase(),
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        )
                       : null,
                 ),
                 if (convo.isOnline)
@@ -301,7 +328,8 @@ class _ConversationTile extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFF4ADE80),
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFF050810), width: 2),
+                        border: Border.all(
+                            color: const Color(0xFF050810), width: 2),
                       ),
                     ),
                   ),
@@ -326,13 +354,18 @@ class _ConversationTile extends StatelessWidget {
                   ),
                   SizedBox(height: 3.h),
                   Text(
-                    convo.lastMessage.isEmpty ? 'Say hello 👋' : convo.lastMessage,
+                    convo.lastMessage.isEmpty
+                        ? 'Say hello 👋'
+                        : convo.lastMessage,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: hasUnread ? Colors.white.withOpacity(0.85) : Colors.white.withOpacity(0.45),
+                      color: hasUnread
+                          ? Colors.white.withOpacity(0.85)
+                          : Colors.white.withOpacity(0.45),
                       fontSize: 13.5.sp,
-                      fontWeight: hasUnread ? FontWeight.w500 : FontWeight.normal,
+                      fontWeight:
+                          hasUnread ? FontWeight.w500 : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -356,13 +389,18 @@ class _ConversationTile extends StatelessWidget {
                 SizedBox(height: 8.h),
                 if (hasUnread)
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.5.w, vertical: 2.5.h),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 6.5.w, vertical: 2.5.h),
                     constraints: BoxConstraints(minWidth: 20.w),
-                    decoration: const BoxDecoration(color: Color(0xFF4D94FF), shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                        color: Color(0xFF4D94FF), shape: BoxShape.circle),
                     child: Text(
                       '${convo.unreadCount}',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w700),
                     ),
                   )
                 else

@@ -19,16 +19,16 @@ class ProfileController extends GetxController {
   final RxBool isDeleting = false.obs;
 
   // ─── Input Controllers ──────────────────────────────────────────
-  final nameController    = TextEditingController();
-  final bioController     = TextEditingController();
+  final nameController = TextEditingController();
+  final bioController = TextEditingController();
   final addressController = TextEditingController();
 
   // ─── Reactive Profile Fields ────────────────────────────────────
-  final RxString name            = ''.obs;
-  final RxString email           = ''.obs;
-  final RxString role            = ''.obs;
-  final RxString status          = ''.obs;
-  final RxBool   isVerified      = false.obs;
+  final RxString name = ''.obs;
+  final RxString email = ''.obs;
+  final RxString role = ''.obs;
+  final RxString status = ''.obs;
+  final RxBool isVerified = false.obs;
   final RxString profileImageUrl = ''.obs;
 
   // ─── Selected Local Image for Upload ────────────────────────────
@@ -68,21 +68,21 @@ class ProfileController extends GetxController {
 
       final data = response?['data'];
       if (data != null) {
-        name.value              = data['name'] ?? '';
-        nameController.text    = data['name'] ?? '';
-        bioController.text     = data['bio'] ?? '';
+        name.value = data['name'] ?? '';
+        nameController.text = data['name'] ?? '';
+        bioController.text = data['bio'] ?? '';
         addressController.text = data['address'] ?? '';
-        email.value             = data['email'] ?? '';
-        role.value               = data['role'] ?? '';
-        status.value             = data['status'] ?? '';
-        isVerified.value         = data['isVerified'] ?? false;
-        profileImageUrl.value    = data['profile'] ?? '';
+        email.value = data['email'] ?? '';
+        role.value = data['role'] ?? '';
+        status.value = data['status'] ?? '';
+        isVerified.value = data['isVerified'] ?? false;
+        profileImageUrl.value = data['profile'] ?? '';
 
         await UserInfo.setUser(
-          id   : data['id'] ?? '',
+          id: data['id'] ?? '',
           email: data['email'] ?? '',
-          name : data['name'] ?? '',
-          role : data['role'] ?? '',
+          name: data['name'] ?? '',
+          role: data['role'] ?? '',
         );
       }
     } on UnauthorizedException catch (_) {
@@ -132,20 +132,20 @@ class ProfileController extends GetxController {
       if (response?['success'] == true) {
         final data = response['data'];
         if (data != null) {
-          name.value              = data['name'] ?? nameController.text;
-          nameController.text    = data['name'] ?? nameController.text;
-          bioController.text     = data['bio'] ?? bioController.text;
+          name.value = data['name'] ?? nameController.text;
+          nameController.text = data['name'] ?? nameController.text;
+          bioController.text = data['bio'] ?? bioController.text;
           addressController.text = data['address'] ?? addressController.text;
-          profileImageUrl.value    = data['profile'] ?? profileImageUrl.value;
-          email.value             = data['email'] ?? email.value;
-          role.value               = data['role'] ?? role.value;
-          status.value             = data['status'] ?? status.value;
+          profileImageUrl.value = data['profile'] ?? profileImageUrl.value;
+          email.value = data['email'] ?? email.value;
+          role.value = data['role'] ?? role.value;
+          status.value = data['status'] ?? status.value;
 
           await UserInfo.setUser(
-            id   : data['id'] ?? '',
+            id: data['id'] ?? '',
             email: data['email'] ?? email.value,
-            name : data['name'] ?? nameController.text,
-            role : data['role'] ?? role.value,
+            name: data['name'] ?? nameController.text,
+            role: data['role'] ?? role.value,
           );
         }
 
@@ -173,7 +173,8 @@ class ProfileController extends GetxController {
       AlertDialog(
         backgroundColor: const Color(0xFF161E30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Delete Account',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: const Text(
           'Are you sure you want to delete your account? A verification code (OTP) will be sent to your email to confirm deletion.',
           style: TextStyle(color: Colors.white70),
@@ -181,15 +182,18 @@ class ProfileController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
               Get.back(); // close confirm dialog
               await _sendDeleteAccountRequest();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
-            child: const Text('Send Code', style: TextStyle(color: Colors.white)),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
+            child:
+                const Text('Send Code', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -205,7 +209,8 @@ class ProfileController extends GetxController {
       );
 
       if (response?['success'] == true) {
-        _showSuccess(response?['message'] ?? 'Verification code sent to your email');
+        _showSuccess(
+            response?['message'] ?? 'Verification code sent to your email');
         _showDeleteConfirmDialog();
       }
     } on HttpException catch (e) {
@@ -226,7 +231,8 @@ class ProfileController extends GetxController {
       AlertDialog(
         backgroundColor: const Color(0xFF161E30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirm Account Deletion', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Confirm Account Deletion',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,15 +245,20 @@ class ProfileController extends GetxController {
             TextField(
               controller: otpController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 4),
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 18, letterSpacing: 4),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 hintText: 'Enter OTP',
-                hintStyle: const TextStyle(color: Colors.white38, letterSpacing: 0),
+                hintStyle:
+                    const TextStyle(color: Colors.white38, letterSpacing: 0),
                 filled: true,
                 fillColor: const Color(0xFF0F1522),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
           ],
@@ -255,7 +266,8 @@ class ProfileController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -267,8 +279,10 @@ class ProfileController extends GetxController {
               Get.back();
               await _confirmDeleteAccount(code);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
-            child: const Text('Delete Permanently', style: TextStyle(color: Colors.white)),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
+            child: const Text('Delete Permanently',
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -304,8 +318,10 @@ class ProfileController extends GetxController {
   }
 
   // ─── Alerts & SnackBar ──────────────────────────────────────────
-  void _showError(String message) => _snack(message, Icons.error_outline, Colors.red.shade700);
-  void _showSuccess(String message) => _snack(message, Icons.check_circle_outline, Colors.green.shade700);
+  void _showError(String message) =>
+      _snack(message, Icons.error_outline, Colors.red.shade700);
+  void _showSuccess(String message) =>
+      _snack(message, Icons.check_circle_outline, Colors.green.shade700);
 
   void _snack(String message, IconData icon, Color color) {
     final context = Get.context;
@@ -316,7 +332,9 @@ class ProfileController extends GetxController {
           children: [
             Icon(icon, color: Colors.white),
             const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
+            Expanded(
+                child:
+                    Text(message, style: const TextStyle(color: Colors.white))),
           ],
         ),
         backgroundColor: color,

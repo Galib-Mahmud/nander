@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
-
+import '../../core/endpoint/api_client.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../core/local_storage/user_info.dart';
 import 'chat_models.dart';
@@ -12,7 +11,8 @@ import 'chat_models.dart';
 class ChatController extends GetxController {
   static ChatController get to => Get.put(ChatController(), permanent: true);
 
-  IO.Socket? _socket;
+  final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
+  io.Socket? _socket;
   String? _myId;
 
   final RxBool isSocketConnected = false.obs;
@@ -37,60 +37,143 @@ class ChatController extends GetxController {
   // SOCKET SETUP
   // ──────────────────────────────────────────────────────────────────
   Future<void> _initSocket() async {
-    _myId = await UserInfo.getUserId();
-    if (_myId == null || _myId!.isEmpty) return; // not logged in yet
+    await _ensureMyId();
+    if (_myId == null || _myId!.isEmpty) {
+      debugPrint('⚠️ Socket init deferred: myId not found yet.');
+      return;
+    }
 
-    _socket = IO.io(
-      ChatEndpoint.baseUrl,
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+    try {
+      _socket?.dispose();
 
-    _socket!.connect();
+      _socket = io.io(
+        ChatEndpoint.baseUrl,
+        io.OptionBuilder()
+            .setTransports(['websocket'])
+            .enableAutoConnect()
+            .enableReconnection()
+            .setReconnectionDelay(1000)
+            .setReconnectionAttempts(10)
+            .build(),
+      );
 
-    _socket!.onConnect((_) {
-      isSocketConnected.value = true;
-      // Register this user as online + subscribe to their incoming messages
-      _socket!.emit('userConnected', _myId);
-      _socket!.emit('getMessage', _myId);
-    });
+      _socket!.connect();
 
-    _socket!.onDisconnect((_) => isSocketConnected.value = false);
+      _socket!.onConnect((_) {
+        isSocketConnected.value = true;
+        debugPrint('🟢 Socket connected! MyId: $_myId');
+        if (_myId != null && _myId!.isNotEmpty) {
+          _socket!.emit('userConnected', _myId);
+          _socket!.emit('getMessage', _myId);
+        }
+      });
 
-    // Incoming live message pushed by the server
-    _socket!.on('getMessage', (data) {
+      _socket!.onDisconnect((_) {
+        isSocketConnected.value = false;
+        debugPrint('🔴 Socket disconnected');
+      });
+
+      void handleSocketData(dynamic data) {
+        try {
+          debugPrint('📩 Socket message received: $data');
+          final payload = data is String ? jsonDecode(data) : data;
+          if (payload is Map<String, dynamic>) {
+            final incoming = ChatMessageModel.fromJson(payload);
+            _handleIncomingMessage(incoming);
+          } else if (payload is List) {
+            for (final item in payload) {
+              if (item is Map<String, dynamic>) {
+                _handleIncomingMessage(ChatMessageModel.fromJson(item));
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('❌ Parse incoming socket message error: $e');
+        }
+      }
+
+      _socket!.on('getMessage', handleSocketData);
+      _socket!.on('newMessage', handleSocketData);
+      _socket!.on('message', handleSocketData);
+      _socket!.on('receiveMessage', handleSocketData);
+
+      _socket!.onConnectError((e) => debugPrint('❌ Socket connect error: $e'));
+      _socket!.onError((e) => debugPrint('❌ Socket error: $e'));
+    } catch (e) {
+      debugPrint('❌ Socket initialization error: $e');
+    }
+  }
+
+  Future<void> _ensureMyId() async {
+    final freshId = await UserInfo.getUserId();
+    if (freshId != null && freshId.trim().isNotEmpty) {
+      final trimmed = freshId.trim();
+      if (_myId != trimmed) {
+        debugPrint('🔄 User ID updated from $_myId to $trimmed');
+        _myId = trimmed;
+      }
+      return;
+    }
+
+    final token = await UserInfo.getAccessToken();
+    if (token != null && token.isNotEmpty) {
       try {
-        final payload = data is String ? jsonDecode(data) : data;
-        if (payload is Map<String, dynamic>) {
-          final incoming = ChatMessageModel.fromJson(payload);
-          _handleIncomingMessage(incoming);
+        final parts = token.split('.');
+        if (parts.length >= 2) {
+          final normalized = base64Url.normalize(parts[1]);
+          final payload = utf8.decode(base64Url.decode(normalized));
+          final map = jsonDecode(payload);
+          if (map is Map<String, dynamic>) {
+            final extracted = map['id']?.toString() ??
+                map['_id']?.toString() ??
+                map['userId']?.toString() ??
+                map['user']?['id']?.toString() ??
+                map['user']?['_id']?.toString();
+            if (extracted != null && extracted.isNotEmpty) {
+              _myId = extracted.trim();
+              await UserInfo.setUser(
+                id: _myId!,
+                email: map['email']?.toString() ?? '',
+                name: map['name']?.toString() ?? '',
+                role: map['role']?.toString() ?? '',
+              );
+              debugPrint('🔑 Extracted and saved myId from JWT: $_myId');
+            }
+          }
         }
       } catch (e) {
-        debugPrint('❌ Parse incoming message error: $e');
+        debugPrint('⚠️ Error decoding JWT for userId: $e');
       }
-    });
-
-    _socket!.onConnectError((e) => debugPrint('❌ Socket connect error: $e'));
-    _socket!.onError((e) => debugPrint('❌ Socket error: $e'));
+    }
   }
 
   void _handleIncomingMessage(ChatMessageModel incoming) {
     final belongsToOpenChat = activePeerId.value.isNotEmpty &&
-        (incoming.senderId == activePeerId.value || incoming.receiverId == activePeerId.value);
+        (incoming.senderId == activePeerId.value ||
+            incoming.receiverId == activePeerId.value ||
+            (incoming.senderId == _myId && incoming.receiverId == activePeerId.value));
 
     if (belongsToOpenChat) {
-      messages.add(incoming);
+      final index = messages.indexWhere((m) =>
+          (m.id.isNotEmpty && m.id == incoming.id) ||
+          (m.senderId == incoming.senderId &&
+              m.message == incoming.message &&
+              m.createdAt.difference(incoming.createdAt).inSeconds.abs() < 5));
+
+      if (index >= 0) {
+        messages[index] = incoming;
+      } else {
+        messages.add(incoming);
+      }
     }
-    // Keep the conversation list preview/order fresh either way
     fetchConversations();
   }
 
-  /// Call this again after login/logout since the user id may have changed.
   Future<void> reconnectSocket() async {
     _socket?.dispose();
+    _socket = null;
     isSocketConnected.value = false;
+    _myId = null;
     await _initSocket();
   }
 
@@ -100,26 +183,24 @@ class ChatController extends GetxController {
   Future<void> fetchConversations({String? search}) async {
     isLoadingConversations.value = true;
     try {
-      final token = await UserInfo.getAccessToken();
-      final uri = Uri.parse(ChatEndpoint.conversations).replace(
-        queryParameters: (search != null && search.trim().isNotEmpty) ? {'search': search.trim()} : null,
-      );
-      final response = await http.get(
-        uri,
-        headers: {
-          'Accept': 'application/json',
-          if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final decoded = jsonDecode(response.body);
-        final list = (decoded['data'] as List? ?? [])
-            .map((e) => ConversationModel.fromJson(e))
-            .toList();
-        conversations.assignAll(list);
-      } else {
-        debugPrint('❌ Fetch conversations failed: ${response.statusCode} ${response.body}');
+      final endpoint = (search != null && search.trim().isNotEmpty)
+          ? '/chat/conversations?search=${Uri.encodeComponent(search.trim())}'
+          : '/chat/conversations';
+
+      final response = await _apiClient.get(endpoint, requiresAuth: true);
+      final rawList = (response?['data'] as List?) ?? [];
+
+      final list = <ConversationModel>[];
+      for (final item in rawList) {
+        if (item is Map<String, dynamic>) {
+          try {
+            list.add(ConversationModel.fromJson(item));
+          } catch (e) {
+            debugPrint('⚠️ Error parsing single conversation: $e');
+          }
+        }
       }
+      conversations.assignAll(list);
     } catch (e) {
       debugPrint('❌ Fetch conversations error: $e');
     } finally {
@@ -134,25 +215,35 @@ class ChatController extends GetxController {
     activePeerId.value = peerId;
     messages.clear();
     isLoadingMessages.value = true;
+
+    await _ensureMyId();
+    if (_socket == null || !isSocketConnected.value) {
+      _initSocket();
+    }
+
     try {
-      final token = await UserInfo.getAccessToken();
-      final response = await http.get(
-        Uri.parse(ChatEndpoint.messages(peerId)),
-        headers: {
-          'Accept': 'application/json',
-          if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final decoded = jsonDecode(response.body);
-        final list = (decoded['data'] as List? ?? [])
-            .map((e) => ChatMessageModel.fromJson(e))
-            .toList()
-          ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        messages.assignAll(list);
-      } else {
-        debugPrint('❌ Fetch messages failed: ${response.statusCode} ${response.body}');
+      final endpoint = '/chat/messages/$peerId';
+      debugPrint('📡 Fetching messages from: ${ApiEndpoint.baseUrl}$endpoint');
+
+      final response = await _apiClient.get(endpoint, requiresAuth: true);
+      debugPrint('📩 Chat messages response: $response');
+
+      final rawList = (response?['data'] as List?) ?? [];
+      final list = <ChatMessageModel>[];
+
+      for (final item in rawList) {
+        if (item is Map<String, dynamic>) {
+          try {
+            list.add(ChatMessageModel.fromJson(item));
+          } catch (e) {
+            debugPrint('⚠️ Single message parse error: $e on $item');
+          }
+        }
       }
+
+      list.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      messages.assignAll(list);
+      debugPrint('✅ Loaded ${messages.length} messages successfully for peer $peerId');
     } catch (e) {
       debugPrint('❌ Fetch messages error: $e');
     } finally {
@@ -170,28 +261,51 @@ class ChatController extends GetxController {
   // ──────────────────────────────────────────────────────────────────
   Future<void> sendMessage(String receiverId, String text) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty || _myId == null) return;
+    if (trimmed.isEmpty) return;
+
+    await _ensureMyId();
+    final senderId = _myId ?? '';
 
     isSending.value = true;
     try {
-      _socket?.emit('sendMessage', {
-        'senderId'  : _myId,
-        'receiverId': receiverId,
-        'message'   : trimmed,
-      });
-
-      // Optimistic local append so the sender sees it instantly
-      messages.add(ChatMessageModel(
-        id: DateTime.now().microsecondsSinceEpoch.toString(),
-        senderId: _myId!,
+      final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
+      final newMsg = ChatMessageModel(
+        id: tempId,
+        senderId: senderId,
         receiverId: receiverId,
         message: trimmed,
         isRead: false,
         createdAt: DateTime.now(),
-      ));
+      );
+
+      // Optimistic local append so the sender sees it immediately on the right side
+      messages.add(newMsg);
+
+      final payload = {
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'message': trimmed,
+      };
+
+      debugPrint('📤 Sending message via socket: $payload');
+      _socket?.emit('sendMessage', payload);
+      _socket?.emit('newMessage', payload);
+      _socket?.emit('message', payload);
+
+      if (_socket == null || !isSocketConnected.value) {
+        _socket?.connect();
+      }
     } finally {
       isSending.value = false;
     }
+  }
+
+  void deleteMessageLocally(String messageId) {
+    messages.removeWhere((m) => m.id == messageId);
+  }
+
+  void clearChatLocally() {
+    messages.clear();
   }
 
   String? get myId => _myId;
