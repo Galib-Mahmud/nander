@@ -595,8 +595,9 @@ class TeamController extends GetxController {
   }) async {
     try {
       final body = {
+        'id': requestId,
         'requestId': requestId,
-        'status': isAccept ? 'accepted' : 'rejected',
+        'status': isAccept ? 'ACTIVE' : 'REJECTED',
       };
       debugPrint('📤 Admin responding to team member request: $body');
       final response = await _apiClient.patch(
@@ -636,8 +637,9 @@ class TeamController extends GetxController {
   }) async {
     try {
       final body = {
+        'id': requestId,
         'requestId': requestId,
-        'status': isAccept ? 'accepted' : 'rejected',
+        'status': isAccept ? 'ACTIVE' : 'REJECTED',
       };
       debugPrint('📤 Trainer responding to team invitation: $body');
       final response = await _apiClient.patch(

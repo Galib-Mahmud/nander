@@ -266,7 +266,7 @@ class TeamProfileController extends GetxController {
           '📡 Approving team request: requestId=$id via ${ApiEndpoint.trainerAcceptReject}');
       await _apiClient.patch(
         ApiEndpoint.trainerAcceptReject,
-        body: {'requestId': id, 'status': 'accepted'},
+        body: {'id': id, 'requestId': id, 'status': 'ACTIVE'},
         requiresAuth: true,
       );
     } catch (e) {
@@ -290,14 +290,14 @@ class TeamProfileController extends GetxController {
   }
 
   // PATCH /trainer/trainer-accept-reject
-  // body: { "requestId": requestId, "status": "rejected" }
+  // body: { "id": id, "requestId": requestId, "status": "REJECTED" }
   Future<void> declineRequest(String id) async {
     try {
       debugPrint(
           '📡 Declining team request: requestId=$id via ${ApiEndpoint.trainerAcceptReject}');
       await _apiClient.patch(
         ApiEndpoint.trainerAcceptReject,
-        body: {'requestId': id, 'status': 'rejected'},
+        body: {'id': id, 'requestId': id, 'status': 'REJECTED'},
         requiresAuth: true,
       );
     } catch (e) {

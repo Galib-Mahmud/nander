@@ -310,7 +310,7 @@ class ClubScreenController extends GetxController {
       debugPrint('📡 Approving club request: requestId=$id via ${ApiEndpoint.teamClubAdminAcceptReject}');
       await _apiClient.patch(
         ApiEndpoint.teamClubAdminAcceptReject,
-        body: {'requestId': id, 'status': 'accepted'},
+        body: {'id': id, 'requestId': id, 'status': 'ACTIVE'},
         requiresAuth: true,
       );
     } catch (e) {
@@ -334,13 +334,13 @@ class ClubScreenController extends GetxController {
   }
 
   // PATCH /team/club-admin-accept-reject
-  // body: { "requestId": id, "status": "rejected" }
+  // body: { "id": id, "requestId": id, "status": "REJECTED" }
   Future<void> declineRequest(String id) async {
     try {
       debugPrint('📡 Declining club request: requestId=$id via ${ApiEndpoint.teamClubAdminAcceptReject}');
       await _apiClient.patch(
         ApiEndpoint.teamClubAdminAcceptReject,
-        body: {'requestId': id, 'status': 'rejected'},
+        body: {'id': id, 'requestId': id, 'status': 'REJECTED'},
         requiresAuth: true,
       );
     } catch (e) {
