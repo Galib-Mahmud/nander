@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nander/trainer/routes/app_route.dart';
-import 'package:nander/trainer/routes/route_name.dart';
-import 'package:nander/trainer/core/local_storage/user_info.dart'; // adjust to your actual path
+import 'package:nander/nander/routes/app_route.dart';
+import 'package:nander/nander/routes/route_name.dart';
+import 'package:nander/nander/core/local_storage/user_info.dart'; // adjust to your actual path
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

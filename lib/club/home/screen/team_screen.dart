@@ -1,1 +1,0 @@
-export '../../../trainer/home/screen/team_screen.dart';
