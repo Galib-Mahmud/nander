@@ -1,5 +1,5 @@
 class ApiEndpoint {
-  static const String host = "http://10.10.26.235:8000";
+  static const String host = "https://nanapi.sobhoy.com";
   static const String baseUrl = "$host/api/v1";
 
   static const String signup = "/auth/user/signup";
@@ -30,8 +30,10 @@ class ApiEndpoint {
   static const String trainerAcceptReject = "/trainer/trainer-accept-reject";
   static const String clubAdminAcceptReject =
       "/trainer/club-admin-accept-reject";
-  static const String notificationAcceptReject = "/notification/accept-rejected";
-  static const String notificationAcceptRejected = "/notification/accept-rejected";
+  static const String notificationAcceptReject =
+      "/notification/accept-rejected";
+  static const String notificationAcceptRejected =
+      "/notification/accept-rejected";
   static const String myClubTrainersRequest =
       "/trainer/my-club-trainers-request";
   static const String myClubsRequest = "/trainer/my-clubs-request";
@@ -41,6 +43,11 @@ class ApiEndpoint {
   static const String announcementCreate = '/announcement/create';
   static const String announcementUpdate = '/announcement/update';
   // Delete is handled dynamically in controller as /announcement/{id}
+
+  // ─── Network / Top Clubs ──────────────────────────────────────────
+  static const String network = '/network';
+  static const String findClubs = '/network/find-clubs';
+  static const String sendNetworkRequest = '/network/send-request';
 
   // ─── Teams ────────────────────────────────────────────────────
   static const String team = "/team";

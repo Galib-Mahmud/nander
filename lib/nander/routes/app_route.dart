@@ -17,7 +17,7 @@ import '../home/screen/notification_screen.dart';
 import '../home/screen/schedule_screen.dart';
 import '../home/screen/scheduler_screen.dart';
 import '../home/screen/team_screen.dart';
-import '../home/screen/top_class_screen.dart';
+import '../home/screen/top_club_screen.dart';
 import '../profile/screen/faq_screen.dart';
 import '../profile/screen/privacy_policy_screen.dart';
 import '../profile/screen/terms_and_condition_screen.dart';

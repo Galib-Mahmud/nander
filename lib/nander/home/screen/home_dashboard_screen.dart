@@ -4,17 +4,20 @@ import 'package:get/get.dart';
 
 import '../../announcement/controller/announcement_controller.dart';
 import '../../announcement/screen/announcement_details.dart';
+import '../../core/endpoint/api_endpoint.dart';
 import '../../routes/route_name.dart';
 import '../../widget/controller/app_drawer_controller.dart';
-// ✅ Import the announcement controller
+import '../controller/top_club_controller.dart';
+import '../controller/top_club_model.dart';
 
 class HomeDashboardScreen extends StatelessWidget {
   const HomeDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Initialize controller to ensure data fetching starts
+    // Initialize controllers to ensure data fetching starts
     final announcementController = AnnouncementController.to;
+    final topClubController = TopClubController.to;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
@@ -263,11 +266,14 @@ class HomeDashboardScreen extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.w600)),
-                        Text('All',
-                            style: TextStyle(
-                                color: const Color(0xFF4D94FF),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500))
+                        GestureDetector(
+                          onTap: () => Get.toNamed(RouteName.topClubs),
+                          child: Text('All',
+                              style: TextStyle(
+                                  color: const Color(0xFF4D94FF),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500)),
+                        ),
                       ]),
                   SizedBox(height: 12.h),
                   Container(
@@ -284,6 +290,9 @@ class HomeDashboardScreen extends StatelessWidget {
                         Expanded(
                             child: TextField(
                                 style: const TextStyle(color: Colors.white),
+                                onChanged: (value) {
+                                  topClubController.onSearchChanged(value);
+                                },
                                 decoration: InputDecoration(
                                     hintText: 'Search clubs...',
                                     hintStyle: TextStyle(
@@ -293,12 +302,39 @@ class HomeDashboardScreen extends StatelessWidget {
                                     border: InputBorder.none)))
                       ])),
                   SizedBox(height: 12.h),
-                  _buildClubItem(
-                      'Manchester United', 'Best Club of United States'),
-                  _buildClubItem(
-                      'Manchester United', 'Best Club of United States'),
-                  _buildClubItem(
-                      'Manchester United', 'Best Club of United States'),
+                  Obx(() {
+                    if (topClubController.isFindClubsLoading.value &&
+                        topClubController.findClubs.isEmpty) {
+                      return SizedBox(
+                          height: 60.h,
+                          child: const Center(
+                              child: CircularProgressIndicator(
+                                  color: Color(0xFF4D94FF))));
+                    }
+
+                    if (topClubController.findClubs.isEmpty) {
+                      return Container(
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFF1A2236),
+                            borderRadius: BorderRadius.circular(12.r)),
+                        child: Center(
+                            child: Text('No clubs found',
+                                style: TextStyle(
+                                    color: Colors.white54, fontSize: 13.sp))),
+                      );
+                    }
+
+                    // Show max 3 clubs on dashboard
+                    final recentClubs =
+                        topClubController.findClubs.take(3).toList();
+
+                    return Column(
+                      children: recentClubs
+                          .map((club) => _buildClubItem(club, topClubController))
+                          .toList(),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -482,7 +518,9 @@ class HomeDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClubItem(String name, String subtitle) {
+  Widget _buildClubItem(FindClubModel club, TopClubController controller) {
+    final isInvited = controller.invitedClubIds.contains(club.id);
+    final imageUrl = ApiEndpoint.resolveImageUrl(club.profile);
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.all(16.w),
@@ -491,29 +529,79 @@ class HomeDashboardScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: const Color(0xFF2A3550))),
       child: Row(children: [
+        // Club avatar
+        Container(
+          width: 40.w,
+          height: 40.w,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A0E1A),
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFF2A3550)),
+          ),
+          child: ClipOval(
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    width: 40.w,
+                    height: 40.w,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Text(
+                        club.name.isNotEmpty ? club.name[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          color: const Color(0xFF4D94FF),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      club.name.isNotEmpty ? club.name[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        color: const Color(0xFF4D94FF),
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+          ),
+        ),
+        SizedBox(width: 12.w),
         Expanded(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name,
+          Text(club.name,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.sp,
-                  fontWeight: FontWeight.w600)),
+                  fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis),
           SizedBox(height: 4.h),
-          Text(subtitle,
+          Text(club.email,
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5), fontSize: 12.sp))
+                  color: Colors.white.withValues(alpha: 0.5), fontSize: 12.sp),
+              overflow: TextOverflow.ellipsis)
         ])),
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-            decoration: BoxDecoration(
-                color: const Color(0xFF4D94FF),
-                borderRadius: BorderRadius.circular(8.r)),
-            child: const Text('Invite',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600))),
+        GestureDetector(
+          onTap: isInvited ? null : () => controller.sendInvite(club.id),
+          child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                  color: isInvited
+                      ? const Color(0xFF1A2236)
+                      : const Color(0xFF4D94FF),
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: isInvited
+                      ? Border.all(color: const Color(0xFF2A3550))
+                      : null),
+              child: Text(isInvited ? 'Sent' : 'Invite',
+                  style: TextStyle(
+                      color: isInvited ? const Color(0xFF8B95A5) : Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600))),
+        ),
       ]),
     );
   }
