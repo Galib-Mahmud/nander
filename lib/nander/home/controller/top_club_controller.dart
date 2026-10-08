@@ -60,7 +60,7 @@ class TopClubController extends GetxController {
       );
 
       if (response?['success'] == true) {
-        final List<dynamic> data = response['data'] ?? [];
+        final List<dynamic> data = _asList(response['data']);
         final parsed = <NetworkClubModel>[];
         for (final item in data) {
           if (item is Map<String, dynamic>) {
@@ -73,6 +73,9 @@ class TopClubController extends GetxController {
         }
         networkClubs.assignAll(parsed);
         debugPrint('✅ My Network loaded: ${networkClubs.length} clubs');
+      } else {
+        // Previously this failed silently (null response / success:false).
+        debugPrint('❌ My Network not loaded. Response: $response');
       }
     } catch (e) {
       debugPrint('❌ Fetch My Network error: $e');
@@ -102,7 +105,7 @@ class TopClubController extends GetxController {
       );
 
       if (response?['success'] == true) {
-        final List<dynamic> data = response['data'] ?? [];
+        final List<dynamic> data = _asList(response['data']);
         final parsed = <FindClubModel>[];
         for (final item in data) {
           if (item is Map<String, dynamic>) {
@@ -115,6 +118,8 @@ class TopClubController extends GetxController {
         }
         findClubs.assignAll(parsed);
         debugPrint('✅ Find Clubs loaded: ${findClubs.length} clubs');
+      } else {
+        debugPrint('❌ Find Clubs not loaded. Response: $response');
       }
     } catch (e) {
       debugPrint('❌ Fetch Find Clubs error: $e');
@@ -127,6 +132,18 @@ class TopClubController extends GetxController {
     } finally {
       isFindClubsLoading.value = false;
     }
+  }
+
+  /// Accepts a plain list, or a map that wraps the list
+  /// (e.g. { clubs: [...] }), instead of throwing a cast error.
+  List<dynamic> _asList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      for (final value in data.values) {
+        if (value is List) return value;
+      }
+    }
+    return <dynamic>[];
   }
 
   // ─── POST /network/send-request ────────────────────────────────────

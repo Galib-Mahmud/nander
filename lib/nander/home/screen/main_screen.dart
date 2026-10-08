@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../newtrainer/new_trainer_screen.dart';
 import '../../routes/route_name.dart';
 import '../../widget/controller/app_drawer_controller.dart';
 import '../../widget/screen/custom_drawer.dart';
@@ -78,7 +79,7 @@ class _MainScreenState extends State<MainScreen>
     const ScheduleScreen(
       activeTabIndex: 0,
     ),
-    const TeamScreen(),
+    const TrainerTeam(),
     const MoreScreen(),
   ];
 

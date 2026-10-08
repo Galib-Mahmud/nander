@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:nander/nander/newtrainer/new_trainer_screen.dart';
 import '../../widget/controller/app_drawer_controller.dart';
 import '../../widget/screen/custom_drawer.dart';
 import 'home_dashboard_screen.dart';
@@ -75,7 +76,9 @@ class _MainScreen1State extends State<MainScreen1>
   final List<Widget> _pages = [
     const HomeDashboardScreen(),
     const ScheduleScreen(activeTabIndex: 0),
-    const TeamScreen(),
+    // const TeamScreen(),
+    const TrainerTeam(),
+
     const MoreScreen(),
   ];
 

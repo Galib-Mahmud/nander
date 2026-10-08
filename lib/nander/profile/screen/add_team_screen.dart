@@ -162,13 +162,7 @@ class AddTeamScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 6.h),
-                Text(
-                  item.email,
-                  style: TextStyle(
-                    color: const Color(0xFF8B95A5),
-                    fontSize: 13.sp,
-                  ),
-                ),
+
               ],
             ),
           ),

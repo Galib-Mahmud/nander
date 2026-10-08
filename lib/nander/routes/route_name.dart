@@ -12,6 +12,7 @@ class RouteName {
   static const String selectClub = '/selectClub';
   static const String onboarding = '/onboarding';
   static const String announcements = '/announcements';
+  static const String trainerTeam = '/trainerTeam';
 
   //Main Screen
   static const String main = '/main';

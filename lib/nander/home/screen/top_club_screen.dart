@@ -23,6 +23,14 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
   void initState() {
     super.initState();
     controller = TopClubController.to;
+
+    // The controller's onInit() only runs the first time it is created, so
+    // re-fetch whenever this screen opens. If onInit() just started a fetch
+    // the loading flag is already true and we skip the duplicate call.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!controller.isNetworkLoading.value) controller.fetchMyNetwork();
+      if (!controller.isFindClubsLoading.value) controller.fetchFindClubs();
+    });
   }
 
   @override
@@ -413,31 +421,31 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
       child: ClipOval(
         child: imageUrl != null
             ? Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: 44.w,
-                height: 44.w,
-                errorBuilder: (_, __, ___) => Center(
-                  child: Text(
-                    name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: TextStyle(
-                      color: const Color(0xFF4D94FF),
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              )
-            : Center(
-                child: Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: TextStyle(
-                    color: const Color(0xFF4D94FF),
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          imageUrl,
+          fit: BoxFit.cover,
+          width: 44.w,
+          height: 44.w,
+          errorBuilder: (_, __, ___) => Center(
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: TextStyle(
+                color: const Color(0xFF4D94FF),
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+          ),
+        )
+            : Center(
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : '?',
+            style: TextStyle(
+              color: const Color(0xFF4D94FF),
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
     );
   }

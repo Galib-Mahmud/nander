@@ -120,6 +120,7 @@ class CustomDrawer extends StatelessWidget {
                         label: 'My Teams',
                         onTap: () => Get.toNamed(RouteName.myteam),
                       ),
+                      if (profileController.isTrainer)
                       _buildMenuItem(
                         icon: Icons.sports_mma_outlined,
                         label: 'Training',

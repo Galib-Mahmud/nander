@@ -1,6 +1,6 @@
 class ApiEndpoint {
-  // static const String host = "https://nanapi.sobhoy.com";
-  static const String host = "http://10.10.26.235:8000";
+  static const String host = "https://nanapi.sobhoy.com";
+//   static const String host = "http://10.10.26.235:8000";
 
   static const String baseUrl = "$host/api/v1";
 
@@ -39,6 +39,8 @@ class ApiEndpoint {
   static const String myClubTrainersRequest =
       "/trainer/my-club-trainers-request";
   static const String myClubsRequest = "/trainer/my-clubs-request";
+
+  static const String myTeamWithProgress = "/team/my-team-with-progress";
 
   //Announcement
   static const String announcements = '/announcement';
