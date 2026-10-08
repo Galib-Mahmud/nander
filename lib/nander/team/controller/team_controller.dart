@@ -51,12 +51,36 @@ class TeamController extends GetxController {
     super.onClose();
   }
 
+  // Future<void> initController() async {
+  //   await checkUserRole();
+  //   if (isClubAdmin.value) {
+  //     await fetchTeams();
+  //   } else {
+  //     await Future.wait([
+  //       fetchMyClubs(),
+  //       fetchAllClubs(),
+  //     ]);
+  //   }
+  // }
+
+  // Future<void> refreshData() async {
+  //   await checkUserRole();
+  //   if (isClubAdmin.value) {
+  //     await fetchTeams();
+  //   } else {
+  //     await Future.wait([
+  //       fetchMyClubs(),
+  //       fetchAllClubs(),
+  //     ]);
+  //   }
+  // }
   Future<void> initController() async {
     await checkUserRole();
     if (isClubAdmin.value) {
       await fetchTeams();
     } else {
       await Future.wait([
+        fetchTeams(), // <-- add
         fetchMyClubs(),
         fetchAllClubs(),
       ]);
@@ -69,6 +93,7 @@ class TeamController extends GetxController {
       await fetchTeams();
     } else {
       await Future.wait([
+        fetchTeams(), // <-- add
         fetchMyClubs(),
         fetchAllClubs(),
       ]);
@@ -113,6 +138,14 @@ class TeamController extends GetxController {
           '📡 Fetching teams from: $endpoint (role: ${isClubAdmin.value ? "CLUB_ADMIN" : "TRAINER"})');
 
       final response = await _apiClient.get(endpoint, requiresAuth: true);
+      debugPrint('📥 RAW RESPONSE: $response');
+
+      if (response?['success'] == true) {
+        final dynamic raw = response['data'];
+        debugPrint('📥 data type: ${raw.runtimeType}');
+      } else {
+        debugPrint('⚠️ success != true: $response');
+      }
 
       if (response?['success'] == true) {
         final dynamic raw = response['data'];
@@ -127,8 +160,8 @@ class TeamController extends GetxController {
           if (item is Map<String, dynamic>) {
             try {
               parsed.add(TeamModel.fromJson(item));
-            } catch (e) {
-              debugPrint('⚠️ Error parsing team item: $e');
+            } catch (e, st) {
+              debugPrint('⚠️ Error parsing team item: $e\n$st\nitem: $item');
             }
           }
         }
@@ -220,7 +253,7 @@ class TeamController extends GetxController {
           '📡 Sending request to club $clubId via ${ApiEndpoint.sendRequestByTrainer}');
       final response = await _apiClient.post(
         ApiEndpoint.sendRequestByTrainer,
-        body: {"clubId": clubId},
+        body: {"clubAdminId": clubId},
         requiresAuth: true,
       );
 

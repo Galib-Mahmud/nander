@@ -9,7 +9,10 @@ import '../../core/local_storage/user_info.dart';
 import '../../routes/route_name.dart';
 
 class ProfileController extends GetxController {
-  static ProfileController get to => Get.put(ProfileController());
+  // Same instance sob jaygay (drawer, profile screen) — notun instance banabe na
+  static ProfileController get to => Get.isRegistered<ProfileController>()
+      ? Get.find<ProfileController>()
+      : Get.put(ProfileController(), permanent: true);
 
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
   final ImagePicker _picker = ImagePicker();
@@ -26,10 +29,14 @@ class ProfileController extends GetxController {
   // ─── Reactive Profile Fields ────────────────────────────────────
   final RxString name = ''.obs;
   final RxString email = ''.obs;
-  final RxString role = ''.obs;
+  final RxString role = ''.obs; // CLUB_ADMIN | TRAINER
   final RxString status = ''.obs;
   final RxBool isVerified = false.obs;
   final RxString profileImageUrl = ''.obs;
+
+  // ─── Role Helpers ───────────────────────────────────────────────
+  bool get isClubAdmin => role.value.toUpperCase() == 'CLUB_ADMIN';
+  bool get isTrainer => role.value.toUpperCase() == 'TRAINER';
 
   // ─── Selected Local Image for Upload ────────────────────────────
   final Rx<File?> selectedImage = Rx<File?>(null);
@@ -97,6 +104,20 @@ class ProfileController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // ─── Logout (drawer theke use hobe) ─────────────────────────────
+  Future<void> logout() async {
+    await UserInfo.logout();
+    // Poroborti user er jonno purono data na thake
+    role.value = '';
+    name.value = '';
+    email.value = '';
+    status.value = '';
+    isVerified.value = false;
+    profileImageUrl.value = '';
+    selectedImage.value = null;
+    Get.offAllNamed(RouteName.login);
   }
 
   // ─── 2. PUT Update Profile (form-data) ──────────────────────────
@@ -305,6 +326,7 @@ class ProfileController extends GetxController {
       if (response?['success'] == true) {
         _showSuccess(response?['message'] ?? 'Account deleted successfully');
         await UserInfo.logout();
+        role.value = '';
         Get.offAllNamed(RouteName.wellcome1);
       }
     } on HttpException catch (e) {

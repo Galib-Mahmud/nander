@@ -23,11 +23,6 @@ class TeamProfileController extends GetxController {
   // ─── Initial Mock Data Matching Design Screenshots ─────────────────
   final RxList<ProfileItemModel> myTeams = <ProfileItemModel>[
     const ProfileItemModel(
-      id: 't1',
-      name: 'Eleanor Pena',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
       id: 't2',
       name: 'Wade Warren',
       email: 'someone@gmail.com',
@@ -173,9 +168,8 @@ class TeamProfileController extends GetxController {
         if (list.isNotEmpty) {
           final items = list.map((item) {
             final team = item['team'] as Map<String, dynamic>?;
-            final name = team?['name']?.toString() ??
-                item['name']?.toString() ??
-                'Team';
+            final name =
+                team?['name']?.toString() ?? item['name']?.toString() ?? 'Team';
             final email = team?['sendEmail']?.toString() ??
                 item['sendEmail']?.toString() ??
                 item['trainer']?['email']?.toString() ??
@@ -219,8 +213,8 @@ class TeamProfileController extends GetxController {
                 item['trainerName']?.toString() ??
                 'someone@gmail.com';
             final id = item['id']?.toString() ?? '';
-            final isAlreadyPending = requests.any(
-                (r) => (r.teamId == id || r.id == id) && r.isPending);
+            final isAlreadyPending = requests
+                .any((r) => (r.teamId == id || r.id == id) && r.isPending);
 
             return ProfileItemModel(
               id: id,
@@ -320,8 +314,9 @@ class TeamProfileController extends GetxController {
   // body: { "teamId": teamId }
   Future<void> sendJoinRequest(ProfileItemModel item) async {
     isSubmitting.value = true;
-    final targetTeamId =
-        (item.teamId != null && item.teamId!.isNotEmpty) ? item.teamId! : item.id;
+    final targetTeamId = (item.teamId != null && item.teamId!.isNotEmpty)
+        ? item.teamId!
+        : item.id;
 
     try {
       debugPrint('📡 Sending team join request: teamId=$targetTeamId');

@@ -33,7 +33,9 @@ class AnnouncementController extends GetxController {
   Future<void> fetchAnnouncements() async {
     isLoading.value = true;
     try {
-      final response = await _apiClient.get(ApiEndpoint.announcements, requiresAuth: true);
+      final response =
+          await _apiClient.get(ApiEndpoint.announcements, requiresAuth: true);
+      debugPrint('📥 ANNOUNCEMENT RAW: $response');
 
       if (response?['success'] == true) {
         final dynamic rawData = response['data'];
@@ -58,6 +60,8 @@ class AnnouncementController extends GetxController {
         parsed.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         announcements.assignAll(parsed);
         debugPrint('✅ Loaded ${announcements.length} announcements');
+      } else {
+        debugPrint('⚠️ announcements success != true: $response');
       }
     } catch (e) {
       debugPrint('❌ Fetch announcements error: $e');
@@ -113,7 +117,8 @@ class AnnouncementController extends GetxController {
   }
 
   /// Update an existing announcement (PATCH /announcement/update)
-  Future<bool> updateAnnouncement(String id, String title, String description) async {
+  Future<bool> updateAnnouncement(
+      String id, String title, String description) async {
     isSubmitting.value = true;
     try {
       final body = {

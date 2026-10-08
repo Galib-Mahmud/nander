@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:nander/nander/profile/controller/profile_controller.dart';
 
 import '../../routes/route_name.dart';
 
+// ⚠️ Path ta tomar project onujayi thik kore nio
 class CustomDrawer extends StatelessWidget {
   final VoidCallback onClose;
 
@@ -11,6 +13,8 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profileController = ProfileController.to;
+
     return Container(
       width: 280.w,
       height: double.infinity,
@@ -39,14 +43,12 @@ class CustomDrawer extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // ✅ Logo Image Asset
-                  Container(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/logo.png', // ✅ Your logo image path
-                        fit: BoxFit.cover,
-                      ),
+                  // Logo Image Asset
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
                   // Close button
@@ -105,44 +107,40 @@ class CustomDrawer extends StatelessWidget {
             // Menu Items
             Expanded(
               child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildMenuItem(
-                      icon: Icons.dashboard_outlined,
-                      label: 'Dashboard',
-                      onTap: () {
-                        Get.toNamed(RouteName.main);
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.groups_outlined,
-                      label: 'My Teams',
-                      onTap: () {
-                        Get.toNamed(RouteName.myteam);
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.sports_mma_outlined,
-                      label: 'Training',
-                      onTap: () {
-                        Get.toNamed(RouteName.scheduler);
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.chat_bubble_outline,
-                      label: 'Chats',
-                      onTap: () {
-                        Get.toNamed(RouteName.chat);
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.account_balance_outlined,
-                      label: 'Club Network',
-                      onTap: () {
-                        Get.toNamed(RouteName.topClubs);
-                      },
-                    ),
-                  ],
+                child: Obx(
+                  () => Column(
+                    children: [
+                      // _buildMenuItem(
+                      //   icon: Icons.dashboard_outlined,
+                      //   label: 'Dashboard',
+                      //   onTap: () => {Get.back()},
+                      // ),
+                      _buildMenuItem(
+                        icon: Icons.groups_outlined,
+                        label: 'My Teams',
+                        onTap: () => Get.toNamed(RouteName.myteam),
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.sports_mma_outlined,
+                        label: 'Training',
+                        onTap: () => Get.toNamed(RouteName.scheduler),
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.chat_bubble_outline,
+                        label: 'Chats',
+                        onTap: () => Get.toNamed(RouteName.chat),
+                      ),
+
+                      // Role: CLUB_ADMIN -> hide, TRAINER -> show
+                      // (role load na hoa porjonto o hide thakbe)
+                      if (profileController.isClubAdmin)
+                        _buildMenuItem(
+                          icon: Icons.account_balance_outlined,
+                          label: 'Club Network',
+                          onTap: () => Get.toNamed(RouteName.topClubs),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -151,9 +149,7 @@ class CustomDrawer extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
               child: GestureDetector(
-                onTap: () {
-                  // Handle logout
-                },
+                onTap: () => profileController.logout(),
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 16.h),

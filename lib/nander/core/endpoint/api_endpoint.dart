@@ -1,5 +1,7 @@
 class ApiEndpoint {
-  static const String host = "https://nanapi.sobhoy.com";
+  // static const String host = "https://nanapi.sobhoy.com";
+  static const String host = "http://10.10.26.235:8000";
+
   static const String baseUrl = "$host/api/v1";
 
   static const String signup = "/auth/user/signup";
@@ -68,6 +70,21 @@ class ApiEndpoint {
   static const String teamTrainerAcceptReject = "/team/trainer-accept-reject";
   static const String teamClubAdminAcceptReject =
       "/team/club-admin-accept-reject";
+
+  // ─── Training Sessions ──────────────────────────────────────────
+  static const String createTrainingSession =
+      "/training-session/create-training-session";
+  static String trainingSessionsByTrainer(String teamId) =>
+      "/training-session/training-sessions-by-trainer?teamId=$teamId";
+  static String singleTrainingSession(String id) =>
+      "/training-session/single-training/$id";
+  static String updateTrainingSession(String id) =>
+      "/training-session/update-training/$id";
+
+  // ─── Dashboard Statics ──────────────────────────────────────────
+  static const String dashboardStaticsTrainer =
+      "/global/dashboard-statics-trainer";
+  static const String dashboardStaticsClubAdmin = "/global/dashboard-statics";
 
   /// Server returns relative image paths like "/images/xxx.webp" —
   /// images live at the host root (NOT under /api/v1), so we prefix

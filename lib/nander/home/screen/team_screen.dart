@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:nander/nander/trainers/screen/add_trainer_screen.dart';
 
 import '../../auth/controller/club_model.dart';
 import '../../chat/screen/add_new_team_screen.dart';
@@ -125,8 +126,7 @@ class _TeamScreenState extends State<TeamScreen> {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                padding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16.w,
@@ -1340,7 +1340,6 @@ class _TeamScreenState extends State<TeamScreen> {
                         }),
                       ),
                       SizedBox(height: 12.h),
-
                       // Add Member Button
                       SizedBox(
                         width: double.infinity,
@@ -1348,7 +1347,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             Navigator.pop(ctx);
-                            _showAddMemberDialog(context, team);
+                            Get.to(() => const AddTrainerScreen());
                           },
                           icon: const Icon(Icons.person_add_alt_1,
                               color: Color(0xFF4D94FF), size: 18),
