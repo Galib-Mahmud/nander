@@ -37,4 +37,14 @@ class RouteName {
   static const String profileTeam = '/profileTeam';
   static const String addClub = '/addClub';
   static const String addTeam = '/addTeam';
+
+
+
+
+
+  //Club Add Teams
+  static const String clubMyTeam = '/clubMyTeam';
+  static const String clubAddTeam = '/clubAddTeam';
+
+
 }

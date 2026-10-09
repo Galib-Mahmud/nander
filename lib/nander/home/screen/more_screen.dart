@@ -260,7 +260,7 @@ class MoreScreen extends StatelessWidget {
                   Get.toNamed(RouteName.updateprofile);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Change Password', Icons.chevron_right,
+                _buildMenuItem('Reset Password', Icons.chevron_right,
                     onTap: () {
                   final auth = AuthController.to;
                   auth.resetOtpVerified.value = false;

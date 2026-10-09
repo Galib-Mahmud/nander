@@ -1,6 +1,6 @@
 class ApiEndpoint {
-  static const String host = "https://nanapi.sobhoy.com";
-//   static const String host = "http://10.10.26.235:8000";
+  // static const String host = "https://nanapi.sobhoy.com";
+   static const String host = "http://10.10.26.235:8000";
 
   static const String baseUrl = "$host/api/v1";
 
@@ -18,6 +18,7 @@ class ApiEndpoint {
       "/auth/user/account-delete-confirm";
 
   static const String clubList = "$baseUrl/club/list";
+   static String singleTeamWithProgress(String id) => "/team/single-team-with-progress/$id";
 
   // ─── Notifications ────────────────────────────────────────────
   static const String notifications = "/notification";
@@ -29,7 +30,6 @@ class ApiEndpoint {
   static const String sendRequestByClubAdmin =
       "/trainer/send-request-by-club-admin";
   static const String sendRequestByTrainer = "/trainer/send-request-by-trainer";
-  static const String trainerAcceptReject = "/trainer/trainer-accept-reject";
   static const String clubAdminAcceptReject =
       "/trainer/club-admin-accept-reject";
   static const String notificationAcceptReject =
@@ -56,6 +56,19 @@ class ApiEndpoint {
   // ─── Teams ────────────────────────────────────────────────────
   static const String team = "/team";
   static const String myTeam = "/team/my-team";
+  static const String myTeams = "/team/my-teams";
+
+
+   // Inside ApiEndpoint class
+
+// ── Team Members & Requests ──────────────────────────────────────
+  static String teamMembers(String teamId) => "/team/team-members/$teamId";
+  static String requestTeamMembers(String teamId) => "/team/request-team-members/$teamId";
+  static String findMembers(String teamId) => "/team/find-members/$teamId"; // For search/add
+  static const String trainerAcceptReject = "/team/trainer-accept-reject";
+
+
+
   static const String activeTeams = "/team/active-teams";
   static const String requestTeams = "/team/request-teams";
   static const String teamCreate = "/team/create";
@@ -67,8 +80,6 @@ class ApiEndpoint {
   static String teamDelete(String id) => "/team/$id";
   static String activeTeamMembers(String teamId) =>
       "/team/active-team-members/$teamId";
-  static String requestTeamMembers(String teamId) =>
-      "/team/request-team-members/$teamId";
   static const String teamTrainerAcceptReject = "/team/trainer-accept-reject";
   static const String teamClubAdminAcceptReject =
       "/team/club-admin-accept-reject";

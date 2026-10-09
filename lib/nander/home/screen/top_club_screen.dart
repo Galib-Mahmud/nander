@@ -350,7 +350,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
     final club = networkClub.club;
     return GestureDetector(
       onTap: () {
-        Get.toNamed(RouteName.clubProfile);
+        Get.toNamed(RouteName.chat);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16.h),

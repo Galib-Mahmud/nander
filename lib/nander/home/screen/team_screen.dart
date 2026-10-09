@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:nander/nander/trainers/screen/add_trainer_screen.dart';
 
-import '../../auth/controller/club_model.dart';
 import '../../chat/screen/add_new_team_screen.dart';
 import '../../core/endpoint/api_endpoint.dart';
+import '../../newtrainer/trainner_team_details_screen.dart';
 import '../../team/controller/team_controller.dart';
 import '../../team/controller/team_model.dart';
-import '../../trainers/model/trainer_model.dart';
+import '../../trainers/screen/add_trainer_screen.dart';
 
 class TeamScreen extends StatefulWidget {
   const TeamScreen({super.key});
@@ -57,8 +56,14 @@ class _TeamScreenState extends State<TeamScreen> {
               ),
             );
           }
+          final tabIndex = controller.trainerTab.value;
+          final tabTitle = tabIndex == 0
+              ? 'My Teams'
+              : tabIndex == 1
+                  ? 'Find Teams'
+                  : 'Team Requests';
           return Text(
-            controller.trainerTab.value == 0 ? 'My Clubs' : 'Find Clubs',
+            tabTitle,
             style: TextStyle(
               color: Colors.white,
               fontSize: 22.sp,
@@ -76,6 +81,9 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // ─── CLUB ADMIN BODY (GET /team/my-team) ───────────────────────────
+  // ═══════════════════════════════════════════════════════════════════
   Widget _buildClubAdminBody(BuildContext context) {
     if (controller.isLoading.value && controller.teams.isEmpty) {
       return const Center(
@@ -142,7 +150,7 @@ class _TeamScreenState extends State<TeamScreen> {
               SizedBox(height: 20.h),
             ],
 
-            // Add New Team Button
+            // Add New Team Button (POST /team/create)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: SizedBox(
@@ -169,7 +177,6 @@ class _TeamScreenState extends State<TeamScreen> {
               ),
             ),
 
-            // 120px spacing so button stays above bottom bar
             SizedBox(height: 120.h),
           ],
         ),
@@ -177,15 +184,18 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Trainer Body (Tabs: My Clubs & Club List) ───────────────────
+  // ═══════════════════════════════════════════════════════════════════
+  // ─── TRAINER BODY (My Teams, Find Teams, Requests) ─────────────────
+  // ═══════════════════════════════════════════════════════════════════
   Widget _buildTrainerBody(BuildContext context) {
     return Column(
       children: [
-        // Tab selector: My Clubs & Club List
+        // Tab selector: My Teams, Find Teams, Requests
         Padding(
           padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 12.h),
           child: Container(
             height: 44.h,
+            padding: EdgeInsets.all(4.w),
             decoration: BoxDecoration(
               color: const Color(0xFF111827),
               borderRadius: BorderRadius.circular(10.r),
@@ -205,12 +215,12 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'My Clubs (${controller.myClubs.length})',
+                              'My Teams (${controller.myTeams.length})',
                               style: TextStyle(
                                 color: controller.trainerTab.value == 0
                                     ? Colors.white
                                     : const Color(0xFF8B95A5),
-                                fontSize: 13.sp,
+                                fontSize: 12.sp,
                                 fontWeight: controller.trainerTab.value == 0
                                     ? FontWeight.bold
                                     : FontWeight.w500,
@@ -232,13 +242,40 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Club List (${controller.allClubs.length})',
+                              'Find Teams (${controller.filteredAllTeams.length})',
                               style: TextStyle(
                                 color: controller.trainerTab.value == 1
                                     ? Colors.white
                                     : const Color(0xFF8B95A5),
-                                fontSize: 13.sp,
+                                fontSize: 12.sp,
                                 fontWeight: controller.trainerTab.value == 1
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => controller.trainerTab.value = 2,
+                    child: Obx(() => Container(
+                          decoration: BoxDecoration(
+                            color: controller.trainerTab.value == 2
+                                ? const Color(0xFF4D94FF)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Requests (${controller.requestedTeams.length})',
+                              style: TextStyle(
+                                color: controller.trainerTab.value == 2
+                                    ? Colors.white
+                                    : const Color(0xFF8B95A5),
+                                fontSize: 12.sp,
+                                fontWeight: controller.trainerTab.value == 2
                                     ? FontWeight.bold
                                     : FontWeight.w500,
                               ),
@@ -262,9 +299,11 @@ class _TeamScreenState extends State<TeamScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Obx(() {
                 if (controller.trainerTab.value == 0) {
-                  return _buildMyClubsView(context);
+                  return _buildTrainerMyTeamsView(context);
+                } else if (controller.trainerTab.value == 1) {
+                  return _buildTrainerFindTeamsView(context);
                 } else {
-                  return _buildClubListView(context);
+                  return _buildTrainerRequestsView(context);
                 }
               }),
             ),
@@ -274,9 +313,9 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Trainer: My Clubs View (from GET /trainer/my-clubs) ───────────
-  Widget _buildMyClubsView(BuildContext context) {
-    if (controller.isLoadingClubs.value && controller.myClubs.isEmpty) {
+  // ─── Trainer: Tab 0 - My Teams View (GET /team/my-team-with-progress & /team/active-teams)
+  Widget _buildTrainerMyTeamsView(BuildContext context) {
+    if (controller.isLoading.value && controller.myTeams.isEmpty) {
       return Padding(
         padding: EdgeInsets.only(top: 80.h),
         child: const Center(
@@ -285,7 +324,7 @@ class _TeamScreenState extends State<TeamScreen> {
       );
     }
 
-    if (controller.myClubs.isEmpty) {
+    if (controller.myTeams.isEmpty) {
       return Column(
         children: [
           SizedBox(height: 100.h),
@@ -293,13 +332,13 @@ class _TeamScreenState extends State<TeamScreen> {
             child: Column(
               children: [
                 Icon(
-                  Icons.shield_outlined,
+                  Icons.groups_outlined,
                   color: const Color(0xFF8B95A5),
                   size: 56.w,
                 ),
                 SizedBox(height: 14.h),
                 Text(
-                  'No clubs joined yet',
+                  'No teams joined yet',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16.sp,
@@ -308,7 +347,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'Explore clubs and send an invitation to join',
+                  'Explore teams and send a request to join',
                   style: TextStyle(
                     color: const Color(0xFF8B95A5),
                     fontSize: 13.sp,
@@ -329,7 +368,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         ),
                       ),
                       child: const Text(
-                        'Find Clubs',
+                        'Find Teams',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -356,12 +395,12 @@ class _TeamScreenState extends State<TeamScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 16.w,
             mainAxisSpacing: 16.h,
-            childAspectRatio: 0.74,
+            childAspectRatio: 0.72,
           ),
-          itemCount: controller.myClubs.length,
+          itemCount: controller.myTeams.length,
           itemBuilder: (context, index) {
-            final club = controller.myClubs[index];
-            return _buildClubCard(context, club);
+            final team = controller.myTeams[index];
+            return _buildTrainerTeamCard(context, team);
           },
         ),
         SizedBox(height: 20.h),
@@ -380,7 +419,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 elevation: 0,
               ),
               child: Text(
-                'Send Invitation to Club',
+                'Find More Teams',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.sp,
@@ -395,8 +434,8 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Trainer: Club List View (from GET /club/list) ─────────────────
-  Widget _buildClubListView(BuildContext context) {
+  // ─── Trainer: Tab 1 - Find Teams View (GET /team) ─────────────────
+  Widget _buildTrainerFindTeamsView(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
@@ -410,24 +449,24 @@ class _TeamScreenState extends State<TeamScreen> {
               border: Border.all(color: const Color(0xFF1F2937)),
             ),
             child: TextField(
-              controller: controller.clubSearchCtrl,
-              onChanged: controller.filterAllClubs,
+              controller: controller.teamSearchCtrl,
+              onChanged: controller.filterAllTeams,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search clubs by name or location...',
+                hintText: 'Search teams by name, location...',
                 hintStyle: TextStyle(
                   color: const Color(0xFF8B95A5),
                   fontSize: 14.sp,
                 ),
                 prefixIcon: const Icon(Icons.search,
                     color: Color(0xFF8B95A5), size: 20),
-                suffixIcon: controller.clubSearchCtrl.text.isNotEmpty
+                suffixIcon: controller.teamSearchCtrl.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear,
                             color: Colors.white54, size: 18),
                         onPressed: () {
-                          controller.clubSearchCtrl.clear();
-                          controller.filterAllClubs('');
+                          controller.teamSearchCtrl.clear();
+                          controller.filterAllTeams('');
                         },
                       )
                     : null,
@@ -438,7 +477,7 @@ class _TeamScreenState extends State<TeamScreen> {
           ),
           SizedBox(height: 16.h),
 
-          if (controller.filteredAllClubs.isEmpty) ...[
+          if (controller.filteredAllTeams.isEmpty) ...[
             SizedBox(height: 80.h),
             Center(
               child: Column(
@@ -447,7 +486,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       color: const Color(0xFF8B95A5), size: 48.w),
                   SizedBox(height: 10.h),
                   Text(
-                    'No clubs found',
+                    'No teams found',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 15.sp,
@@ -462,10 +501,10 @@ class _TeamScreenState extends State<TeamScreen> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.filteredAllClubs.length,
+              itemCount: controller.filteredAllTeams.length,
               itemBuilder: (context, index) {
-                final club = controller.filteredAllClubs[index];
-                return _buildClubListItem(context, club);
+                final team = controller.filteredAllTeams[index];
+                return _buildTrainerFindTeamListItem(context, team);
               },
             ),
             SizedBox(height: 120.h),
@@ -475,16 +514,88 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Trainer: Joined/Pending Club Card ────────────────────────────
-  Widget _buildClubCard(BuildContext context, ClubTrainerItem club) {
+  // ─── Trainer: Tab 2 - Requests View (GET /team/request-teams) ──────
+  Widget _buildTrainerRequestsView(BuildContext context) {
+    if (controller.isLoading.value && controller.requestedTeams.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.only(top: 80.h),
+        child: const Center(
+          child: CircularProgressIndicator(color: Color(0xFF4D94FF)),
+        ),
+      );
+    }
+
+    if (controller.requestedTeams.isEmpty) {
+      return Column(
+        children: [
+          SizedBox(height: 100.h),
+          Center(
+            child: Column(
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  color: const Color(0xFF8B95A5),
+                  size: 56.w,
+                ),
+                SizedBox(height: 14.h),
+                Text(
+                  'No pending team requests',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  'Invitations from clubs will appear here',
+                  style: TextStyle(
+                    color: const Color(0xFF8B95A5),
+                    fontSize: 13.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 120.h),
+        ],
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.requestedTeams.length,
+            itemBuilder: (context, index) {
+              final team = controller.requestedTeams[index];
+              return _buildTrainerRequestListItem(context, team);
+            },
+          ),
+          SizedBox(height: 120.h),
+        ],
+      ),
+    );
+  }
+
+  // ─── Trainer: Team Card with Progress ─────────────────────────────
+  Widget _buildTrainerTeamCard(BuildContext context, TeamModel team) {
     const defaultBio =
-        'A community-focused hockey club dedicated to developing players, building strong teams, and creating opportunities for athletes of all skill levels.';
-    final isActive = club.status?.toUpperCase() == 'ACTIVE';
+        'A community-focused hockey team dedicated to developing players and building strong teams.';
 
     return GestureDetector(
-      onTap: () => _showClubDetailsBottomSheet(context, club),
+      onTap: () {
+        // Navigate to Single Team With Progress details screen (GET /team/single-team-with-progress/:teamId)
+        Get.to(() => TrainerTeamDetailScreen(
+              teamId: team.id,
+              initialName: team.name,
+            ));
+      },
       child: Container(
-        padding: EdgeInsets.fromLTRB(14.w, 16.h, 14.w, 14.h),
+        padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 12.h),
         decoration: BoxDecoration(
           color: const Color(0xFF111827),
           borderRadius: BorderRadius.circular(16.r),
@@ -492,23 +603,22 @@ class _TeamScreenState extends State<TeamScreen> {
         ),
         child: Column(
           children: [
-            // Circular Avatar (Top-center, 58.w)
+            // Avatar
             ClipRRect(
-              borderRadius: BorderRadius.circular(30.r),
+              borderRadius: BorderRadius.circular(26.r),
               child: Container(
-                width: 58.w,
-                height: 58.w,
+                width: 52.w,
+                height: 52.w,
                 color: const Color(0xFF050810),
-                child: (club.displayProfile != null &&
-                        club.displayProfile!.isNotEmpty)
+                child: (team.image != null && team.image!.isNotEmpty)
                     ? Image.network(
-                        ApiEndpoint.resolveImageUrl(club.displayProfile) ?? '',
+                        ApiEndpoint.resolveImageUrl(team.image) ?? '',
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => const Center(
                           child: Icon(
                             Icons.shield,
                             color: Color(0xFF4D94FF),
-                            size: 30,
+                            size: 26,
                           ),
                         ),
                       )
@@ -516,85 +626,116 @@ class _TeamScreenState extends State<TeamScreen> {
                         child: Icon(
                           Icons.shield,
                           color: Color(0xFF4D94FF),
-                          size: 30,
+                          size: 26,
                         ),
                       ),
               ),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 8.h),
 
-            // Club Name
+            // Team Name
             Text(
-              club.displayName,
+              team.name,
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16.sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 4.h),
 
-            // Status Badge
+            // Active Badge
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
               decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xFF10B981).withValues(alpha: 0.15)
-                    : const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12.r),
+                color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10.r),
               ),
-              child: Text(
-                isActive ? 'Active' : 'Pending',
+              child: const Text(
+                'Active',
                 style: TextStyle(
-                  color: isActive
-                      ? const Color(0xFF10B981)
-                      : const Color(0xFFF59E0B),
-                  fontSize: 11.sp,
+                  color: Color(0xFF10B981),
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             SizedBox(height: 6.h),
 
-            // Bio / Address
-            Expanded(
-              child: Text(
-                (club.clubAdmin?.bio != null &&
-                        club.clubAdmin!.bio!.trim().isNotEmpty)
-                    ? club.clubAdmin!.bio!
-                    : (club.clubAdmin?.address != null &&
-                            club.clubAdmin!.address!.trim().isNotEmpty)
-                        ? club.clubAdmin!.address!
-                        : defaultBio,
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 11.sp,
-                  height: 1.35,
+            // Progress or Bio
+            if (team.totalSessions > 0 || team.progressPercentage > 0) ...[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${team.completedSessions}/${team.totalSessions} Sessions',
+                          style: TextStyle(
+                            color: const Color(0xFF8B95A5),
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                        Text(
+                          '${team.progressPercentage}%',
+                          style: TextStyle(
+                            color: const Color(0xFF4D94FF),
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4.r),
+                      child: LinearProgressIndicator(
+                        value: (team.progressPercentage / 100.0).clamp(0.0, 1.0),
+                        backgroundColor: const Color(0xFF1F2937),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF4D94FF)),
+                        minHeight: 5.h,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+            ] else ...[
+              Expanded(
+                child: Text(
+                  (team.bio != null && team.bio!.trim().isNotEmpty)
+                      ? team.bio!
+                      : (team.address != null && team.address!.trim().isNotEmpty)
+                          ? team.address!
+                          : defaultBio,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    fontSize: 11.sp,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  // ─── Trainer: Club List Item with Invite Action ───────────────────
-  Widget _buildClubListItem(BuildContext context, ClubModel club) {
+  // ─── Trainer: Find Team List Item with Join Action (POST /team/join-request-by-trainer)
+  Widget _buildTrainerFindTeamListItem(BuildContext context, TeamModel team) {
     return Obx(() {
-      final isAlreadyJoined = controller.myClubs.any((c) =>
-          (c.clubAdmin?.id == club.id || c.clubAdminId == club.id) &&
-          c.status?.toUpperCase() == 'ACTIVE');
-      final isPending = controller.pendingClubIds.contains(club.id) ||
-          controller.myClubs.any((c) =>
-              (c.clubAdmin?.id == club.id || c.clubAdminId == club.id) &&
-              c.status?.toUpperCase() == 'PENDING');
+      final isJoined = controller.myTeams.any((t) => t.id == team.id);
+      final isPending = controller.pendingJoinTeamIds.contains(team.id) ||
+          controller.requestedTeams.any((t) => t.id == team.id);
 
       return Container(
         margin: EdgeInsets.only(bottom: 12.h),
@@ -612,9 +753,9 @@ class _TeamScreenState extends State<TeamScreen> {
                 width: 48.w,
                 height: 48.w,
                 color: const Color(0xFF050810),
-                child: (club.profile != null && club.profile!.isNotEmpty)
+                child: (team.image != null && team.image!.isNotEmpty)
                     ? Image.network(
-                        ApiEndpoint.resolveImageUrl(club.profile) ?? '',
+                        ApiEndpoint.resolveImageUrl(team.image) ?? '',
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => const Center(
                           child: Icon(Icons.shield,
@@ -633,7 +774,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    club.name,
+                    team.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -644,11 +785,13 @@ class _TeamScreenState extends State<TeamScreen> {
                   ),
                   SizedBox(height: 3.h),
                   Text(
-                    (club.address != null && club.address!.isNotEmpty)
-                        ? club.address!
-                        : (club.bio != null && club.bio!.isNotEmpty)
-                            ? club.bio!
-                            : 'Hockey Club',
+                    (team.club != null && team.club!.name.isNotEmpty)
+                        ? team.club!.name
+                        : (team.address != null && team.address!.isNotEmpty)
+                            ? team.address!
+                            : (team.bio != null && team.bio!.isNotEmpty)
+                                ? team.bio!
+                                : 'Hockey Team',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -660,7 +803,7 @@ class _TeamScreenState extends State<TeamScreen> {
               ),
             ),
             SizedBox(width: 10.w),
-            if (isAlreadyJoined)
+            if (isJoined)
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -696,7 +839,7 @@ class _TeamScreenState extends State<TeamScreen> {
               ElevatedButton(
                 onPressed: controller.isSubmitting.value
                     ? null
-                    : () => controller.sendRequestToClub(club.id),
+                    : () => controller.joinTeamAsTrainer(team.id),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4D94FF),
                   padding:
@@ -709,7 +852,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Invite',
+                  'Join',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.sp,
@@ -723,157 +866,142 @@ class _TeamScreenState extends State<TeamScreen> {
     });
   }
 
-  // ─── Trainer: Club Details BottomSheet ───────────────────────────
-  void _showClubDetailsBottomSheet(BuildContext context, ClubTrainerItem club) {
-    final isActive = club.status?.toUpperCase() == 'ACTIVE';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF111827),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+  // ─── Trainer: Request List Item (Accept / Reject: PATCH /trainer/trainer-accept-reject)
+  Widget _buildTrainerRequestListItem(BuildContext context, TeamModel team) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111827),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: const Color(0xFF1F2937)),
       ),
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(2.r),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24.r),
+            child: Container(
+              width: 48.w,
+              height: 48.w,
+              color: const Color(0xFF050810),
+              child: (team.image != null && team.image!.isNotEmpty)
+                  ? Image.network(
+                      ApiEndpoint.resolveImageUrl(team.image) ?? '',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Center(
+                        child: Icon(Icons.shield,
+                            color: Color(0xFF4D94FF), size: 24),
+                      ),
+                    )
+                  : const Center(
+                      child: Icon(Icons.shield,
+                          color: Color(0xFF4D94FF), size: 24),
+                    ),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  team.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              SizedBox(height: 16.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          club.displayName,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (club.clubAdmin?.email != null &&
-                            club.clubAdmin!.email!.isNotEmpty) ...[
-                          SizedBox(height: 2.h),
-                          Text(
-                            club.clubAdmin!.email!,
-                            style: TextStyle(
-                              color: const Color(0xFF8B95A5),
-                              fontSize: 12.sp,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+                SizedBox(height: 3.h),
+                Text(
+                  (team.club?.name != null && team.club!.name.isNotEmpty)
+                      ? team.club!.name
+                      : (team.address != null && team.address!.isNotEmpty)
+                          ? team.address!
+                          : 'Team Request',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF8B95A5),
+                    fontSize: 12.sp,
                   ),
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? const Color(0xFF10B981).withValues(alpha: 0.15)
-                          : const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      isActive ? 'Active' : 'Pending Request',
-                      style: TextStyle(
-                        color: isActive
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFF59E0B),
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              if (club.clubAdmin?.address != null &&
-                  club.clubAdmin!.address!.isNotEmpty) ...[
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined,
-                        color: Color(0xFF8B95A5), size: 16),
-                    SizedBox(width: 6.w),
-                    Expanded(
-                      child: Text(
-                        club.clubAdmin!.address!,
-                        style: TextStyle(
-                          color: const Color(0xFF8B95A5),
-                          fontSize: 13.sp,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
-                SizedBox(height: 12.h),
               ],
-              Text(
-                'About Club',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 6.h),
-              Text(
-                (club.clubAdmin?.bio != null &&
-                        club.clubAdmin!.bio!.trim().isNotEmpty)
-                    ? club.clubAdmin!.bio!
-                    : 'A community-focused hockey club dedicated to developing players, building strong teams, and creating opportunities for athletes of all skill levels.',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13.sp,
-                  height: 1.4,
-                ),
-              ),
-              SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                height: 48.h,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1F2937),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Accept Button
+              GestureDetector(
+                onTap: controller.isSubmitting.value
+                    ? null
+                    : () => controller.respondToTrainerInvitation(
+                          requestId: team.requestId ?? team.id,
+                          isAccept: true,
+                          teamId: team.id,
+                        ),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4D94FF),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Text(
+                    'Accept',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              // Decline Button
+              GestureDetector(
+                onTap: controller.isSubmitting.value
+                    ? null
+                    : () => controller.respondToTrainerInvitation(
+                          requestId: team.requestId ?? team.id,
+                          isAccept: false,
+                          teamId: team.id,
+                        ),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF111827),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Text(
+                    'Decline',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  // ─── Exact Card Design from Figma Screenshot 1 ─────────────────────
+  // ═══════════════════════════════════════════════════════════════════
+  // ─── CLUB ADMIN: Exact Card Design from Figma ───────────────────────
+  // ═══════════════════════════════════════════════════════════════════
   Widget _buildTeamCard(BuildContext context, TeamModel team) {
     const defaultBio =
-        'A community-focused hockey club dedicated to developing players, building strong teams, and creating opportunities for athletes of all skill levels.';
+        'A community-focused hockey team dedicated to developing players, building strong teams, and creating opportunities for athletes of all skill levels.';
 
     return GestureDetector(
       onTap: () => _showTeamDetailsBottomSheet(context, team),
@@ -916,7 +1044,7 @@ class _TeamScreenState extends State<TeamScreen> {
             ),
             SizedBox(height: 12.h),
 
-            // Team Name (Centered, bold white, 16.sp)
+            // Team Name
             Text(
               team.name,
               textAlign: TextAlign.center,
@@ -930,7 +1058,7 @@ class _TeamScreenState extends State<TeamScreen> {
             ),
             SizedBox(height: 6.h),
 
-            // Bio (Centered, 11.sp, max 4 lines, elegant grey)
+            // Bio / Address
             Expanded(
               child: Text(
                 (team.bio != null && team.bio!.trim().isNotEmpty)
@@ -952,7 +1080,9 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Team Members & Details BottomSheet ───────────────────────────
+  // ═══════════════════════════════════════════════════════════════════
+  // ─── CLUB ADMIN: Team Details & Members BottomSheet ────────────────
+  // ═══════════════════════════════════════════════════════════════════
   void _showTeamDetailsBottomSheet(BuildContext context, TeamModel team) {
     controller.fetchActiveTeamMembers(team.id);
     controller.fetchRequestTeamMembers(team.id);
@@ -1026,6 +1156,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           Row(
                             children: [
+                              // Edit Team (PATCH /team/update)
                               IconButton(
                                 icon: const Icon(Icons.edit_outlined,
                                     color: Color(0xFF4D94FF), size: 22),
@@ -1034,6 +1165,15 @@ class _TeamScreenState extends State<TeamScreen> {
                                   Get.to(() => AddNewTeamScreen(team: team));
                                 },
                               ),
+                              // Delete Team (DELETE /team/:teamId)
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline,
+                                    color: Colors.redAccent, size: 22),
+                                onPressed: () {
+                                  _confirmDeleteTeam(ctx, team);
+                                },
+                              ),
+                              // Close Sheet
                               IconButton(
                                 icon: const Icon(Icons.close,
                                     color: Colors.white54, size: 22),
@@ -1045,7 +1185,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       ),
                       SizedBox(height: 14.h),
 
-                      // Tab selector: Active Members & Join Requests
+                      // Tab selector: Active Members & Requests
                       Container(
                         height: 44.h,
                         decoration: BoxDecoration(
@@ -1127,7 +1267,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           }
 
                           if (activeTabIndex == 0) {
-                            // Active Members
+                            // Active Members (GET /team/active-team-members/:teamId)
                             if (controller.activeTeamMembers.isEmpty) {
                               return Center(
                                 child: Column(
@@ -1156,15 +1296,24 @@ class _TeamScreenState extends State<TeamScreen> {
                                   contentPadding: EdgeInsets.zero,
                                   leading: CircleAvatar(
                                     backgroundColor: const Color(0xFF050810),
-                                    child: Text(
-                                      member.displayName.isNotEmpty
-                                          ? member.displayName[0].toUpperCase()
-                                          : 'T',
-                                      style: const TextStyle(
-                                        color: Color(0xFF4D94FF),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                    backgroundImage: member.displayImage != null
+                                        ? NetworkImage(
+                                            ApiEndpoint.resolveImageUrl(
+                                                    member.displayImage) ??
+                                                '')
+                                        : null,
+                                    child: member.displayImage == null
+                                        ? Text(
+                                            member.displayName.isNotEmpty
+                                                ? member.displayName[0]
+                                                    .toUpperCase()
+                                                : 'T',
+                                            style: const TextStyle(
+                                              color: Color(0xFF4D94FF),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                        : null,
                                   ),
                                   title: Text(
                                     member.displayName,
@@ -1201,7 +1350,7 @@ class _TeamScreenState extends State<TeamScreen> {
                               },
                             );
                           } else {
-                            // Requests (Approve / Decline)
+                            // Requests (GET /team/request-team-members/:teamId)
                             if (controller.requestTeamMembers.isEmpty) {
                               return Center(
                                 child: Column(
@@ -1233,16 +1382,26 @@ class _TeamScreenState extends State<TeamScreen> {
                                       CircleAvatar(
                                         backgroundColor:
                                             const Color(0xFF050810),
-                                        child: Text(
-                                          member.displayName.isNotEmpty
-                                              ? member.displayName[0]
-                                                  .toUpperCase()
-                                              : 'T',
-                                          style: const TextStyle(
-                                            color: Color(0xFF4D94FF),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        backgroundImage:
+                                            member.displayImage != null
+                                                ? NetworkImage(
+                                                    ApiEndpoint.resolveImageUrl(
+                                                            member
+                                                                .displayImage) ??
+                                                        '')
+                                                : null,
+                                        child: member.displayImage == null
+                                            ? Text(
+                                                member.displayName.isNotEmpty
+                                                    ? member.displayName[0]
+                                                        .toUpperCase()
+                                                    : 'T',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF4D94FF),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            : null,
                                       ),
                                       SizedBox(width: 12.w),
                                       Expanded(
@@ -1271,7 +1430,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          // Approve Button
+                                          // Approve Button (PATCH /team/trainer-accept-reject)
                                           GestureDetector(
                                             onTap: () => controller
                                                 .respondToTeamRequestByAdmin(
@@ -1340,14 +1499,14 @@ class _TeamScreenState extends State<TeamScreen> {
                         }),
                       ),
                       SizedBox(height: 12.h),
-                      // Add Member Button
+
+                      // Add Member Button (POST /team/add-member)
                       SizedBox(
                         width: double.infinity,
                         height: 48.h,
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.pop(ctx);
-                            Get.to(() => const AddTrainerScreen());
+                            _showAddMemberDialog(context, team);
                           },
                           icon: const Icon(Icons.person_add_alt_1,
                               color: Color(0xFF4D94FF), size: 18),
@@ -1377,7 +1536,45 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  // ─── Invite / Add Trainer Dialog ──────────────────────────────────
+  // ─── Delete Confirmation Dialog (DELETE /team/:teamId) ────────────
+  void _confirmDeleteTeam(BuildContext parentContext, TeamModel team) {
+    showDialog(
+      context: parentContext,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF111827),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        title: const Text('Delete Team',
+            style:
+                TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Text(
+            'Are you sure you want to delete "${team.name}"? This action cannot be undone.',
+            style: const TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel',
+                style: TextStyle(color: Color(0xFF8B95A5))),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx); // Close dialog
+              Navigator.pop(parentContext); // Close bottom sheet
+              await controller.deleteTeam(team.id);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r)),
+            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Invite / Add Trainer Dialog (POST /team/add-member) ───────────
   void _showAddMemberDialog(BuildContext context, TeamModel team) {
     final nameCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
@@ -1470,38 +1667,65 @@ class _TeamScreenState extends State<TeamScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (emailCtrl.text.trim().isEmpty) {
-                      Get.snackbar('Error', 'Please enter trainer email');
-                      return;
-                    }
-                    Navigator.pop(ctx);
-                    await controller.addTeamMember(
-                      teamId: team.id,
-                      trainerName: nameCtrl.text.trim(),
-                      sendEmail: emailCtrl.text.trim(),
-                      isSendByEmail: true,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4D94FF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+              SizedBox(height: 20.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Get.to(() => const AddTrainerScreen());
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF334155)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                      ),
+                      child: Text(
+                        'Browse Trainers',
+                        style: TextStyle(
+                          color: const Color(0xFF8B95A5),
+                          fontSize: 13.sp,
+                        ),
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Add Member',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (emailCtrl.text.trim().isEmpty) {
+                          Get.snackbar('Error', 'Please enter trainer email');
+                          return;
+                        }
+                        Navigator.pop(ctx);
+                        await controller.addTeamMember(
+                          teamId: team.id,
+                          trainerName: nameCtrl.text.trim(),
+                          sendEmail: emailCtrl.text.trim(),
+                          isSendByEmail: true,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4D94FF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                      ),
+                      child: Text(
+                        'Add Member',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.sp,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

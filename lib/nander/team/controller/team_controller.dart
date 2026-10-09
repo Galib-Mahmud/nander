@@ -18,25 +18,38 @@ class TeamController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
   final ImagePicker _picker = ImagePicker();
 
-  final RxList<TeamModel> teams = <TeamModel>[].obs;
+  // ─── General & Role State ─────────────────────────────────────────
   final RxBool isLoading = false.obs;
   final RxBool isSubmitting = false.obs;
   final RxBool isClubAdmin = false.obs;
   final RxString currentUserId = ''.obs;
 
-  // Track pending join requests sent in current session
-  final RxSet<String> pendingJoinTeamIds = <String>{}.obs;
-
-  // Selected image for adding/editing team
+  // Selected image for adding/editing team (form-data)
   final Rx<File?> selectedImage = Rx<File?>(null);
 
-  // ─── Trainer Clubs State (Role: TRAINER) ─────────────────────────
+  // ─── Club Admin Teams State (GET /team/my-team) ───────────────────
+  final RxList<TeamModel> teams = <TeamModel>[].obs;
+
+  // Team Members for Selected Team (Admin management)
+  final RxList<TeamMemberModel> activeTeamMembers = <TeamMemberModel>[].obs;
+  final RxList<TeamMemberModel> requestTeamMembers = <TeamMemberModel>[].obs;
+  final RxBool isLoadingMembers = false.obs;
+
+  // ─── Trainer Teams State (Role: TRAINER) ──────────────────────────
+  final RxInt trainerTab = 0.obs; // 0: My Teams, 1: Browse Teams, 2: Requests
+  final RxList<TeamModel> myTeams = <TeamModel>[].obs; // Joined/Active Teams
+  final RxList<TeamModel> allTeams = <TeamModel>[].obs; // All teams to browse
+  final RxList<TeamModel> filteredAllTeams = <TeamModel>[].obs;
+  final RxList<TeamModel> requestedTeams = <TeamModel>[].obs; // Requests/Invites
+  final RxSet<String> pendingJoinTeamIds = <String>{}.obs;
+  final TextEditingController teamSearchCtrl = TextEditingController();
+
+  // ─── Legacy Trainer Clubs State (for backward compatibility) ──────
   final RxList<ClubTrainerItem> myClubs = <ClubTrainerItem>[].obs;
   final RxList<ClubModel> allClubs = <ClubModel>[].obs;
   final RxList<ClubModel> filteredAllClubs = <ClubModel>[].obs;
   final RxSet<String> pendingClubIds = <String>{}.obs;
   final RxBool isLoadingClubs = false.obs;
-  final RxInt trainerTab = 0.obs;
   final TextEditingController clubSearchCtrl = TextEditingController();
 
   @override
@@ -47,40 +60,35 @@ class TeamController extends GetxController {
 
   @override
   void onClose() {
+    teamSearchCtrl.dispose();
     clubSearchCtrl.dispose();
     super.onClose();
   }
 
-  // Future<void> initController() async {
-  //   await checkUserRole();
-  //   if (isClubAdmin.value) {
-  //     await fetchTeams();
-  //   } else {
-  //     await Future.wait([
-  //       fetchMyClubs(),
-  //       fetchAllClubs(),
-  //     ]);
-  //   }
-  // }
+  // ─── Helper for extracting dynamic lists ──────────────────────────
+  List<dynamic> _extractList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      if (data['teams'] is List) return data['teams'] as List;
+      if (data['activeTeams'] is List) return data['activeTeams'] as List;
+      if (data['requestTeams'] is List) return data['requestTeams'] as List;
+      if (data['members'] is List) return data['members'] as List;
+      if (data['data'] is List) return data['data'] as List;
+      if (data['items'] is List) return data['items'] as List;
+      if (data['results'] is List) return data['results'] as List;
+      if (data['data'] is Map) return _extractList(data['data']);
+    }
+    return [];
+  }
 
-  // Future<void> refreshData() async {
-  //   await checkUserRole();
-  //   if (isClubAdmin.value) {
-  //     await fetchTeams();
-  //   } else {
-  //     await Future.wait([
-  //       fetchMyClubs(),
-  //       fetchAllClubs(),
-  //     ]);
-  //   }
-  // }
+  // ─── Lifecycle & Role Detection ───────────────────────────────────
   Future<void> initController() async {
     await checkUserRole();
     if (isClubAdmin.value) {
       await fetchTeams();
     } else {
       await Future.wait([
-        fetchTeams(), // <-- add
+        fetchTrainerData(),
         fetchMyClubs(),
         fetchAllClubs(),
       ]);
@@ -93,7 +101,7 @@ class TeamController extends GetxController {
       await fetchTeams();
     } else {
       await Future.wait([
-        fetchTeams(), // <-- add
+        fetchTrainerData(),
         fetchMyClubs(),
         fetchAllClubs(),
       ]);
@@ -109,7 +117,7 @@ class TeamController extends GetxController {
         '👥 TeamController - User role: $role, isClubAdmin: ${isClubAdmin.value}, userId: ${currentUserId.value}');
   }
 
-  // ─── Pick Image for Team ──────────────────────────────────────────
+  // ─── Pick Image for Team (form-data) ──────────────────────────────
   Future<void> pickImage(ImageSource source) async {
     try {
       final picked = await _picker.pickImage(source: source, imageQuality: 85);
@@ -126,164 +134,245 @@ class TeamController extends GetxController {
     selectedImage.value = null;
   }
 
-  // ─── GET Teams (Role-based) ──────────────────────────────────────
-  // Club Admin: /team/my-team
-  // Trainer: /team
+  // ─────────────────────────────────────────────────────────────────
+  // 3. GET My Teams (Club Admin: GET /team/my-team)
+  // ─────────────────────────────────────────────────────────────────
   Future<void> fetchTeams() async {
+    if (!isClubAdmin.value) {
+      await fetchTrainerData();
+      return;
+    }
+
     isLoading.value = true;
     try {
-      final endpoint =
-          isClubAdmin.value ? ApiEndpoint.myTeam : ApiEndpoint.team;
-      debugPrint(
-          '📡 Fetching teams from: $endpoint (role: ${isClubAdmin.value ? "CLUB_ADMIN" : "TRAINER"})');
+      debugPrint('📡 [Club Admin] Fetching my teams: ${ApiEndpoint.myTeam}');
+      final response = await _apiClient.get(ApiEndpoint.myTeam, requiresAuth: true);
 
-      final response = await _apiClient.get(endpoint, requiresAuth: true);
-      debugPrint('📥 RAW RESPONSE: $response');
-
-      if (response?['success'] == true) {
-        final dynamic raw = response['data'];
-        debugPrint('📥 data type: ${raw.runtimeType}');
-      } else {
-        debugPrint('⚠️ success != true: $response');
-      }
-
-      if (response?['success'] == true) {
-        final dynamic raw = response['data'];
-        final List<dynamic> list = (raw is List)
-            ? raw
-            : (raw is Map && raw['teams'] is List)
-                ? raw['teams']
-                : [];
-
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
         final parsed = <TeamModel>[];
-        for (final item in list) {
+        for (final item in rawList) {
           if (item is Map<String, dynamic>) {
             try {
               parsed.add(TeamModel.fromJson(item));
-            } catch (e, st) {
-              debugPrint('⚠️ Error parsing team item: $e\n$st\nitem: $item');
+            } catch (e) {
+              debugPrint('⚠️ Error parsing admin team item: $e');
             }
           }
         }
-
         teams.assignAll(parsed);
-        debugPrint('✅ Loaded ${teams.length} teams from $endpoint');
+        debugPrint('✅ Loaded ${teams.length} teams for club admin');
       }
     } catch (e) {
-      debugPrint('❌ Fetch teams error: $e');
+      debugPrint('❌ Fetch admin teams error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // ─── GET Trainer Clubs (GET /trainer/my-clubs) ────────────────────
-  Future<void> fetchMyClubs() async {
-    isLoadingClubs.value = true;
+  // ─────────────────────────────────────────────────────────────────
+  // TRAINER FLOW: Fetch all trainer data
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchTrainerData() async {
+    isLoading.value = true;
     try {
-      debugPrint('📡 Fetching trainer clubs from: ${ApiEndpoint.myClubs}');
-      final response =
-          await _apiClient.get(ApiEndpoint.myClubs, requiresAuth: true);
-      if (response?['success'] == true && response?['data'] is List) {
-        final list = (response['data'] as List)
-            .map((item) =>
-                ClubTrainerItem.fromJson(item as Map<String, dynamic>))
-            .toList();
-        myClubs.assignAll(list);
-
-        for (final item in list) {
-          if (item.clubAdmin?.id != null && item.clubAdmin!.id.isNotEmpty) {
-            pendingClubIds.add(item.clubAdmin!.id);
-          }
-          if (item.clubAdminId != null && item.clubAdminId!.isNotEmpty) {
-            pendingClubIds.add(item.clubAdminId!);
-          }
-        }
-        debugPrint(
-            '✅ Loaded ${myClubs.length} clubs from ${ApiEndpoint.myClubs}');
-      }
-    } catch (e) {
-      debugPrint('❌ Fetch my clubs error: $e');
+      await Future.wait([
+        fetchMyTeamsWithProgress(),
+        fetchTrainerActiveTeams(),
+        fetchAllTeamsForTrainer(),
+        fetchTrainerRequestTeams(),
+      ]);
     } finally {
-      isLoadingClubs.value = false;
+      isLoading.value = false;
     }
   }
 
-  // ─── GET All Clubs (GET /club/list) ───────────────────────────────
-  Future<void> fetchAllClubs({String? query}) async {
+  // ─────────────────────────────────────────────────────────────────
+  // 7. GET My Team With Progress (GET /team/my-team-with-progress)
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchMyTeamsWithProgress() async {
+    try {
+      debugPrint('📡 [Trainer] Fetching my teams with progress: ${ApiEndpoint.myTeamWithProgress}');
+      final response = await _apiClient.get(ApiEndpoint.myTeamWithProgress, requiresAuth: true);
+
+      List<TeamModel> loadedTeams = [];
+
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            try {
+              loadedTeams.add(TeamModel.fromJson(item));
+            } catch (e) {
+              debugPrint('⚠️ Error parsing myTeamWithProgress item: $e');
+            }
+          }
+        }
+      }
+
+      if (loadedTeams.isNotEmpty) {
+        myTeams.assignAll(loadedTeams);
+        teams.assignAll(loadedTeams);
+        debugPrint('✅ [Trainer] Loaded ${myTeams.length} teams with progress');
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch trainer my teams with progress error: $e');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // 15. GET Active Teams by Trainer (GET /team/active-teams)
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchTrainerActiveTeams() async {
+    try {
+      debugPrint('📡 [Trainer] Fetching active teams: ${ApiEndpoint.activeTeams}');
+      final activeResp = await _apiClient.get(ApiEndpoint.activeTeams, requiresAuth: true);
+      if (activeResp?['success'] == true && activeResp?['data'] != null) {
+        final rawList = _extractList(activeResp['data']);
+        final List<TeamModel> activeList = [];
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            try {
+              activeList.add(TeamModel.fromJson(item));
+            } catch (e) {
+              debugPrint('⚠️ Error parsing activeTeams item: $e');
+            }
+          }
+        }
+        for (final t in activeList) {
+          final existingIdx = myTeams.indexWhere((existing) => existing.id == t.id);
+          if (existingIdx == -1) {
+            myTeams.add(t);
+          }
+        }
+        teams.assignAll(myTeams);
+        debugPrint('✅ [Trainer] Total active/joined teams: ${myTeams.length}');
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch trainer active teams error: $e');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // 4. GET All Team by Trainer (GET /team)
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchAllTeamsForTrainer({String? query}) async {
     try {
       final endpoint = (query != null && query.trim().isNotEmpty)
-          ? '/club/list?search=${Uri.encodeComponent(query.trim())}'
-          : '/club/list';
+          ? '${ApiEndpoint.team}?search=${Uri.encodeComponent(query.trim())}'
+          : ApiEndpoint.team;
+      debugPrint('📡 [Trainer] Fetching all teams: $endpoint');
+
       final response = await _apiClient.get(endpoint, requiresAuth: true);
-      if (response?['success'] == true && response?['data'] is List) {
-        final raw = response['data'] as List;
-        final list = <ClubModel>[];
-        for (final item in raw) {
-          try {
-            list.add(ClubModel.fromJson(item as Map<String, dynamic>));
-          } catch (e) {
-            debugPrint('⚠️ Error parsing club item: $e');
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
+        final parsed = <TeamModel>[];
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            try {
+              parsed.add(TeamModel.fromJson(item));
+            } catch (e) {
+              debugPrint('⚠️ Error parsing all team item: $e');
+            }
           }
         }
-        allClubs.assignAll(list);
-        filterAllClubs(clubSearchCtrl.text);
+        allTeams.assignAll(parsed);
+        filterAllTeams(teamSearchCtrl.text);
+        debugPrint('✅ [Trainer] Loaded ${allTeams.length} total teams');
       }
     } catch (e) {
-      debugPrint('❌ Fetch all clubs error: $e');
+      debugPrint('❌ Fetch all teams error: $e');
     }
   }
 
-  void filterAllClubs(String query) {
+  void filterAllTeams(String query) {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) {
-      filteredAllClubs.assignAll(allClubs);
+      filteredAllTeams.assignAll(allTeams);
     } else {
-      filteredAllClubs.assignAll(allClubs.where((c) =>
-          c.name.toLowerCase().contains(q) ||
-          (c.address ?? '').toLowerCase().contains(q) ||
-          (c.bio ?? '').toLowerCase().contains(q)));
+      filteredAllTeams.assignAll(allTeams.where((t) =>
+      t.name.toLowerCase().contains(q) ||
+          (t.address ?? '').toLowerCase().contains(q) ||
+          (t.bio ?? '').toLowerCase().contains(q) ||
+          (t.trainerName ?? '').toLowerCase().contains(q) ||
+          (t.club?.name ?? '').toLowerCase().contains(q)));
     }
   }
 
-  // ─── POST Send Request to Club (POST /trainer/send-request-by-trainer) ──
-  Future<bool> sendRequestToClub(String clubId) async {
+  // ─────────────────────────────────────────────────────────────────
+  // 16. GET Request Team Member by Trainer (GET /team/request-teams)
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchTrainerRequestTeams() async {
+    try {
+      debugPrint('📡 [Trainer] Fetching requested teams: ${ApiEndpoint.requestTeams}');
+      final response = await _apiClient.get(ApiEndpoint.requestTeams, requiresAuth: true);
+
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
+        final parsed = <TeamModel>[];
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            try {
+              parsed.add(TeamModel.fromJson(item));
+            } catch (e) {
+              debugPrint('⚠️ Error parsing request team item: $e');
+            }
+          }
+        }
+        requestedTeams.assignAll(parsed);
+        debugPrint('✅ [Trainer] Loaded ${requestedTeams.length} pending team requests');
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch trainer request teams error: $e');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // 10. POST Join Request by Trainer (POST /team/join-request-by-trainer)
+  // ─────────────────────────────────────────────────────────────────
+  Future<bool> joinTeamAsTrainer(String teamId) async {
     isSubmitting.value = true;
     try {
-      debugPrint(
-          '📡 Sending request to club $clubId via ${ApiEndpoint.sendRequestByTrainer}');
+      final body = {'teamId': teamId};
+      debugPrint('📤 [Trainer] Sending join request: $body to ${ApiEndpoint.teamJoinRequestByTrainer}');
+
       final response = await _apiClient.post(
-        ApiEndpoint.sendRequestByTrainer,
-        body: {"clubAdminId": clubId},
+        ApiEndpoint.teamJoinRequestByTrainer,
+        body: body,
         requiresAuth: true,
       );
 
       if (response?['success'] == true) {
-        pendingClubIds.add(clubId);
+        pendingJoinTeamIds.add(teamId);
         Get.snackbar(
           'Success',
-          response?['message'] ?? 'Request sent to club successfully.',
+          response?['message'] ?? 'Join request sent successfully',
           backgroundColor: Colors.green.shade700,
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
-        await fetchMyClubs();
+        await Future.wait([
+          fetchAllTeamsForTrainer(),
+          fetchTrainerRequestTeams(),
+        ]);
         return true;
       } else {
         Get.snackbar(
           'Notice',
-          response?['message'] ?? 'Failed to send request.',
+          response?['message'] ?? 'Failed to send join request',
           backgroundColor: Colors.red.shade800,
           colorText: Colors.white,
         );
         return false;
       }
     } on HttpException catch (e) {
+      debugPrint('❌ Join team error: $e');
       Get.snackbar('Error', e.message,
           backgroundColor: Colors.red.shade800, colorText: Colors.white);
       return false;
     } catch (e) {
-      debugPrint('❌ Send request to club error: $e');
-      Get.snackbar('Error', 'Failed to send request to club',
+      debugPrint('❌ Join team error: $e');
+      Get.snackbar('Error', 'Failed to send join request',
           backgroundColor: Colors.red.shade800, colorText: Colors.white);
       return false;
     } finally {
@@ -291,22 +380,73 @@ class TeamController extends GetxController {
     }
   }
 
-  // ─── GET Single Team ──────────────────────────────────────────────
-  Future<TeamModel?> fetchSingleTeam(String id) async {
+  // ─────────────────────────────────────────────────────────────────
+  // 12. Accept / Reject Joining Request by Trainer (PATCH /trainer/trainer-accept-reject)
+  // ─────────────────────────────────────────────────────────────────
+  Future<bool> respondToTrainerInvitation({
+    required String requestId,
+    required bool isAccept,
+    String? teamId,
+  }) async {
+    isSubmitting.value = true;
     try {
-      final response =
-          await _apiClient.get(ApiEndpoint.teamDetail(id), requiresAuth: true);
-      if (response?['success'] == true &&
-          response['data'] is Map<String, dynamic>) {
-        return TeamModel.fromJson(response['data'] as Map<String, dynamic>);
+      final status = isAccept ? 'accepted' : 'rejected';
+      final body = {
+        'requestId': requestId,
+        'status': status,
+      };
+      debugPrint('📤 [Trainer] Responding to request: $body');
+
+      // Try primary endpoint: /trainer/trainer-accept-reject
+      dynamic response = await _apiClient.patch(
+        ApiEndpoint.trainerAcceptReject,
+        body: body,
+        requiresAuth: true,
+      );
+
+      // Fallback if not accepted on /trainer/...
+      if (response == null || response['success'] != true) {
+        try {
+          response = await _apiClient.patch(
+            ApiEndpoint.teamTrainerAcceptReject,
+            body: body,
+            requiresAuth: true,
+          );
+        } catch (_) {}
+      }
+
+      if (response?['success'] == true) {
+        Get.snackbar(
+          isAccept ? 'Accepted' : 'Declined',
+          response?['message'] ??
+              (isAccept ? 'Invitation accepted successfully' : 'Invitation declined'),
+          backgroundColor: isAccept ? Colors.green.shade700 : Colors.red.shade800,
+          colorText: Colors.white,
+        );
+        await fetchTrainerData();
+        return true;
+      } else {
+        Get.snackbar(
+          'Error',
+          response?['message'] ?? 'Failed to update invitation status',
+          backgroundColor: Colors.red.shade800,
+          colorText: Colors.white,
+        );
+        return false;
       }
     } catch (e) {
-      debugPrint('❌ Fetch single team error: $e');
+      debugPrint('❌ Trainer accept/reject invitation error: $e');
+      Get.snackbar('Error', 'Failed to update invitation',
+          backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    } finally {
+      isSubmitting.value = false;
     }
-    return null;
   }
 
-  // ─── POST Create Team (form-data) ─────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────
+  // 1. POST Create Team (Club Admin: POST /team/create)
+  // ─────────────────────────────────────────────────────────────────
   Future<bool> createTeam({
     required String name,
     required String bio,
@@ -340,7 +480,7 @@ class TeamController extends GetxController {
         files['image'] = fileToUpload;
       }
 
-      debugPrint('📤 Creating team: $fields, files: ${files.keys}');
+      debugPrint('📤 [Club Admin] Creating team: $fields, files: ${files.keys}');
 
       final response = await _apiClient.multipart(
         ApiEndpoint.teamCreate,
@@ -378,14 +518,16 @@ class TeamController extends GetxController {
     }
   }
 
-  // ─── PATCH Update Team (form-data) ────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────
+  // 2. PATCH Update Team (Club Admin: PATCH /team/update)
+  // ─────────────────────────────────────────────────────────────────
   Future<bool> updateTeam({
     required String id,
     required String name,
     required String bio,
     required String address,
-    required String sendEmail,
-    required String trainerName,
+    String? sendEmail,
+    String? trainerName,
     File? imageFile,
   }) async {
     if (name.trim().isEmpty) {
@@ -400,8 +542,8 @@ class TeamController extends GetxController {
         'name': name.trim(),
         'bio': bio.trim(),
         'address': address.trim(),
-        'sendEmail': sendEmail.trim(),
-        'trainerName': trainerName.trim(),
+        if (sendEmail != null) 'sendEmail': sendEmail.trim(),
+        if (trainerName != null) 'trainerName': trainerName.trim(),
       };
 
       final fileToUpload = imageFile ?? selectedImage.value;
@@ -410,7 +552,7 @@ class TeamController extends GetxController {
         files['image'] = fileToUpload;
       }
 
-      debugPrint('📤 Updating team: $fields, files: ${files.keys}');
+      debugPrint('📤 [Club Admin] Updating team: $fields, files: ${files.keys}');
 
       final response = await _apiClient.multipart(
         ApiEndpoint.teamUpdate,
@@ -448,13 +590,53 @@ class TeamController extends GetxController {
     }
   }
 
-  // ─── DELETE Team ──────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────
+  // 5. GET Single Team (GET /team/:teamId)
+  // ─────────────────────────────────────────────────────────────────
+  Future<TeamModel?> fetchSingleTeam(String id) async {
+    try {
+      final response =
+      await _apiClient.get(ApiEndpoint.teamDetail(id), requiresAuth: true);
+      if (response?['success'] == true &&
+          response['data'] is Map<String, dynamic>) {
+        return TeamModel.fromJson(response['data'] as Map<String, dynamic>);
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch single team error: $e');
+    }
+    return null;
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // 8. GET Single Team With Progress (GET /team/single-team-with-progress/:teamId)
+  // ─────────────────────────────────────────────────────────────────
+  Future<TeamModel?> fetchSingleTeamWithProgress(String teamId) async {
+    try {
+      final response = await _apiClient.get(
+        ApiEndpoint.singleTeamWithProgress(teamId),
+        requiresAuth: true,
+      );
+      if (response?['success'] == true && response?['data'] is Map<String, dynamic>) {
+        return TeamModel.fromJson(response['data'] as Map<String, dynamic>);
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch single team with progress error: $e');
+    }
+    return null;
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // 6. DELETE Team (DELETE /team/:teamId)
+  // ─────────────────────────────────────────────────────────────────
   Future<bool> deleteTeam(String id) async {
     try {
       final response = await _apiClient.delete(ApiEndpoint.teamDelete(id),
           requiresAuth: true);
       if (response?['success'] == true) {
         teams.removeWhere((t) => t.id == id);
+        myTeams.removeWhere((t) => t.id == id);
+        allTeams.removeWhere((t) => t.id == id);
+        filteredAllTeams.removeWhere((t) => t.id == id);
         Get.snackbar(
           'Deleted',
           response?['message'] ?? 'Team deleted successfully',
@@ -471,7 +653,9 @@ class TeamController extends GetxController {
     }
   }
 
-  // ─── POST Add Team Member (Club Admin only) ───────────────────────
+  // ─────────────────────────────────────────────────────────────────
+  // 9. POST Add Team Member by Admin (POST /team/add-member)
+  // ─────────────────────────────────────────────────────────────────
   Future<bool> addTeamMember({
     required String teamId,
     String? trainerId,
@@ -483,14 +667,13 @@ class TeamController extends GetxController {
     try {
       final body = <String, dynamic>{
         'teamId': teamId,
-        if (trainerId != null && trainerId.isNotEmpty) 'trainerId': trainerId,
-        if (trainerName != null && trainerName.isNotEmpty)
-          'trainerName': trainerName,
-        if (sendEmail != null && sendEmail.isNotEmpty) 'sendEmail': sendEmail,
-        if (isSendByEmail) 'isSendByEmail': true,
+        'trainerId': trainerId ?? '',
+        'sendEmail': sendEmail ?? '',
+        'trainerName': trainerName ?? '',
+        'isSendByEmail': isSendByEmail,
       };
 
-      debugPrint('📤 Adding team member: $body');
+      debugPrint('📤 [Club Admin] Adding team member: $body to ${ApiEndpoint.teamAddMember}');
       final response = await _apiClient.post(
         ApiEndpoint.teamAddMember,
         body: body,
@@ -500,14 +683,25 @@ class TeamController extends GetxController {
       if (response?['success'] == true) {
         Get.snackbar(
           'Success',
-          response?['message'] ?? 'Team member added successfully',
+          response?['message'] ?? 'Team member added / invitation sent successfully',
           backgroundColor: Colors.green.shade700,
           colorText: Colors.white,
         );
-        await fetchTeams();
+        await Future.wait([
+          fetchActiveTeamMembers(teamId),
+          fetchRequestTeamMembers(teamId),
+          fetchTeams(),
+        ]);
         return true;
+      } else {
+        Get.snackbar(
+          'Error',
+          response?['message'] ?? 'Failed to add team member',
+          backgroundColor: Colors.red.shade800,
+          colorText: Colors.white,
+        );
+        return false;
       }
-      return false;
     } on HttpException catch (e) {
       debugPrint('❌ Add member error: $e');
       Get.snackbar('Error', e.message,
@@ -523,51 +717,9 @@ class TeamController extends GetxController {
     }
   }
 
-  // ─── POST Join Request By Trainer (Trainer only) ──────────────────
-  Future<bool> joinTeamAsTrainer(String teamId) async {
-    isSubmitting.value = true;
-    try {
-      final body = {'teamId': teamId};
-      debugPrint('📤 Sending join request: $body');
-
-      final response = await _apiClient.post(
-        ApiEndpoint.teamJoinRequestByTrainer,
-        body: body,
-        requiresAuth: true,
-      );
-
-      if (response?['success'] == true) {
-        pendingJoinTeamIds.add(teamId);
-        Get.snackbar(
-          'Success',
-          response?['message'] ?? 'Join request sent successfully',
-          backgroundColor: Colors.green.shade700,
-          colorText: Colors.white,
-        );
-        await fetchTeams();
-        return true;
-      }
-      return false;
-    } on HttpException catch (e) {
-      debugPrint('❌ Join team error: $e');
-      Get.snackbar('Error', e.message,
-          backgroundColor: Colors.red.shade800, colorText: Colors.white);
-      return false;
-    } catch (e) {
-      debugPrint('❌ Join team error: $e');
-      Get.snackbar('Error', 'Failed to send join request',
-          backgroundColor: Colors.red.shade800, colorText: Colors.white);
-      return false;
-    } finally {
-      isSubmitting.value = false;
-    }
-  }
-
-  // ─── 11 & 12. Team Members Management ──────────────────────────────
-  final RxList<TeamMemberModel> activeTeamMembers = <TeamMemberModel>[].obs;
-  final RxList<TeamMemberModel> requestTeamMembers = <TeamMemberModel>[].obs;
-  final RxBool isLoadingMembers = false.obs;
-
+  // ─────────────────────────────────────────────────────────────────
+  // 13. GET Active Team Member by Admin (GET /team/active-team-members/:teamId)
+  // ─────────────────────────────────────────────────────────────────
   Future<void> fetchActiveTeamMembers(String teamId) async {
     isLoadingMembers.value = true;
     try {
@@ -575,11 +727,10 @@ class TeamController extends GetxController {
         ApiEndpoint.activeTeamMembers(teamId),
         requiresAuth: true,
       );
-      if (response?['success'] == true) {
-        final dynamic raw = response['data'];
-        final List<dynamic> list = (raw is List) ? raw : [];
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
         activeTeamMembers.assignAll(
-          list
+          rawList
               .whereType<Map<String, dynamic>>()
               .map(TeamMemberModel.fromJson)
               .toList(),
@@ -594,6 +745,9 @@ class TeamController extends GetxController {
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────
+  // 14. GET Request Team Member by Admin (GET /team/request-team-members/:teamId)
+  // ─────────────────────────────────────────────────────────────────
   Future<void> fetchRequestTeamMembers(String teamId) async {
     isLoadingMembers.value = true;
     try {
@@ -601,11 +755,10 @@ class TeamController extends GetxController {
         ApiEndpoint.requestTeamMembers(teamId),
         requiresAuth: true,
       );
-      if (response?['success'] == true) {
-        final dynamic raw = response['data'];
-        final List<dynamic> list = (raw is List) ? raw : [];
+      if (response?['success'] == true && response?['data'] != null) {
+        final rawList = _extractList(response['data']);
         requestTeamMembers.assignAll(
-          list
+          rawList
               .whereType<Map<String, dynamic>>()
               .map(TeamMemberModel.fromJson)
               .toList(),
@@ -620,30 +773,46 @@ class TeamController extends GetxController {
     }
   }
 
-  // 13. Trainer Accept/Reject by Admin
+  // ─────────────────────────────────────────────────────────────────
+  // 11 & 17. Trainer Accept or Reject by Admin (PATCH /team/trainer-accept-reject)
+  // ─────────────────────────────────────────────────────────────────
   Future<bool> respondToTeamRequestByAdmin({
     required String teamId,
     required String requestId,
     required bool isAccept,
   }) async {
     try {
+      final status = isAccept ? 'accepted' : 'rejected';
       final body = {
-        'id': requestId,
         'requestId': requestId,
-        'status': isAccept ? 'ACTIVE' : 'REJECTED',
+        'status': status,
       };
-      debugPrint('📤 Admin responding to team member request: $body');
-      final response = await _apiClient.patch(
+      debugPrint('📤 [Club Admin] Responding to trainer request: $body');
+
+      // Primary endpoint 17: /team/trainer-accept-reject
+      dynamic response = await _apiClient.patch(
         ApiEndpoint.teamTrainerAcceptReject,
         body: body,
         requiresAuth: true,
       );
+
+      // Fallback endpoint 11: /trainer/trainer-accept-reject if needed
+      if (response == null || response['success'] != true) {
+        try {
+          response = await _apiClient.patch(
+            ApiEndpoint.trainerAcceptReject,
+            body: body,
+            requiresAuth: true,
+          );
+        } catch (_) {}
+      }
+
       if (response?['success'] == true) {
         Get.snackbar(
           isAccept ? 'Approved' : 'Declined',
-          response?['message'] ?? 'Request processed successfully',
+          response?['message'] ?? (isAccept ? 'Trainer approved' : 'Request declined'),
           backgroundColor:
-              isAccept ? Colors.green.shade700 : Colors.red.shade800,
+          isAccept ? Colors.green.shade700 : Colors.red.shade800,
           colorText: Colors.white,
         );
         await Future.wait([
@@ -652,8 +821,15 @@ class TeamController extends GetxController {
           fetchTeams(),
         ]);
         return true;
+      } else {
+        Get.snackbar(
+          'Error',
+          response?['message'] ?? 'Failed to process request',
+          backgroundColor: Colors.red.shade800,
+          colorText: Colors.white,
+        );
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint('❌ Admin respond to team member request error: $e');
       Get.snackbar('Error', 'Failed to process request',
@@ -662,45 +838,99 @@ class TeamController extends GetxController {
     }
   }
 
-  // 14. Trainer Accept/Reject by Trainer
-  Future<bool> respondToTeamRequestByTrainer({
-    required String teamId,
-    required String requestId,
-    required bool isAccept,
-  }) async {
+  // ─────────────────────────────────────────────────────────────────
+  // Compatibility methods for Trainer Clubs (keeps existing screens functional)
+  // ─────────────────────────────────────────────────────────────────
+  Future<void> fetchMyClubs() async {
+    isLoadingClubs.value = true;
     try {
-      final body = {
-        'id': requestId,
-        'requestId': requestId,
-        'status': isAccept ? 'ACTIVE' : 'REJECTED',
-      };
-      debugPrint('📤 Trainer responding to team invitation: $body');
-      final response = await _apiClient.patch(
-        ApiEndpoint.teamClubAdminAcceptReject,
-        body: body,
+      final response =
+      await _apiClient.get(ApiEndpoint.myClubs, requiresAuth: true);
+      if (response?['success'] == true && response?['data'] is List) {
+        final list = (response['data'] as List)
+            .map((item) =>
+            ClubTrainerItem.fromJson(item as Map<String, dynamic>))
+            .toList();
+        myClubs.assignAll(list);
+        for (final item in list) {
+          if (item.clubAdmin?.id != null && item.clubAdmin!.id.isNotEmpty) {
+            pendingClubIds.add(item.clubAdmin!.id);
+          }
+          if (item.clubAdminId != null && item.clubAdminId!.isNotEmpty) {
+            pendingClubIds.add(item.clubAdminId!);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch my clubs error: $e');
+    } finally {
+      isLoadingClubs.value = false;
+    }
+  }
+
+  Future<void> fetchAllClubs({String? query}) async {
+    try {
+      final endpoint = (query != null && query.trim().isNotEmpty)
+          ? '/club/list?search=${Uri.encodeComponent(query.trim())}'
+          : '/club/list';
+      final response = await _apiClient.get(endpoint, requiresAuth: true);
+      if (response?['success'] == true && response?['data'] is List) {
+        final raw = response['data'] as List;
+        final list = <ClubModel>[];
+        for (final item in raw) {
+          try {
+            list.add(ClubModel.fromJson(item as Map<String, dynamic>));
+          } catch (e) {
+            debugPrint('⚠️ Error parsing club item: $e');
+          }
+        }
+        allClubs.assignAll(list);
+        filterAllClubs(clubSearchCtrl.text);
+      }
+    } catch (e) {
+      debugPrint('❌ Fetch all clubs error: $e');
+    }
+  }
+
+  void filterAllClubs(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) {
+      filteredAllClubs.assignAll(allClubs);
+    } else {
+      filteredAllClubs.assignAll(allClubs.where((c) =>
+      c.name.toLowerCase().contains(q) ||
+          (c.address ?? '').toLowerCase().contains(q) ||
+          (c.bio ?? '').toLowerCase().contains(q)));
+    }
+  }
+
+  Future<bool> sendRequestToClub(String clubId) async {
+    isSubmitting.value = true;
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoint.sendRequestByTrainer,
+        body: {"clubAdminId": clubId},
         requiresAuth: true,
       );
+
       if (response?['success'] == true) {
+        pendingClubIds.add(clubId);
         Get.snackbar(
-          isAccept ? 'Approved' : 'Declined',
-          response?['message'] ?? 'Request processed successfully',
-          backgroundColor:
-              isAccept ? Colors.green.shade700 : Colors.red.shade800,
+          'Success',
+          response?['message'] ?? 'Request sent to club successfully.',
+          backgroundColor: Colors.green.shade700,
           colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
-        await Future.wait([
-          fetchActiveTeamMembers(teamId),
-          fetchRequestTeamMembers(teamId),
-          fetchTeams(),
-        ]);
+        await fetchMyClubs();
         return true;
       }
       return false;
     } catch (e) {
-      debugPrint('❌ Trainer respond to team invitation error: $e');
-      Get.snackbar('Error', 'Failed to process request',
-          backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      debugPrint('❌ Send request to club error: $e');
       return false;
+    } finally {
+      isSubmitting.value = false;
     }
   }
 }

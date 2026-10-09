@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nander/nander/newtrainer/trainer_controller.dart';
 import 'package:nander/nander/newtrainer/trainer_model.dart';
+import 'package:nander/nander/newtrainer/trainner_team_details_screen.dart';
+
 
 /// Trainer's team list with training progress.
 /// No bottom nav bar here - it is meant to be placed inside the app shell
@@ -24,7 +26,8 @@ class TrainerTeam extends StatelessWidget {
               child: Obx(() {
                 if (controller.isLoading.value && controller.teams.isEmpty) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF4D94FF)),
+                    child:
+                    CircularProgressIndicator(color: Color(0xFF4D94FF)),
                   );
                 }
 
@@ -87,7 +90,8 @@ class TrainerTeam extends StatelessWidget {
 
   // ─── Body states: error / empty / list ──────────────────────────────
   Widget _buildBody(TrainerTeamController controller) {
-    if (controller.errorMessage.value.isNotEmpty && controller.teams.isEmpty) {
+    if (controller.errorMessage.value.isNotEmpty &&
+        controller.teams.isEmpty) {
       return _scrollableMessage(
         icon: Icons.error_outline,
         title: controller.errorMessage.value,
@@ -107,8 +111,19 @@ class TrainerTeam extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 24.h),
       itemCount: controller.teams.length,
       separatorBuilder: (_, __) => SizedBox(height: 16.h),
-      itemBuilder: (context, index) =>
-          _buildTeamProgressCard(controller.teams[index]),
+      itemBuilder: (context, index) {
+        final team = controller.teams[index];
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Get.to(
+                () => TrainerTeamDetailScreen(
+              teamId: team.id,
+              initialName: team.name,
+            ),
+          ),
+          child: _buildTeamProgressCard(team),
+        );
+      },
     );
   }
 
@@ -200,7 +215,7 @@ class TrainerTeam extends StatelessWidget {
               minHeight: 6.h,
               backgroundColor: Colors.white,
               valueColor:
-                  const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
+              const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
             ),
           ),
         ],

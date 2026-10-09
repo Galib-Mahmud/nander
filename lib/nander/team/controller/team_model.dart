@@ -47,6 +47,16 @@ class TeamMemberModel {
     return '';
   }
 
+  String? get displayImage {
+    if (trainer is Map && trainer['profile'] != null && trainer['profile'].toString().isNotEmpty) {
+      return trainer['profile'].toString();
+    }
+    if (trainer is Map && trainer['image'] != null && trainer['image'].toString().isNotEmpty) {
+      return trainer['image'].toString();
+    }
+    return null;
+  }
+
   factory TeamMemberModel.fromJson(Map<String, dynamic> json) {
     return TeamMemberModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
@@ -97,6 +107,11 @@ class TeamModel {
   final ClubInfo? club;
   final dynamic trainer;
   final List<TeamMemberModel> members;
+  final String? requestId;
+  final String? requestStatus;
+  final int totalSessions;
+  final int completedSessions;
+  final int progressPercentage;
 
   TeamModel({
     required this.id,
@@ -115,25 +130,40 @@ class TeamModel {
     this.club,
     this.trainer,
     this.members = const [],
+    this.requestId,
+    this.requestStatus,
+    this.totalSessions = 0,
+    this.completedSessions = 0,
+    this.progressPercentage = 0,
   });
 
   bool isTrainerJoined(String? currentUserId) {
     if (currentUserId == null || currentUserId.isEmpty) return false;
     if (trainerId == currentUserId) return true;
     return members.any((m) =>
-        m.trainerId == currentUserId &&
+    m.trainerId == currentUserId &&
         (m.status == 'ACTIVE' || m.status == 'accepted'));
   }
 
   bool isTrainerPending(String? currentUserId) {
     if (currentUserId == null || currentUserId.isEmpty) return false;
     return members.any((m) =>
-        m.trainerId == currentUserId &&
+    m.trainerId == currentUserId &&
         (m.status == 'PENDING' || m.status == 'pending'));
   }
 
   factory TeamModel.fromJson(Map<String, dynamic> json) {
-    final rawMembers = json['members'];
+    Map<String, dynamic> data = json;
+    String? reqId = json['requestId']?.toString();
+    String? reqStatus = json['requestStatus']?.toString() ?? json['status']?.toString();
+
+    if (json.containsKey('team') && json['team'] is Map<String, dynamic>) {
+      reqId ??= json['id']?.toString() ?? json['_id']?.toString();
+      reqStatus ??= json['status']?.toString();
+      data = Map<String, dynamic>.from(json['team'] as Map);
+    }
+
+    final rawMembers = data['members'] ?? json['members'];
     List<TeamMemberModel> parsedMembers = [];
     if (rawMembers is List) {
       for (final m in rawMembers) {
@@ -143,26 +173,35 @@ class TeamModel {
       }
     }
 
+    int toInt(dynamic v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
+
     return TeamModel(
-      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      bio: json['bio']?.toString(),
-      address: json['address']?.toString(),
-      image: json['image']?.toString(),
-      clubId: json['clubId']?.toString() ?? '',
-      trainerId: json['trainerId']?.toString(),
-      sendEmail: json['sendEmail']?.toString(),
-      trainerName: json['trainerName']?.toString(),
-      isSendByEmail: json['isSendByEmail'] == true,
-      // Note: Backend JSON keys include 'isTainerAccepted' or 'isTrainerAccepted'
-      isTrainerAccepted: (json['isTainerAccepted'] == true || json['isTrainerAccepted'] == true),
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
-      club: (json['club'] != null && json['club'] is Map<String, dynamic>)
-          ? ClubInfo.fromJson(json['club'] as Map<String, dynamic>)
+      id: data['id']?.toString() ?? data['_id']?.toString() ?? json['teamId']?.toString() ?? '',
+      name: data['name']?.toString() ?? '',
+      bio: data['bio']?.toString(),
+      address: data['address']?.toString(),
+      image: data['image']?.toString(),
+      clubId: data['clubId']?.toString() ?? '',
+      trainerId: data['trainerId']?.toString(),
+      sendEmail: data['sendEmail']?.toString(),
+      trainerName: data['trainerName']?.toString(),
+      isSendByEmail: data['isSendByEmail'] == true,
+      isTrainerAccepted: (data['isTainerAccepted'] == true ||
+          data['isTrainerAccepted'] == true ||
+          data['status'] == 'accepted' ||
+          data['status'] == 'ACTIVE'),
+      createdAt: data['createdAt'] != null ? DateTime.tryParse(data['createdAt'].toString()) : null,
+      updatedAt: data['updatedAt'] != null ? DateTime.tryParse(data['updatedAt'].toString()) : null,
+      club: (data['club'] != null && data['club'] is Map<String, dynamic>)
+          ? ClubInfo.fromJson(data['club'] as Map<String, dynamic>)
           : null,
-      trainer: json['trainer'],
+      trainer: data['trainer'],
       members: parsedMembers,
+      requestId: reqId,
+      requestStatus: reqStatus,
+      totalSessions: toInt(data['totalSessions'] ?? json['totalSessions']),
+      completedSessions: toInt(data['completedSessions'] ?? json['completedSessions']),
+      progressPercentage: toInt(data['progressPercentage'] ?? json['progressPercentage']),
     );
   }
 
@@ -182,6 +221,11 @@ class TeamModel {
       if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
       'members': members.map((m) => m.toJson()).toList(),
+      if (requestId != null) 'requestId': requestId,
+      if (requestStatus != null) 'requestStatus': requestStatus,
+      'totalSessions': totalSessions,
+      'completedSessions': completedSessions,
+      'progressPercentage': progressPercentage,
     };
   }
 }

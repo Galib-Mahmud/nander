@@ -8,6 +8,8 @@ import '../auth/screen/premium_screen.dart';
 import '../auth/screen/reset_password_screen.dart';
 import '../chat/screen/chat_list_screen.dart';
 import '../chat/screen/my_teams_screen.dart';
+import '../club_my_teams/screen/club_add_new_teams.dart';
+import '../club_my_teams/screen/club_my_teams.dart';
 import '../profile/screen/profile_update_screen.dart';
 import '../home/screen/club_profile_screen.dart';
 import '../home/screen/main_screen.dart';
@@ -80,5 +82,15 @@ class AppRoute {
         page: () => const profile_team.TeamScreen()),
     GetPage(name: RouteName.addClub, page: () => const AddClubScreen()),
     GetPage(name: RouteName.addTeam, page: () => const AddTeamScreen()),
+
+
+
+
+    //Club Add Teams
+    GetPage(name: RouteName.clubMyTeam, page: () => const ClubMyteams()),
+    GetPage(name: RouteName.clubAddTeam, page: () => const ClubAddNewTeamScreen()),
+
+
+
   ];
 }
