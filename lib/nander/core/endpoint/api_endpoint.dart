@@ -64,8 +64,10 @@ class ApiEndpoint {
 // ── Team Members & Requests ──────────────────────────────────────
   static String teamMembers(String teamId) => "/team/team-members/$teamId";
   static String requestTeamMembers(String teamId) => "/team/request-team-members/$teamId";
-  static String findMembers(String teamId) => "/team/find-members/$teamId"; // For search/add
   static const String trainerAcceptReject = "/team/trainer-accept-reject";
+  // ── Add / Find Trainers ──────────────────────────────────────
+  static String findMembers(String teamId) => "/team/find-members/$teamId";
+  static const String addMember = "/team/add-member";
 
 
 

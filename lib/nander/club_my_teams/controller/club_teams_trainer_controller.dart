@@ -8,6 +8,7 @@ class TrainerModel {
   final String email;
   final String? profile;
   final String status; // ACTIVE, PENDING, REJECTED
+  final bool isTrainerRequested;
 
   TrainerModel({
     required this.id,
@@ -15,17 +16,25 @@ class TrainerModel {
     required this.email,
     this.profile,
     required this.status,
+    this.isTrainerRequested = false,
   });
 
   factory TrainerModel.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> userData =
+    (json['trainer'] is Map<String, dynamic>) ? json['trainer'] : json;
 
-    final userData = json['trainer'] ?? json;
     return TrainerModel(
-      id: json['id'] ?? '',
-      name: userData['name']?.toString() ?? 'Unknown',
-      email: userData['email']?.toString() ?? 'Unknown',
-      profile: json['profile'],
-      status: json['status'] ?? 'PENDING',
+      id: json['id']?.toString() ?? '',
+      // trainer null hole (email diye invite) trainerName / sendEmail theke nibe
+      name: userData['name']?.toString() ??
+          json['trainerName']?.toString() ??
+          'Unknown',
+      email: userData['email']?.toString() ??
+          json['sendEmail']?.toString() ??
+          'Unknown',
+      profile: userData['profile']?.toString(),
+      status: json['status']?.toString() ?? 'PENDING',
+      isTrainerRequested: json['isTrainerRequested'] == true,
     );
   }
 }
@@ -39,15 +48,17 @@ class TeamTrainersController extends ChangeNotifier {
   String _searchQuery = '';
 
   // Getters
-  List<TrainerModel> get activeTrainers => _activeTrainers.where((t) =>
+  List<TrainerModel> get activeTrainers => _activeTrainers
+      .where((t) =>
   t.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-      t.email.toLowerCase().contains(_searchQuery.toLowerCase())
-  ).toList();
+      t.email.toLowerCase().contains(_searchQuery.toLowerCase()))
+      .toList();
 
-  List<TrainerModel> get requestedTrainers => _requestedTrainers.where((t) =>
+  List<TrainerModel> get requestedTrainers => _requestedTrainers
+      .where((t) =>
   t.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-      t.email.toLowerCase().contains(_searchQuery.toLowerCase())
-  ).toList();
+      t.email.toLowerCase().contains(_searchQuery.toLowerCase()))
+      .toList();
 
   bool get isLoading => _isLoading;
 
@@ -63,14 +74,17 @@ class TeamTrainersController extends ChangeNotifier {
         final data = membersRes['data'];
         // API returns nested structure: { id, name..., members: [...] }
         final List<dynamic> membersList = data['members'] ?? [];
-        _activeTrainers = membersList.map((e) => TrainerModel.fromJson(e)).toList();
+        _activeTrainers =
+            membersList.map((e) => TrainerModel.fromJson(e)).toList();
       }
 
       // 2. Fetch Requests
-      final reqRes = await _apiClient.get(ApiEndpoint.requestTeamMembers(teamId));
+      final reqRes =
+      await _apiClient.get(ApiEndpoint.requestTeamMembers(teamId));
       if (reqRes is Map && reqRes['success'] == true) {
         final List<dynamic> reqList = reqRes['data'] ?? [];
-        _requestedTrainers = reqList.map((e) => TrainerModel.fromJson(e)).toList();
+        _requestedTrainers =
+            reqList.map((e) => TrainerModel.fromJson(e)).toList();
       }
     } catch (e) {
       debugPrint("Fetch Error: $e");
@@ -97,8 +111,13 @@ class TeamTrainersController extends ChangeNotifier {
 
       if (action == 'approve') {
         _activeTrainers.add(TrainerModel(
-            id: trainer.id, name: trainer.name, email: trainer.email,
-            profile: trainer.profile, status: 'ACTIVE'));
+          id: trainer.id,
+          name: trainer.name,
+          email: trainer.email,
+          profile: trainer.profile,
+          status: 'ACTIVE',
+          isTrainerRequested: trainer.isTrainerRequested,
+        ));
       }
 
       notifyListeners();

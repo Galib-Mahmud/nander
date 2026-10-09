@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 
 import '../../core/endpoint/api_endpoint.dart';
+import '../../trainers/screen/add_trainer_screen.dart';
 import '../controller/club_teams_trainer_controller.dart';
+import 'add_trainer_screen.dart';
 
 class TeamTrainersScreen extends StatefulWidget {
   final String teamId;
   final String teamName;
 
-  const TeamTrainersScreen({super.key, required this.teamId, required this.teamName});
+  const TeamTrainersScreen(
+      {super.key, required this.teamId, required this.teamName});
 
   @override
   State<TeamTrainersScreen> createState() => _TeamTrainersScreenState();
 }
 
-class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTickerProviderStateMixin {
+class _TeamTrainersScreenState extends State<TeamTrainersScreen>
+    with SingleTickerProviderStateMixin {
   final TeamTrainersController _controller = TeamTrainersController();
   late TabController _tabController;
   int _currentTab = 0; // 0 = My Trainers, 1 = Requests
@@ -28,6 +32,13 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
       }
     });
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -46,18 +57,18 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(widget.teamName,
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
       ),
       body: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {
-          // ✅ FACEBOOK-STYLE PULL TO REFRESH
           return RefreshIndicator(
             onRefresh: _loadData,
             color: const Color(0xFF3B82F6),
             backgroundColor: const Color(0xFF112240),
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(), // Required for RefreshIndicator
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,9 +96,11 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
                       decoration: const InputDecoration(
                         hintText: 'Search trainer...',
                         hintStyle: TextStyle(color: Color(0xFF8892B0)),
-                        prefixIcon: Icon(Icons.search, color: Color(0xFF8892B0)),
+                        prefixIcon:
+                        Icon(Icons.search, color: Color(0xFF8892B0)),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        contentPadding:
+                        EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                       ),
                     ),
                   ),
@@ -99,20 +112,24 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
                       _buildEmptyState("No trainers found")
                     else
                       ListView.separated(
-                        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: _controller.activeTrainers.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (ctx, i) => _buildTrainerCard(_controller.activeTrainers[i]),
+                        itemBuilder: (ctx, i) =>
+                            _buildTrainerCard(_controller.activeTrainers[i]),
                       ),
                   ] else ...[
                     if (_controller.requestedTrainers.isEmpty)
                       _buildEmptyState("No pending requests")
                     else
                       ListView.separated(
-                        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: _controller.requestedTrainers.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (ctx, i) => _buildRequestCard(_controller.requestedTrainers[i]),
+                        itemBuilder: (ctx, i) =>
+                            _buildRequestCard(_controller.requestedTrainers[i]),
                       ),
                   ],
 
@@ -128,20 +145,35 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFF0A192F),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10)
+          ],
         ),
         child: SizedBox(
-          width: double.infinity, height: 56,
+          width: double.infinity,
+          height: 56,
           child: ElevatedButton.icon(
-            onPressed: () {
-              // Navigate to Find/Add Trainer Screen
-              debugPrint("Navigate to find trainers for team: ${widget.teamId}");
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ClubAddTrainerScreen(teamId: widget.teamId),
+                ),
+              );
+
+              // Refresh list if trainer was added successfully
+              if (result == true && mounted) {
+                await _controller.fetchAllData(widget.teamId);
+              }
             },
             icon: const Icon(Icons.arrow_forward_ios, size: 18),
-            label: const Text('Add New Trainer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            label: const Text('Add New Trainer',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3B82F6), foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              backgroundColor: const Color(0xFF3B82F6),
+              foregroundColor: Colors.white,
+              shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             ),
           ),
         ),
@@ -152,7 +184,10 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
   Widget _buildTab(String title, int index) {
     final isSelected = _currentTab == index;
     return GestureDetector(
-      onTap: () => _tabController.animateTo(index),
+      onTap: () {
+        _tabController.animateTo(index);
+        setState(() => _currentTab = index);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -180,19 +215,29 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
       child: Row(
         children: [
           CircleAvatar(
-            radius: 24, backgroundColor: const Color(0xFF1E3A5F),
+            radius: 24,
+            backgroundColor: const Color(0xFF1E3A5F),
             backgroundImage: trainer.profile != null
-                ? NetworkImage('${ApiEndpoint.host}${trainer.profile}') : null,
-            child: trainer.profile == null ? const Icon(Icons.person, color: Colors.white54) : null,
+                ? NetworkImage('${ApiEndpoint.host}${trainer.profile}')
+                : null,
+            child: trainer.profile == null
+                ? const Icon(Icons.person, color: Colors.white54)
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(trainer.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(trainer.name,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(trainer.email, style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
+                Text(trainer.email,
+                    style: const TextStyle(
+                        color: Color(0xFF8892B0), fontSize: 14)),
               ],
             ),
           ),
@@ -215,32 +260,46 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(trainer.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(trainer.name,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(trainer.email, style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
+                Text(trainer.email,
+                    style: const TextStyle(
+                        color: Color(0xFF8892B0), fontSize: 14)),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          // Action Buttons or Status Badge
-          Row(
+
+          // isTrainerRequested == true  -> Approve / Decline
+          // isTrainerRequested == false -> Pending badge
+          trainer.isTrainerRequested
+              ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
                 height: 36,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final success = await _controller.handleRequest(trainer.id, 'approve');
+                    final success = await _controller.handleRequest(
+                        trainer.id, 'approve');
                     if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(success ? "Approved!" : "Failed"),
-                            backgroundColor: success ? Colors.green : Colors.red));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(success ? "Approved!" : "Failed"),
+                        backgroundColor:
+                        success ? Colors.green : Colors.red));
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6), foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF3B82F6),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                  child: const Text('Approve', style: TextStyle(fontSize: 12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  child:
+                  const Text('Approve', style: TextStyle(fontSize: 12)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -248,27 +307,48 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen> with SingleTick
                 height: 36,
                 child: OutlinedButton(
                   onPressed: () async {
-                    final success = await _controller.handleRequest(trainer.id, 'reject');
+                    final success = await _controller.handleRequest(
+                        trainer.id, 'reject');
                     if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(success ? "Declined" : "Failed"),
-                            backgroundColor: success ? Colors.orange : Colors.red));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(success ? "Declined" : "Failed"),
+                        backgroundColor:
+                        success ? Colors.orange : Colors.red));
                   },
                   style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white, side: const BorderSide(color: Color(0xFF1E3A5F)),
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Color(0xFF1E3A5F)),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                  child: const Text('Decline', style: TextStyle(fontSize: 12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  child:
+                  const Text('Decline', style: TextStyle(fontSize: 12)),
                 ),
               ),
             ],
           )
+              : Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              border:
+              Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+            ),
+            child: const Text(
+              'Pending',
+              style: TextStyle(color: Colors.orange, fontSize: 12),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildEmptyState(String msg) => Center(
-      child: Padding(padding: const EdgeInsets.only(top: 40),
-          child: Text(msg, style: const TextStyle(color: Color(0xFF8892B0), fontSize: 16))));
+      child: Padding(
+          padding: const EdgeInsets.only(top: 40),
+          child: Text(msg,
+              style: const TextStyle(color: Color(0xFF8892B0), fontSize: 16))));
 }

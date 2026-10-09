@@ -115,6 +115,8 @@ class CustomDrawer extends StatelessWidget {
                       //   label: 'Dashboard',
                       //   onTap: () => {Get.back()},
                       // ),
+
+                      if (profileController.isClubAdmin)
                       _buildMenuItem(
                         icon: Icons.groups_outlined,
                         label: 'My Teams',

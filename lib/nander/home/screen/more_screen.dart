@@ -114,7 +114,7 @@ class MoreScreen extends StatelessWidget {
                   decoration: const BoxDecoration(
                       color: Color(0xFFFF5252), shape: BoxShape.circle),
                   child: Center(
-                    child: Text('3',
+                    child: Text('N',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 10.sp,
