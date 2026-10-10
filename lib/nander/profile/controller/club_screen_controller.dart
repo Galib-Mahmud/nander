@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +24,10 @@ class ProfileItemModel {
     this.clubAdminId,
     this.teamId,
   });
+
+  /// Id the join request is sent to (club admin id, falls back to id).
+  String get targetId =>
+      (clubAdminId != null && clubAdminId!.isNotEmpty) ? clubAdminId! : id;
 
   ProfileItemModel copyWith({
     String? id,
@@ -54,71 +60,32 @@ class ClubScreenController extends GetxController {
   final RxInt selectedTab = 0.obs; // 0: My Clubs, 1: Club's Request
   final RxBool isLoading = false.obs;
   final RxBool isSubmitting = false.obs;
+  final RxBool isLoadingFindClubs = false.obs;
+  final RxBool isLoadingMyClubs = false.obs;
+  final RxBool isLoadingRequests = false.obs;
+
+  /// Request ids an approve / decline call is running for (blocks double taps).
+  final RxSet<String> processingRequestIds = <String>{}.obs;
+
+  /// Club ids a request is currently being sent to (disables the button).
+  final RxSet<String> sendingClubIds = <String>{}.obs;
+
+  /// Club ids this trainer already sent a request to. Kept locally so the
+  /// button stays "Pending Request" even if /trainer/find-club does not flag it.
+  final RxSet<String> pendingClubIds = <String>{}.obs;
 
   final TextEditingController searchCtrl = TextEditingController();
   final RxString searchQuery = ''.obs;
 
-  // ─── Initial Mock Data Matching Design Screenshots ─────────────────
-  final RxList<ProfileItemModel> myClubs = <ProfileItemModel>[
-    const ProfileItemModel(
-      id: 'c1',
-      name: 'Eleanor Pena',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'c2',
-      name: 'Wade Warren',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'c3',
-      name: 'Theresa Webb',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'c4',
-      name: 'Jacob Jones',
-      email: 'someone@gmail.com',
-    ),
-  ].obs;
+  // Filled from GET /trainer/my-clubs ("My Clubs" tab).
+  final RxList<ProfileItemModel> myClubs = <ProfileItemModel>[].obs;
 
-  final RxList<ProfileItemModel> requests = <ProfileItemModel>[
-    const ProfileItemModel(
-      id: 'cr1',
-      name: 'Robert Fox',
-      email: 'someone@gmail.com',
-      isActionable: true,
-    ),
-    const ProfileItemModel(
-      id: 'cr2',
-      name: 'Robert Fox',
-      email: 'someone@gmail.com',
-      isPending: true,
-    ),
-  ].obs;
+  // Filled from GET /trainer/my-clubs-request ("Club's Request" tab).
+  final RxList<ProfileItemModel> requests = <ProfileItemModel>[].obs;
 
-  final RxList<ProfileItemModel> addClubs = <ProfileItemModel>[
-    const ProfileItemModel(
-      id: 'ca1',
-      name: 'Eleanor Pena',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'ca2',
-      name: 'Wade Warren',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'ca3',
-      name: 'Theresa Webb',
-      email: 'someone@gmail.com',
-    ),
-    const ProfileItemModel(
-      id: 'ca4',
-      name: 'Jacob Jones',
-      email: 'someone@gmail.com',
-    ),
-  ].obs;
+  // Filled from GET /trainer/find-club (no mock data, so an empty or failed
+  // response never shows fake clubs).
+  final RxList<ProfileItemModel> addClubs = <ProfileItemModel>[].obs;
 
   final RxList<ProfileItemModel> filteredAddClubs = <ProfileItemModel>[].obs;
 
@@ -139,10 +106,13 @@ class ClubScreenController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
+      // My clubs + requests first, so find-club can reuse them to mark
+      // pending clubs.
       await Future.wait([
-        _fetchClubsAndRequests(),
-        _fetchClubListFromApi(),
+        fetchMyClubs(showLoader: false),
+        fetchClubRequests(showLoader: false),
       ]);
+      await fetchFindClubs(showLoader: false);
     } catch (e) {
       debugPrint('ℹ️ ClubScreenController: Using fallback data ($e)');
     } finally {
@@ -150,136 +120,206 @@ class ClubScreenController extends GetxController {
     }
   }
 
-  // GET /trainer/my-clubs
-  // Returns both ACTIVE clubs and PENDING requests
-  Future<void> _fetchClubsAndRequests() async {
+  // ─── Tab data: each tab has its own endpoint ───────────────────────
+  /// Refresh both tabs (screen open / pull-to-refresh).
+  Future<void> refreshClubTabs() async {
+    await Future.wait([
+      fetchMyClubs(showLoader: myClubs.isEmpty),
+      fetchClubRequests(showLoader: requests.isEmpty),
+    ]);
+  }
+
+  // GET /trainer/my-clubs  ->  "My Clubs" tab
+  Future<void> fetchMyClubs({bool showLoader = true}) async {
+    if (showLoader) isLoadingMyClubs.value = true;
     try {
       final res = await _apiClient.get(ApiEndpoint.myClubs, requiresAuth: true);
-      if (res?['success'] == true && res?['data'] is List) {
-        final List list = res['data'];
-        final activeList = <ProfileItemModel>[];
-        final requestList = <ProfileItemModel>[];
 
-        for (final item in list) {
-          if (item is! Map<String, dynamic>) continue;
-          final clubAdmin = item['clubAdmin'] as Map<String, dynamic>?;
-          final name = clubAdmin?['name']?.toString() ??
-              item['name']?.toString() ??
-              'Club';
-          final email = clubAdmin?['email']?.toString() ??
-              item['email']?.toString() ??
-              'someone@gmail.com';
-          final id = item['id']?.toString() ?? '';
-          final clubAdminId = item['clubAdminId']?.toString() ??
-              clubAdmin?['id']?.toString() ??
-              id;
-          final status = (item['status'] ?? '').toString().toUpperCase();
-          final isTrainerRequested = item['isTrainerRequested'] == true;
+      if (res?['success'] == true) {
+        final items = <ProfileItemModel>[];
+        for (final raw in _asList(res['data'])) {
+          // The tab lists clubs the trainer already joined. Anything still
+          // waiting or rejected belongs to the request tab.
+          final status = _statusOf(raw);
+          if (status == 'PENDING' || status == 'REJECTED') continue;
 
-          if (status == 'ACTIVE') {
-            activeList.add(ProfileItemModel(
-              id: id,
-              clubAdminId: clubAdminId,
-              name: name,
-              email: email,
-            ));
-          } else {
-            // PENDING or other request state
-            requestList.add(ProfileItemModel(
-              id: id, // requestId
-              clubAdminId: clubAdminId,
-              name: name,
-              email: email,
-              isPending: isTrainerRequested,
-              isActionable: !isTrainerRequested,
-            ));
-          }
+          final parsed = _parseClubItem(raw);
+          if (parsed != null) items.add(parsed);
         }
-
-        if (activeList.isNotEmpty) {
-          myClubs.assignAll(activeList);
-        }
-        if (requestList.isNotEmpty) {
-          requests.assignAll(requestList);
-        }
+        // Always replace, even with an empty list.
+        myClubs.assignAll(items);
+        debugPrint('✅ my-clubs loaded: ${items.length} clubs');
+      } else {
+        debugPrint('❌ my-clubs not loaded. Response: $res');
       }
     } catch (e) {
-      debugPrint('❌ Error in _fetchClubsAndRequests: $e');
+      debugPrint('❌ Error in fetchMyClubs: $e');
+    } finally {
+      if (showLoader) isLoadingMyClubs.value = false;
     }
+  }
 
-    // Also query /trainer/my-clubs-request if needed
+  // GET /trainer/my-clubs-request  ->  "Club's Request" tab
+  Future<void> fetchClubRequests({bool showLoader = true}) async {
+    if (showLoader) isLoadingRequests.value = true;
     try {
-      final reqRes = await _apiClient.get(
+      final res = await _apiClient.get(
         ApiEndpoint.myClubsRequest,
         requiresAuth: true,
       );
-      if (reqRes?['success'] == true && reqRes?['data'] is List) {
-        final List list = reqRes['data'];
-        final extraRequests = <ProfileItemModel>[];
-        for (final item in list) {
-          if (item is! Map<String, dynamic>) continue;
-          final id = item['id']?.toString() ?? '';
-          if (requests.any((r) => r.id == id)) continue;
-          final clubAdmin = item['clubAdmin'] as Map<String, dynamic>?;
-          final name = clubAdmin?['name']?.toString() ??
-              item['name']?.toString() ??
-              'Club';
-          final email = clubAdmin?['email']?.toString() ??
-              item['email']?.toString() ??
-              'someone@gmail.com';
-          final clubAdminId = item['clubAdminId']?.toString() ??
-              clubAdmin?['id']?.toString() ??
-              id;
-          final isTrainerRequested = item['isTrainerRequested'] == true;
-          extraRequests.add(ProfileItemModel(
-            id: id,
-            clubAdminId: clubAdminId,
-            name: name,
-            email: email,
-            isPending: isTrainerRequested,
-            isActionable: !isTrainerRequested,
-          ));
+
+      if (res?['success'] == true) {
+        final items = <ProfileItemModel>[];
+        for (final raw in _asList(res['data'])) {
+          // Already answered requests do not belong in this tab.
+          final status = _statusOf(raw);
+          if (status == 'ACTIVE' ||
+              status == 'ACCEPTED' ||
+              status == 'REJECTED') {
+            continue;
+          }
+
+          final parsed = _parseClubItem(raw, isRequest: true);
+          if (parsed != null) items.add(parsed);
         }
-        if (extraRequests.isNotEmpty) {
-          requests.addAll(extraRequests);
-        }
+        // Always replace, even with an empty list.
+        requests.assignAll(items);
+        debugPrint('✅ my-clubs-request loaded: ${items.length} requests');
+      } else {
+        debugPrint('❌ my-clubs-request not loaded. Response: $res');
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('❌ Error in fetchClubRequests: $e');
+    } finally {
+      if (showLoader) isLoadingRequests.value = false;
+    }
   }
 
-  // GET /club/list
-  Future<void> _fetchClubListFromApi() async {
+  String _statusOf(dynamic raw) {
+    if (raw is! Map) return '';
+    return (raw['status'] ?? raw['requestStatus'] ?? '')
+        .toString()
+        .toUpperCase();
+  }
+
+  /// Reads one item of /trainer/my-clubs or /trainer/my-clubs-request.
+  /// Works for a flat object, or one that nests the club under
+  /// `clubAdmin` / `club`.
+  /// For requests: `isTrainerRequested == true` means the trainer sent it
+  /// (shows "Pending Request"), otherwise the club invited the trainer
+  /// (shows Approve / Decline).
+  ProfileItemModel? _parseClubItem(dynamic raw, {bool isRequest = false}) {
+    if (raw is! Map) return null;
+    final item = Map<String, dynamic>.from(raw);
+
+    final nested = item['clubAdmin'] is Map
+        ? Map<String, dynamic>.from(item['clubAdmin'] as Map)
+        : item['club'] is Map
+        ? Map<String, dynamic>.from(item['club'] as Map)
+        : item;
+
+    // Record id (for requests this is the requestId used by approve/decline).
+    final id = (item['id'] ?? nested['id'] ?? '').toString();
+    if (id.isEmpty) return null;
+
+    final clubAdminId = (item['clubAdminId'] ?? nested['id'] ?? id).toString();
+    final isTrainerRequested = item['isTrainerRequested'] == true;
+
+    return ProfileItemModel(
+      id: id,
+      clubAdminId: clubAdminId,
+      name: (nested['name'] ?? item['name'] ?? 'Club').toString(),
+      email: (nested['email'] ?? item['email'] ?? '').toString(),
+      isPending: isRequest && isTrainerRequested,
+      isActionable: isRequest && !isTrainerRequested,
+    );
+  }
+
+  // GET /trainer/find-club
+  Future<void> fetchFindClubs({bool showLoader = true}) async {
+    if (showLoader) isLoadingFindClubs.value = true;
     try {
-      final res = await _apiClient.get('/club/list', requiresAuth: true);
-      if (res?['success'] == true && res?['data'] is List) {
-        final List list = res['data'];
-        if (list.isNotEmpty) {
-          final items = list.map((item) {
-            final name = item['name']?.toString() ?? 'Club';
-            final email = item['email']?.toString() ??
-                item['clubAdmin']?['email']?.toString() ??
-                'someone@gmail.com';
-            final id = item['id']?.toString() ?? '';
-            final clubAdminId = item['clubAdminId']?.toString() ??
-                item['clubAdmin']?['id']?.toString() ??
-                id;
+      final res =
+      await _apiClient.get(ApiEndpoint.findClub, requiresAuth: true);
 
-            final isAlreadyPending = requests.any((r) =>
-                (r.clubAdminId == clubAdminId || r.id == id) && r.isPending);
-
-            return ProfileItemModel(
-              id: id,
-              clubAdminId: clubAdminId,
-              name: name,
-              email: email,
-              isPending: isAlreadyPending,
-            );
-          }).toList();
-          addClubs.assignAll(items);
-          filterClubs(searchCtrl.text);
+      if (res?['success'] == true) {
+        final items = <ProfileItemModel>[];
+        for (final raw in _asList(res['data'])) {
+          final parsed = _parseFindClub(raw);
+          if (parsed != null) items.add(parsed);
         }
+        // Always replace, even with an empty list.
+        addClubs.assignAll(items);
+        filterClubs(searchCtrl.text);
+        debugPrint('✅ find-club loaded: ${items.length} clubs');
+      } else {
+        debugPrint('❌ find-club not loaded. Response: $res');
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('❌ Error in fetchFindClubs: $e');
+    } finally {
+      if (showLoader) isLoadingFindClubs.value = false;
+    }
+  }
+
+  /// Accepts a plain list or a map wrapping the list (e.g. { clubs: [...] }).
+  List<dynamic> _asList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      for (final value in data.values) {
+        if (value is List) return value;
+      }
+    }
+    return <dynamic>[];
+  }
+
+  /// Reads one find-club item. Works for a flat club object, or one that
+  /// nests the club under `clubAdmin` / `club`.
+  ProfileItemModel? _parseFindClub(dynamic raw) {
+    if (raw is! Map) return null;
+    final item = Map<String, dynamic>.from(raw);
+
+    final nested = item['clubAdmin'] is Map
+        ? Map<String, dynamic>.from(item['clubAdmin'] as Map)
+        : item['club'] is Map
+        ? Map<String, dynamic>.from(item['club'] as Map)
+        : item;
+
+    final id = (nested['id'] ?? item['id'] ?? '').toString();
+    if (id.isEmpty) return null;
+
+    final clubAdminId =
+    (item['clubAdminId'] ?? nested['id'] ?? id).toString();
+
+    final status = (item['status'] ?? item['requestStatus'] ?? '')
+        .toString()
+        .toUpperCase();
+    final serverPending = item['isPending'] == true ||
+        item['isRequested'] == true ||
+        item['isTrainerRequested'] == true ||
+        item['requestSent'] == true ||
+        status == 'PENDING';
+
+    final isPending = serverPending ||
+        pendingClubIds.contains(clubAdminId) ||
+        requests.any((r) =>
+        (r.clubAdminId == clubAdminId || r.id == id) && r.isPending);
+
+    return ProfileItemModel(
+      id: id,
+      clubAdminId: clubAdminId,
+      name: (nested['name'] ?? item['name'] ?? 'Club').toString(),
+      email: (nested['email'] ?? item['email'] ?? '').toString(),
+      isPending: isPending,
+    );
+  }
+
+  void _markClubPending(String targetId) {
+    final idx = addClubs.indexWhere((c) => c.targetId == targetId);
+    if (idx != -1) {
+      addClubs[idx] = addClubs[idx].copyWith(isPending: true);
+      filterClubs(searchCtrl.text);
+    }
   }
 
   // ─── Search ─────────────────────────────────────────────────────────
@@ -291,7 +331,7 @@ class ClubScreenController extends GetxController {
     } else {
       filteredAddClubs.assignAll(
         addClubs.where((item) =>
-            item.name.toLowerCase().contains(q) ||
+        item.name.toLowerCase().contains(q) ||
             item.email.toLowerCase().contains(q)),
       );
     }
@@ -303,69 +343,106 @@ class ClubScreenController extends GetxController {
   }
 
   // ─── Actions ────────────────────────────────────────────────────────
-  // PATCH /team/club-admin-accept-reject
-  // body: { "requestId": id, "status": "accepted" }
-  Future<void> approveRequest(String id) async {
+  // PATCH /trainer/club-admin-accept-reject
+  // body: { "id": requestId, "status": "ACTIVE" | "REJECTED" }
+  /// Returns true only when the server confirmed the change.
+  Future<bool> _respondToRequest(String id, String status) async {
     try {
-      debugPrint('📡 Approving club request: requestId=$id via ${ApiEndpoint.teamClubAdminAcceptReject}');
-      await _apiClient.patch(
-        ApiEndpoint.teamClubAdminAcceptReject,
-        body: {'id': id, 'requestId': id, 'status': 'ACTIVE'},
+      debugPrint(
+          '📡 Club request $status: id=$id via ${ApiEndpoint.clubAdminAcceptReject}');
+      final res = await _apiClient.patch(
+        ApiEndpoint.clubAdminAcceptReject,
+        body: {'id': id, 'status': status},
         requiresAuth: true,
       );
+
+      if (res?['success'] == true) return true;
+
+      debugPrint('❌ Club request not updated. Response: $res');
+      _errorSnack(res?['message']?.toString() ?? 'Failed to process request');
+    } on HttpException catch (e) {
+      debugPrint('❌ Club request error: ${e.message}');
+      _errorSnack(e.message);
     } catch (e) {
-      debugPrint('ℹ️ Approve error: $e');
+      debugPrint('❌ Club request error: $e');
+      _errorSnack('Failed to process request');
     }
-
-    final index = requests.indexWhere((r) => r.id == id);
-    if (index != -1) {
-      final item = requests.removeAt(index);
-      myClubs.add(item.copyWith(isActionable: false, isPending: false));
-    }
-
-    Get.snackbar(
-      'Approved',
-      'Club request approved successfully',
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 2),
-    );
+    return false;
   }
 
-  // PATCH /team/club-admin-accept-reject
-  // body: { "id": id, "requestId": id, "status": "REJECTED" }
-  Future<void> declineRequest(String id) async {
-    try {
-      debugPrint('📡 Declining club request: requestId=$id via ${ApiEndpoint.teamClubAdminAcceptReject}');
-      await _apiClient.patch(
-        ApiEndpoint.teamClubAdminAcceptReject,
-        body: {'id': id, 'requestId': id, 'status': 'REJECTED'},
-        requiresAuth: true,
-      );
-    } catch (e) {
-      debugPrint('ℹ️ Decline error: $e');
-    }
-
-    requests.removeWhere((r) => r.id == id);
-
+  void _errorSnack(String message) {
     Get.snackbar(
-      'Declined',
-      'Club request declined',
+      'Error',
+      message,
       backgroundColor: Colors.red.shade800,
       colorText: Colors.white,
       snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
+  }
+
+  Future<void> approveRequest(String id) async {
+    if (processingRequestIds.contains(id)) return;
+    processingRequestIds.add(id);
+    try {
+      if (!await _respondToRequest(id, 'ACTIVE')) return;
+
+      final index = requests.indexWhere((r) => r.id == id);
+      if (index != -1) {
+        final item = requests.removeAt(index);
+        myClubs.add(item.copyWith(isActionable: false, isPending: false));
+      }
+
+      Get.snackbar(
+        'Approved',
+        'Club request approved successfully',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+
+      // Sync both tabs with the server.
+      await refreshClubTabs();
+    } finally {
+      processingRequestIds.remove(id);
+    }
+  }
+
+  Future<void> declineRequest(String id) async {
+    if (processingRequestIds.contains(id)) return;
+    processingRequestIds.add(id);
+    try {
+      if (!await _respondToRequest(id, 'REJECTED')) return;
+
+      requests.removeWhere((r) => r.id == id);
+
+      Get.snackbar(
+        'Declined',
+        'Club request declined',
+        backgroundColor: Colors.red.shade800,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+
+      // Sync both tabs with the server.
+      await refreshClubTabs();
+    } finally {
+      processingRequestIds.remove(id);
+    }
   }
 
   // POST /trainer/send-request-by-trainer
   // body: { "clubId": clubId }
   Future<void> sendJoinRequest(ProfileItemModel item) async {
+    final targetClubId = item.targetId;
+
+    // Already pending, or a request for this club is in flight.
+    if (item.isPending || sendingClubIds.contains(targetClubId)) return;
+
+    sendingClubIds.add(targetClubId);
     isSubmitting.value = true;
-    final targetClubId = (item.clubAdminId != null && item.clubAdminId!.isNotEmpty)
-        ? item.clubAdminId!
-        : item.id;
 
     try {
       debugPrint('📡 Sending request to club: clubId=$targetClubId');
@@ -375,44 +452,59 @@ class ClubScreenController extends GetxController {
         requiresAuth: true,
       );
 
-      final message = res?['message'] ?? 'Request sent to club successfully';
+      if (res?['success'] == true) {
+        // Only now is the request really sent -> show Pending.
+        pendingClubIds.add(targetClubId);
+        _markClubPending(targetClubId);
+
+        // Refresh the "Club's Request" tab from /trainer/my-clubs-request.
+        fetchClubRequests(showLoader: false);
+
+        Get.snackbar(
+          'Success',
+          res?['message'] ?? 'Request sent to club successfully',
+          backgroundColor: const Color(0xFF2F7CF6),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
+        );
+
+        // Sync with the server. pendingClubIds keeps the badge even if
+        // /trainer/find-club does not return a pending flag.
+        fetchFindClubs(showLoader: false);
+      } else {
+        Get.snackbar(
+          'Notice',
+          res?['message'] ?? 'Failed to send request',
+          backgroundColor: Colors.red.shade800,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } on HttpException catch (e) {
+      debugPrint('❌ Send request error: ${e.message}');
       Get.snackbar(
-        'Success',
-        message,
-        backgroundColor: const Color(0xFF2F7CF6),
+        'Error',
+        e.message,
+        backgroundColor: Colors.red.shade800,
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 3),
       );
     } catch (e) {
       debugPrint('❌ Send request error: $e');
       Get.snackbar(
-        'Notice',
-        'Request submitted',
-        backgroundColor: const Color(0xFF2F7CF6),
+        'Error',
+        'Failed to send request',
+        backgroundColor: Colors.red.shade800,
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 3),
       );
     } finally {
+      sendingClubIds.remove(targetClubId);
       isSubmitting.value = false;
-    }
-
-    // Mark as pending in add list
-    final idx = addClubs.indexWhere((c) => c.id == item.id);
-    if (idx != -1) {
-      addClubs[idx] = addClubs[idx].copyWith(isPending: true);
-      filterClubs(searchCtrl.text);
-    }
-
-    // Add to requests list as pending
-    if (!requests.any((r) => r.id == item.id || r.clubAdminId == targetClubId)) {
-      requests.add(item.copyWith(
-        id: item.id,
-        clubAdminId: targetClubId,
-        isPending: true,
-        isActionable: false,
-      ));
     }
   }
 }

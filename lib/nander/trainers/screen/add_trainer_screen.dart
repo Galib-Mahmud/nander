@@ -6,8 +6,24 @@ import '../../routes/route_name.dart';
 import '../controller/trainer_controller.dart';
 import '../model/trainer_model.dart';
 
-class AddTrainerScreen extends StatelessWidget {
+class AddTrainerScreen extends StatefulWidget {
   const AddTrainerScreen({super.key});
+
+  @override
+  State<AddTrainerScreen> createState() => _AddTrainerScreenState();
+}
+
+class _AddTrainerScreenState extends State<AddTrainerScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final c = TrainerController.to;
+    c.searchAddCtrl.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      c.fetchAllTrainers();
+      c.fetchTrainerRequests();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

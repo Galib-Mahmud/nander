@@ -5,13 +5,52 @@ import 'package:get/get.dart';
 import '../controller/club_screen_controller.dart';
 import 'add_club_screen.dart';
 
-class ClubScreen extends StatelessWidget {
+class ClubScreen extends StatefulWidget {
   const ClubScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = ClubScreenController.to;
+  State<ClubScreen> createState() => _ClubScreenState();
+}
 
+class _ClubScreenState extends State<ClubScreen> {
+  late final ClubScreenController controller = ClubScreenController.to;
+
+  @override
+  void initState() {
+    super.initState();
+    // Re-fetch /trainer/my-clubs and /trainer/my-clubs-request every time the
+    // screen opens. Skip if the controller's own first load is still running.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!controller.isLoading.value) controller.refreshClubTabs();
+    });
+  }
+
+  /// Loading spinner / empty text. Scrollable so pull-to-refresh still works.
+  Widget _buildStateMessage({
+    required bool isLoading,
+    required String message,
+  }) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(height: 120.h),
+        Center(
+          child: isLoading
+              ? const CircularProgressIndicator(color: Color(0xFF2F7CF6))
+              : Text(
+            message,
+            style: TextStyle(
+              color: const Color(0xFF8B95A5),
+              fontSize: 14.sp,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF050810),
       appBar: AppBar(
@@ -111,13 +150,18 @@ class ClubScreen extends StatelessWidget {
 
             // ─── Content List ───────────────────────────────────────────
             Expanded(
-              child: Obx(() {
-                if (controller.selectedTab.value == 0) {
-                  return _buildMyClubsList(context, controller);
-                } else {
-                  return _buildClubRequestsList(context, controller);
-                }
-              }),
+              child: RefreshIndicator(
+                color: const Color(0xFF2F7CF6),
+                backgroundColor: const Color(0xFF111827),
+                onRefresh: controller.refreshClubTabs,
+                child: Obx(() {
+                  if (controller.selectedTab.value == 0) {
+                    return _buildMyClubsList(context, controller);
+                  } else {
+                    return _buildClubRequestsList(context, controller);
+                  }
+                }),
+              ),
             ),
 
             // ─── Sticky Bottom Button (Join New Club >) ──────────────────
@@ -165,19 +209,19 @@ class ClubScreen extends StatelessWidget {
 
   // ─── My Clubs Tab (Image 1) ─────────────────────────────────────────
   Widget _buildMyClubsList(
-    BuildContext context,
-    ClubScreenController controller,
-  ) {
+      BuildContext context,
+      ClubScreenController controller,
+      ) {
     if (controller.myClubs.isEmpty) {
-      return Center(
-        child: Text(
-          'No clubs joined yet',
-          style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
-        ),
+      return _buildStateMessage(
+        isLoading:
+        controller.isLoading.value || controller.isLoadingMyClubs.value,
+        message: 'No clubs joined yet',
       );
     }
 
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
       itemCount: controller.myClubs.length,
       separatorBuilder: (_, __) => SizedBox(height: 12.h),
@@ -218,19 +262,19 @@ class ClubScreen extends StatelessWidget {
 
   // ─── Club's Request Tab (Image 2) ───────────────────────────────────
   Widget _buildClubRequestsList(
-    BuildContext context,
-    ClubScreenController controller,
-  ) {
+      BuildContext context,
+      ClubScreenController controller,
+      ) {
     if (controller.requests.isEmpty) {
-      return Center(
-        child: Text(
-          'No club requests',
-          style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
-        ),
+      return _buildStateMessage(
+        isLoading:
+        controller.isLoading.value || controller.isLoadingRequests.value,
+        message: 'No club requests',
       );
     }
 
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
       itemCount: controller.requests.length,
       separatorBuilder: (_, __) => SizedBox(height: 12.h),

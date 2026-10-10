@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,6 +37,9 @@ class TrainerController extends GetxController {
   // Track sent requests
   final RxSet<String> requestedTrainerIds = <String>{}.obs;
 
+  Timer? _searchDebounce;
+  int _findSeq = 0;
+
   // Search controllers
   final TextEditingController searchMainCtrl = TextEditingController();
   final TextEditingController searchAddCtrl = TextEditingController();
@@ -51,6 +56,7 @@ class TrainerController extends GetxController {
 
   @override
   void onClose() {
+    _searchDebounce?.cancel();
     searchMainCtrl.dispose();
     searchAddCtrl.dispose();
     inviteNameCtrl.dispose();
@@ -68,6 +74,7 @@ class TrainerController extends GetxController {
       fetchTrainerRequests(),
       fetchAllTrainers(),
     ]);
+    // fetchTrainerRequests may finish after the list; nothing else needed.
   }
 
   // ─── 1. Fetch My Trainers / Clubs ────────────────────────────────
@@ -82,7 +89,7 @@ class TrainerController extends GetxController {
       if (response?['success'] == true && response?['data'] is List) {
         final list = (response['data'] as List)
             .map((item) =>
-                ClubTrainerItem.fromJson(item as Map<String, dynamic>))
+            ClubTrainerItem.fromJson(item as Map<String, dynamic>))
             .toList();
         myTrainers.assignAll(list);
         applyMainSearch(searchMainCtrl.text);
@@ -106,7 +113,7 @@ class TrainerController extends GetxController {
       if (response?['success'] == true && response?['data'] is List) {
         final list = (response['data'] as List)
             .map((item) =>
-                ClubTrainerItem.fromJson(item as Map<String, dynamic>))
+            ClubTrainerItem.fromJson(item as Map<String, dynamic>))
             .toList();
         requests.assignAll(list);
 
@@ -124,23 +131,46 @@ class TrainerController extends GetxController {
     }
   }
 
-  // ─── 3. Fetch All Trainers (for Add Trainer screen) ──────────────
-  Future<void> fetchAllTrainers() async {
+  // ─── 3. Find Trainers: GET /trainer/find?search=name ─────────────
+  Future<void> fetchAllTrainers({String search = ''}) async {
+    final seq = ++_findSeq;
     isLoadingAllTrainers.value = true;
     try {
-      final response =
-          await _apiClient.get(ApiEndpoint.trainerList, requiresAuth: true);
-      if (response?['success'] == true && response?['data'] is List) {
-        final list = (response['data'] as List)
-            .map((item) => TrainerModel.fromJson(item as Map<String, dynamic>))
-            .toList();
+      final q = search.trim();
+      final path = q.isEmpty
+          ? ApiEndpoint.findTrainer
+          : '${ApiEndpoint.findTrainer}?search=${Uri.encodeQueryComponent(q)}';
+      final response = await _apiClient.get(path, requiresAuth: true);
+      if (seq != _findSeq) return; // stale response
+      if (response?['success'] == true) {
+        final data = response['data'];
+        final raw = data is List
+            ? data
+            : (data is Map && data['trainers'] is List
+            ? data['trainers'] as List
+            : (data is Map && data['data'] is List
+            ? data['data'] as List
+            : const []));
+        final list = <TrainerModel>[];
+        for (final item in raw) {
+          if (item is Map) {
+            list.add(TrainerModel.fromJson(Map<String, dynamic>.from(item)));
+          }
+        }
         allTrainers.assignAll(list);
-        applyAddSearch(searchAddCtrl.text);
+        searchResults.assignAll(list);
+      } else {
+        allTrainers.clear();
+        searchResults.clear();
       }
     } catch (e) {
-      debugPrint('❌ Fetch all trainers error: $e');
+      debugPrint('❌ Find trainers error: $e');
+      if (seq == _findSeq) {
+        allTrainers.clear();
+        searchResults.clear();
+      }
     } finally {
-      isLoadingAllTrainers.value = false;
+      if (seq == _findSeq) isLoadingAllTrainers.value = false;
     }
   }
 
@@ -153,29 +183,23 @@ class TrainerController extends GetxController {
     } else {
       filteredMyTrainers.assignAll(
         myTrainers.where((item) =>
-            item.displayName.toLowerCase().contains(q) ||
+        item.displayName.toLowerCase().contains(q) ||
             item.displayEmail.toLowerCase().contains(q)),
       );
       filteredRequests.assignAll(
         requests.where((item) =>
-            item.displayName.toLowerCase().contains(q) ||
+        item.displayName.toLowerCase().contains(q) ||
             item.displayEmail.toLowerCase().contains(q)),
       );
     }
   }
 
-  // ─── 5. Search Filter for Add Trainer Screen ─────────────────────
+  // ─── 5. Search (server side, debounced) ───────────────────────────
   void applyAddSearch(String query) {
-    final q = query.trim().toLowerCase();
-    if (q.isEmpty) {
-      searchResults.assignAll(allTrainers);
-    } else {
-      searchResults.assignAll(
-        allTrainers.where((t) =>
-            t.name.toLowerCase().contains(q) ||
-            t.email.toLowerCase().contains(q)),
-      );
-    }
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      fetchAllTrainers(search: query);
+    });
   }
 
   // ─── 6. Send Request To Existing Trainer ─────────────────────────
@@ -209,6 +233,10 @@ class TrainerController extends GetxController {
       }
       return false;
     } on HttpException catch (e) {
+      // Already sent before -> show Pending instead of leaving "Request".
+      if (e.message.toLowerCase().contains('already exists')) {
+        requestedTrainerIds.add(trainerId);
+      }
       Get.snackbar('Error', e.message,
           backgroundColor: Colors.red.shade800, colorText: Colors.white);
       return false;
@@ -291,7 +319,6 @@ class TrainerController extends GetxController {
       final statusVal = isAccept ? 'ACTIVE' : 'REJECTED';
       final body = {
         "id": requestId,
-        "requestId": requestId,
         "status": statusVal,
       };
 
@@ -309,7 +336,7 @@ class TrainerController extends GetxController {
                   ? 'Request accepted successfully.'
                   : 'Request declined.'),
           backgroundColor:
-              isAccept ? Colors.green.shade700 : Colors.red.shade800,
+          isAccept ? Colors.green.shade700 : Colors.red.shade800,
           colorText: Colors.white,
         );
         await Future.wait([

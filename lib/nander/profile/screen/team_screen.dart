@@ -368,7 +368,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         ),
                       ),
                       child: const Text(
-                        'Find Teams',
+                        'Join New Teams',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

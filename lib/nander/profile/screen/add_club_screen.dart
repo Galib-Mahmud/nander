@@ -4,12 +4,30 @@ import 'package:get/get.dart';
 
 import '../controller/club_screen_controller.dart';
 
-class AddClubScreen extends StatelessWidget {
+class AddClubScreen extends StatefulWidget {
   const AddClubScreen({super.key});
 
   @override
+  State<AddClubScreen> createState() => _AddClubScreenState();
+}
+
+class _AddClubScreenState extends State<AddClubScreen> {
+  late final ClubScreenController controller = ClubScreenController.to;
+
+  @override
+  void initState() {
+    super.initState();
+    // Refresh find-club every time the screen opens, so pending state is
+    // current. Skip if the controller's own first load is already running.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!controller.isLoading.value && !controller.isLoadingFindClubs.value) {
+        controller.fetchFindClubs(showLoader: controller.addClubs.isEmpty);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = ClubScreenController.to;
 
     return Scaffold(
       backgroundColor: const Color(0xFF050810),
@@ -87,6 +105,14 @@ class AddClubScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 final list = controller.filteredAddClubs;
+                final isLoading = controller.isLoading.value ||
+                    controller.isLoadingFindClubs.value;
+
+                if (isLoading && list.isEmpty) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF2F7CF6)),
+                  );
+                }
 
                 if (list.isEmpty) {
                   return Center(
@@ -117,7 +143,7 @@ class AddClubScreen extends StatelessWidget {
 
                 return ListView.separated(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
                   itemCount: list.length,
                   separatorBuilder: (_, __) => SizedBox(height: 12.h),
                   itemBuilder: (context, index) {
@@ -134,10 +160,10 @@ class AddClubScreen extends StatelessWidget {
   }
 
   Widget _buildClubCard(
-    BuildContext context,
-    ProfileItemModel item,
-    ClubScreenController controller,
-  ) {
+      BuildContext context,
+      ProfileItemModel item,
+      ClubScreenController controller,
+      ) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
@@ -192,24 +218,40 @@ class AddClubScreen extends StatelessWidget {
               ),
             )
           else
-            GestureDetector(
-              onTap: () => controller.sendJoinRequest(item),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2F7CF6),
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Text(
-                  'Request',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
+            Obx(() {
+              final isSending =
+              controller.sendingClubIds.contains(item.targetId);
+              return GestureDetector(
+                onTap: isSending ? null : () => controller.sendJoinRequest(item),
+                child: Container(
+                  constraints: BoxConstraints(minWidth: 84.w),
+                  alignment: Alignment.center,
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2F7CF6),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: isSending
+                      ? SizedBox(
+                    width: 16.w,
+                    height: 16.w,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : Text(
+                    'Request',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
         ],
       ),
     );
