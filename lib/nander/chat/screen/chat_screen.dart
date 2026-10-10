@@ -197,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             _buildAttachmentTile(
               icon: Icons.camera_alt_rounded,
-              label: 'Camera',
+              label: 'Camera'.tr,
               color: const Color(0xFFD3396D),
               onTap: () {
                 Navigator.pop(context);
@@ -206,7 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             _buildAttachmentTile(
               icon: Icons.photo_library_rounded,
-              label: 'Gallery',
+              label: 'Gallery'.tr,
               color: const Color(0xFFAC44CF),
               onTap: () {
                 Navigator.pop(context);
@@ -270,13 +270,13 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.copy_rounded, color: Colors.white70),
-              title: const Text('Copy text', style: TextStyle(color: Colors.white)),
+              title: Text('Copy text'.tr, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 Clipboard.setData(ClipboardData(text: msg.message));
                 Get.snackbar(
-                  'Copied',
-                  'Message copied to clipboard',
+                  'Copied'.tr,
+                  'Message copied to clipboard'.tr,
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: waAppBarColor,
                   colorText: Colors.white,
@@ -620,7 +620,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           maxLines: 5,
                           textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(
-                            hintText: 'Type a message...',
+                            hintText: 'Type a message...'.tr,
                             hintStyle: TextStyle(color: waTextMuted, fontSize: 14.5.sp),
                             border: InputBorder.none,
                             isDense: true,

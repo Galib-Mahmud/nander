@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 // You can reuse the widgets from terms_screen.dart or copy them here.
 // For simplicity, I'm assuming you copy the helper classes (_SectionHeader, _BulletPoint) here.
 
@@ -12,9 +13,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF050810),
         foregroundColor: Colors.white,
-        title: const Text(
-          'Privacy Policy',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        title: Text(
+          'Privacy Policy'.tr,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),

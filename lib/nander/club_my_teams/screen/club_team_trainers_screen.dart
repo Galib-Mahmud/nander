@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../core/endpoint/api_endpoint.dart';
-import '../../trainers/screen/add_trainer_screen.dart';
 import '../controller/club_teams_trainer_controller.dart';
 import 'add_trainer_screen.dart';
 
@@ -76,9 +76,9 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                   // Custom Tabs
                   Row(
                     children: [
-                      _buildTab("My Trainers", 0),
+                      _buildTab("My Trainers".tr, 0),
                       const SizedBox(width: 12),
-                      _buildTab("Trainer's Request", 1),
+                      _buildTab("Trainer's Request".tr, 1),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -93,9 +93,9 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                     child: TextField(
                       onChanged: _controller.updateSearch,
                       style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Search trainer...',
-                        hintStyle: TextStyle(color: Color(0xFF8892B0)),
+                      decoration: InputDecoration(
+                        hintText: 'Search trainer...'.tr,
+                        hintStyle: const TextStyle(color: Color(0xFF8892B0)),
                         prefixIcon:
                         Icon(Icons.search, color: Color(0xFF8892B0)),
                         border: InputBorder.none,
@@ -109,7 +109,7 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                   // Content Based on Tab
                   if (_currentTab == 0) ...[
                     if (_controller.activeTrainers.isEmpty)
-                      _buildEmptyState("No trainers found")
+                      _buildEmptyState("No trainers found".tr)
                     else
                       ListView.separated(
                         shrinkWrap: true,
@@ -121,7 +121,7 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                       ),
                   ] else ...[
                     if (_controller.requestedTrainers.isEmpty)
-                      _buildEmptyState("No pending requests")
+                      _buildEmptyState("No pending requests".tr)
                     else
                       ListView.separated(
                         shrinkWrap: true,
@@ -167,8 +167,8 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
               }
             },
             icon: const Icon(Icons.arrow_forward_ios, size: 18),
-            label: const Text('Add New Trainer',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            label: Text('Add New Trainer'.tr,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3B82F6),
               foregroundColor: Colors.white,
@@ -299,7 +299,7 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
                   child:
-                  const Text('Approve', style: TextStyle(fontSize: 12)),
+                  Text('Approve'.tr, style: const TextStyle(fontSize: 12)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -322,7 +322,7 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
                   child:
-                  const Text('Decline', style: TextStyle(fontSize: 12)),
+                  Text('Decline'.tr, style: const TextStyle(fontSize: 12)),
                 ),
               ),
             ],
@@ -336,9 +336,9 @@ class _TeamTrainersScreenState extends State<TeamTrainersScreen>
               border:
               Border.all(color: Colors.orange.withValues(alpha: 0.5)),
             ),
-            child: const Text(
-              'Pending',
-              style: TextStyle(color: Colors.orange, fontSize: 12),
+            child: Text(
+              'Pending'.tr,
+              style: const TextStyle(color: Colors.orange, fontSize: 12),
             ),
           ),
         ],

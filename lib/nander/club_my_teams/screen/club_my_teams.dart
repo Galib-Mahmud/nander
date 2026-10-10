@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../team/controller/team_model.dart';
 import '../controller/club_my_teams_controller.dart';
@@ -47,8 +48,8 @@ class _ClubMyteamsState extends State<ClubMyteams> {
             ),
             ListTile(
               leading: const Icon(Icons.edit_outlined, color: Color(0xFF3B82F6), size: 28),
-              title: const Text('Edit Team',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+              title: Text('Edit Team'.tr,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               onTap: () async {
                 Navigator.pop(context);
@@ -67,8 +68,8 @@ class _ClubMyteamsState extends State<ClubMyteams> {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 28),
-              title: const Text('Delete Team',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.w500)),
+              title: Text('Delete Team'.tr,
+                  style: const TextStyle(color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.w500)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               onTap: () async {
                 Navigator.pop(context);
@@ -102,8 +103,8 @@ class _ClubMyteamsState extends State<ClubMyteams> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('My Teams',
-            style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        title: Text('My Teams'.tr,
+            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
         centerTitle: false,
       ),
       // ✅ WRAP BODY IN REFRESH INDICATOR FOR PULL-TO-REFRESH
@@ -126,7 +127,7 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                   children: [
                     Text(_controller.error!, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 16),
-                    ElevatedButton(onPressed: _controller.fetchTeams, child: const Text("Retry"))
+                    ElevatedButton(onPressed: _controller.fetchTeams, child: Text("Retry".tr))
                   ],
                 ),
               );
@@ -199,7 +200,7 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                                           textAlign: TextAlign.center,
                                           maxLines: 1, overflow: TextOverflow.ellipsis),
                                       const SizedBox(height: 8),
-                                      Text(team.bio ?? "No bio available",
+                                      Text(team.bio ?? "No bio available".tr,
                                           style: const TextStyle(
                                               color: Color(0xFF8892B0), fontSize: 12, height: 1.4),
                                           textAlign: TextAlign.center,
@@ -265,8 +266,8 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             elevation: 0),
-                        child: const Text('Add New Team',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                        child: Text('Add New Team'.tr,
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                       ),
                     ),
                   ),

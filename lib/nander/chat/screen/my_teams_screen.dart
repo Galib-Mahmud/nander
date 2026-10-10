@@ -22,9 +22,9 @@ class MyTeamsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'My Teams',
-          style: TextStyle(
+        title: Text(
+          'My Teams'.tr,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class MyTeamsScreen extends StatelessWidget {
                 child: controller.teams.isEmpty
                     ? Center(
                         child: Text(
-                          'No teams found',
+                          'No teams found'.tr,
                           style: TextStyle(color: Colors.white54, fontSize: 15.sp),
                         ),
                       )
@@ -81,10 +81,10 @@ class MyTeamsScreen extends StatelessWidget {
                       color: const Color(0xFF4D94FF),
                       borderRadius: BorderRadius.circular(14.r),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'Add New Team',
-                        style: TextStyle(
+                        'Add New Team'.tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -142,7 +142,7 @@ class MyTeamsScreen extends StatelessWidget {
           ),
           SizedBox(height: 6.h),
           Text(
-            team.bio ?? (team.trainerName != null ? 'Trainer: ${team.trainerName}' : 'No bio available'),
+            team.bio ?? (team.trainerName != null ? 'Trainer: ${team.trainerName}' : 'No bio available'.tr),
             textAlign: TextAlign.center,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,

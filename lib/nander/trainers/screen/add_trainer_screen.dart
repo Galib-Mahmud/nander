@@ -39,7 +39,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Add Trainer',
+          'Add Trainer'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -68,7 +68,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                   onChanged: controller.applyAddSearch,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Search trainer...',
+                    hintText: 'Search trainer...'.tr,
                     hintStyle: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     prefixIcon: const Icon(Icons.search, color: Color(0xFF8B95A5), size: 20),
                     border: InputBorder.none,
@@ -95,7 +95,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Trainer not found!',
+                            'Trainer not found!'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18.sp,
@@ -104,7 +104,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                           ),
                           SizedBox(height: 8.h),
                           Text(
-                            'Search again with correct name or email',
+                            'Search again with correct name or email'.tr,
                             style: TextStyle(
                               color: const Color(0xFF8B95A5),
                               fontSize: 14.sp,
@@ -135,7 +135,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                   children: [
                     if (hasResults) ...[
                       Text(
-                        "Can't Find Your Trainer?",
+                        "Can't Find Your Trainer?".tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.sp,
@@ -144,7 +144,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'Search again with correct name or email',
+                        'Search again with correct name or email'.tr,
                         style: TextStyle(
                           color: const Color(0xFF8B95A5),
                           fontSize: 13.sp,
@@ -168,7 +168,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Invite the Trainer',
+                          'Invite the Trainer'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16.sp,
@@ -235,7 +235,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                   border: Border.all(color: const Color(0xFF334155)),
                 ),
                 child: Text(
-                  'Pending',
+                  'Pending'.tr,
                   style: TextStyle(
                     color: const Color(0xFF94A3B8),
                     fontSize: 13.sp,
@@ -254,7 +254,7 @@ class _AddTrainerScreenState extends State<AddTrainerScreen> {
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
-                  'Request',
+                  'Request'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 13.sp,

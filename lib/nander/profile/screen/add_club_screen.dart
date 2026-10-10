@@ -45,7 +45,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
         titleSpacing: 0,
         centerTitle: false,
         title: Text(
-          'Add Club',
+          'Add Club'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -76,7 +76,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                       color: Color(0xFF8B95A5),
                       size: 20,
                     ),
-                    hintText: 'Search Club...',
+                    hintText: 'Search Club...'.tr,
                     hintStyle: TextStyle(
                       color: const Color(0xFF8B95A5),
                       fontSize: 14.sp,
@@ -120,7 +120,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Club not found!',
+                          'Club not found!'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18.sp,
@@ -129,7 +129,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Search again with correct name or email',
+                          'Search again with correct name or email'.tr,
                           style: TextStyle(
                             color: const Color(0xFF8B95A5),
                             fontSize: 13.sp,
@@ -209,7 +209,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                 border: Border.all(color: const Color(0xFF374151)),
               ),
               child: Text(
-                'Pending Request',
+                'Pending Request'.tr,
                 style: TextStyle(
                   color: const Color(0xFF8B95A5),
                   fontSize: 12.sp,
@@ -242,7 +242,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                     ),
                   )
                       : Text(
-                    'Request',
+                    'Request'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 13.sp,

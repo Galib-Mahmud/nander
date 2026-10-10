@@ -80,10 +80,10 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
               SizedBox(height: 48.h),
 
               // Title
-              const Text(
-                'Upgrade to access premium features',
+              Text(
+                'Upgrade to access premium features'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -94,9 +94,9 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
 
               // ✅ Quarterly Plan (Star Icon as Image)
               _buildPlanCard(
-                planName: 'Quarterly',
+                planName: 'Quarterly'.tr,
                 price: '\$4.99',
-                description: 'Perfect for short-term users',
+                description: 'Perfect for short-term users'.tr,
                 iconPath: 'assets/images/Q.png', // ✅ Image asset
                 isSelected: _selectedPlan == 'Quarterly',
                 onTap: () => setState(() => _selectedPlan = 'Quarterly'),
@@ -106,9 +106,9 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
 
               // ✅ Annually Plan (Trophy Icon as Image)
               _buildPlanCard(
-                planName: 'Annually',
+                planName: 'Annually'.tr,
                 price: '\$13.99',
-                description: 'Save more with 12-month access',
+                description: 'Save more with 12-month access'.tr,
                 iconPath: 'assets/images/a.png', // ✅ Image asset
                 isSelected: _selectedPlan == 'Annually',
                 onTap: () => setState(() => _selectedPlan = 'Annually'),
@@ -121,9 +121,9 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
                 clipBehavior: Clip.none,
                 children: [
                   _buildPlanCard(
-                    planName: 'Lifetime',
+                    planName: 'Lifetime'.tr,
                     price: '\$49.99',
-                    description: 'Lifetime access with premium benefits',
+                    description: 'Lifetime access with premium benefits'.tr,
                     iconPath: 'assets/images/L.png', // ✅ Image asset
                     isSelected: _selectedPlan == 'Lifetime',
                     onTap: () => setState(() => _selectedPlan = 'Lifetime'),
@@ -143,9 +143,9 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
                           color: const Color(0xFF4D94FF),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
-                        child: const Text(
-                          'Save \$9.99',
-                          style: TextStyle(
+                        child: Text(
+                          'Save \$9.99'.tr,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -170,10 +170,10 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
                     color: const Color(0xFF4D94FF),
                     borderRadius: BorderRadius.circular(16.r),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Next',
-                      style: TextStyle(
+                      'Next'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,

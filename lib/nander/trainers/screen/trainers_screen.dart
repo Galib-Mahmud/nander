@@ -31,7 +31,7 @@ class TrainersScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Trainers',
+                'Trainers'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 32.sp,
@@ -57,7 +57,7 @@ class TrainersScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          'My Trainers',
+                          'My Trainers'.tr,
                           style: TextStyle(
                             color: isMyTrainers
                                 ? Colors.white
@@ -83,7 +83,7 @@ class TrainersScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          "Trainer's Request",
+                          "Trainer's Request".tr,
                           style: TextStyle(
                             color: !isMyTrainers
                                 ? Colors.white
@@ -114,7 +114,7 @@ class TrainersScreen extends StatelessWidget {
                   onChanged: controller.applyMainSearch,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Search trainer...',
+                    hintText: 'Search trainer...'.tr,
                     hintStyle: TextStyle(
                         color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     prefixIcon: const Icon(Icons.search,
@@ -155,8 +155,8 @@ class TrainersScreen extends StatelessWidget {
                           SizedBox(height: 12.h),
                           Text(
                             isMyTrainers
-                                ? 'No trainers yet'
-                                : 'No pending requests',
+                                ? 'No trainers yet'.tr
+                                : 'No pending requests'.tr,
                             style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 16.sp,
@@ -165,8 +165,8 @@ class TrainersScreen extends StatelessWidget {
                           SizedBox(height: 4.h),
                           Text(
                             isMyTrainers
-                                ? 'Add your first trainer to your club'
-                                : 'Incoming and sent requests will appear here',
+                                ? 'Add your first trainer to your club'.tr
+                                : 'Incoming and sent requests will appear here'.tr,
                             style: TextStyle(
                                 color: const Color(0xFF8B95A5),
                                 fontSize: 13.sp),
@@ -223,7 +223,7 @@ class TrainersScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Add New Trainer',
+                    'Add New Trainer'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
@@ -324,7 +324,7 @@ class TrainersScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
-                      'Approve',
+                      'Approve'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13.sp,
@@ -346,7 +346,7 @@ class TrainersScreen extends StatelessWidget {
                       border: Border.all(color: const Color(0xFF334155)),
                     ),
                     child: Text(
-                      'Decline',
+                      'Decline'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13.sp,
@@ -366,7 +366,7 @@ class TrainersScreen extends StatelessWidget {
                 border: Border.all(color: const Color(0xFF334155)),
               ),
               child: Text(
-                'Pending Request',
+                'Pending Request'.tr,
                 style: TextStyle(
                   color: const Color(0xFF94A3B8),
                   fontSize: 12.sp,

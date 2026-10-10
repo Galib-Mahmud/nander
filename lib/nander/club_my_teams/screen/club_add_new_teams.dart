@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controller/club_my_teams_controller.dart';
 import '../../team/controller/team_model.dart';
@@ -100,7 +101,7 @@ class _ClubAddNewTeamScreenState extends State<ClubAddNewTeamScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          isEditing ? 'Edit Team' : 'Add New Team',
+          isEditing ? 'Edit Team'.tr : 'Add New Team'.tr,
           style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ),
@@ -111,20 +112,20 @@ class _ClubAddNewTeamScreenState extends State<ClubAddNewTeamScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildLabel('Team Name'),
-              _buildTextField(_nameCtrl, 'Full Team name',
-                  validator: (v) => v!.isEmpty ? 'Team name is required' : null),
+              _buildLabel('Team Name'.tr),
+              _buildTextField(_nameCtrl, 'Full Team name'.tr,
+                  validator: (v) => v!.isEmpty ? 'Team name is required'.tr : null),
               const SizedBox(height: 20),
 
-              _buildLabel('Team Bio'),
-              _buildTextField(_bioCtrl, 'Enter Team Bio....'),
+              _buildLabel('Team Bio'.tr),
+              _buildTextField(_bioCtrl, 'Enter Team Bio....'.tr),
               const SizedBox(height: 20),
 
-              _buildLabel('Address'),
-              _buildTextField(_addressCtrl, 'Type here.....'),
+              _buildLabel('Address'.tr),
+              _buildTextField(_addressCtrl, 'Type here.....'.tr),
               const SizedBox(height: 20),
 
-              _buildLabel('Upload Image'),
+              _buildLabel('Upload Image'.tr),
               GestureDetector(
                 onTap: _pickImage,
                 child: Container(
@@ -143,7 +144,7 @@ class _ClubAddNewTeamScreenState extends State<ClubAddNewTeamScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          _selectedImage?.path.split('/').last ?? 'Choose your image',
+                          _selectedImage?.path.split('/').last ?? 'Choose your image'.tr,
                           style: TextStyle(
                               color: _selectedImage != null ? Colors.white : const Color(0xFF8892B0)),
                           overflow: TextOverflow.ellipsis,
@@ -167,7 +168,7 @@ class _ClubAddNewTeamScreenState extends State<ClubAddNewTeamScreen> {
                   child: _isSaving
                       ? const SizedBox(width: 24, height: 24,
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(isEditing ? 'Update Team' : 'Save Team',
+                      : Text(isEditing ? 'Update Team'.tr : 'Save Team'.tr,
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 ),
               ),

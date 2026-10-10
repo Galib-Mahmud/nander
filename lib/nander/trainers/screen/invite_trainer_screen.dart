@@ -21,7 +21,7 @@ class InviteTrainerScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Add Trainer',
+          'Add Trainer'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -39,7 +39,7 @@ class InviteTrainerScreen extends StatelessWidget {
 
               // Trainer Name
               Text(
-                'Trainer Name',
+                'Trainer Name'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15.sp,
@@ -58,7 +58,7 @@ class InviteTrainerScreen extends StatelessWidget {
                   controller: controller.inviteNameCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'Full Name'.tr,
                     hintStyle: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
@@ -69,7 +69,7 @@ class InviteTrainerScreen extends StatelessWidget {
 
               // Trainer Email
               Text(
-                'Trainer Email',
+                'Trainer Email'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15.sp,
@@ -89,7 +89,7 @@ class InviteTrainerScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Enter Trainer Email',
+                    hintText: 'Enter Trainer Email'.tr,
                     hintStyle: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
@@ -127,7 +127,7 @@ class InviteTrainerScreen extends StatelessWidget {
                             child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
-                            'Save',
+                            'Save'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.sp,

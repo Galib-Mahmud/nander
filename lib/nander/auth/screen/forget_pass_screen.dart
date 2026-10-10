@@ -20,15 +20,15 @@ class ForgotPasswordScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Center(child: Image.asset('assets/images/logo.png', width: 120, fit: BoxFit.contain)),
               const SizedBox(height: 50),
-              const Text('Forgot Password', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+              Text('Forgot Password'.tr, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              const Text(
-                "Enter your email and we'll send you a code to reset your password.",
-                style: TextStyle(color: Color(0xFF8B95A5), fontSize: 14, height: 1.4),
+              Text(
+                "Enter your email and we'll send you a code to reset your password.".tr,
+                style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 14, height: 1.4),
               ),
               const SizedBox(height: 30),
 
-              const Text('Email Address', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+              Text('Email Address'.tr, style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(color: const Color(0xFF1A2236), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF2A3550))),
@@ -55,7 +55,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   child: Center(
                     child: controller.isLoading.value
                         ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : const Text('Send Code', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600)),
+                        : Text('Send Code'.tr, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600)),
                   ),
                 ),
               )),

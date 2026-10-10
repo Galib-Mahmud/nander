@@ -77,7 +77,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
           ),
           Expanded(
             child: Obx(() => Text(
-              controller.team.value?.name ?? initialName ?? 'Team',
+              controller.team.value?.name ?? initialName ?? 'Team'.tr,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -100,7 +100,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
         Icon(Icons.error_outline, color: _muted, size: 56.w),
         SizedBox(height: 14.h),
         Text(
-          message.isEmpty ? 'Team not found' : message,
+          message.isEmpty ? 'Team not found'.tr : message,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white70,
@@ -121,7 +121,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
         _buildInfoCard(team),
         SizedBox(height: 24.h),
         Text(
-          'Team readiness',
+          'Team readiness'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 22.sp,
@@ -244,7 +244,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Progress',
+              Text('Progress'.tr,
                   style: TextStyle(color: _muted, fontSize: 14.sp)),
               Text(
                 '$percent%',
@@ -275,11 +275,11 @@ class TrainerTeamDetailScreen extends StatelessWidget {
   Widget _buildStatRow(TrainerTeamDetailModel team) {
     return Row(
       children: [
-        Expanded(child: _statTile('Total', team.totalSessions)),
+        Expanded(child: _statTile('Total'.tr, team.totalSessions)),
         SizedBox(width: 12.w),
-        Expanded(child: _statTile('Completed', team.completedSessions)),
+        Expanded(child: _statTile('Completed'.tr, team.completedSessions)),
         SizedBox(width: 12.w),
-        Expanded(child: _statTile('Remaining', team.remainingSessions)),
+        Expanded(child: _statTile('Remaining'.tr, team.remainingSessions)),
       ],
     );
   }
@@ -352,7 +352,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Trainings per month',
+            'Trainings per month'.tr,
             style: TextStyle(
               color: Colors.white,
               fontSize: 17.sp,
@@ -362,9 +362,9 @@ class TrainerTeamDetailScreen extends StatelessWidget {
           SizedBox(height: 10.h),
           Row(
             children: [
-              _legendDot(const Color(0xFF334155), 'Total'),
+              _legendDot(const Color(0xFF334155), 'Total'.tr),
               SizedBox(width: 16.w),
-              _legendDot(_blue, 'Completed'),
+              _legendDot(_blue, 'Completed'.tr),
             ],
           ),
           SizedBox(height: 16.h),
@@ -373,7 +373,7 @@ class TrainerTeamDetailScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 24.h),
               child: Center(
                 child: Text(
-                  'No session data yet',
+                  'No session data yet'.tr,
                   style: TextStyle(color: _muted, fontSize: 13.sp),
                 ),
               ),

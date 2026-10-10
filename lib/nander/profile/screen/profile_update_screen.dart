@@ -24,13 +24,13 @@ class ProfileUpdateScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Select Profile Photo',
+                  'Select Profile Photo'.tr,
                   style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 20.h),
                 ListTile(
                   leading: const Icon(Icons.photo_library_outlined, color: Color(0xFF4D94FF)),
-                  title: const Text('Choose from Gallery', style: TextStyle(color: Colors.white)),
+                  title: Text('Choose from Gallery'.tr, style: const TextStyle(color: Colors.white)),
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.gallery);
@@ -38,7 +38,7 @@ class ProfileUpdateScreen extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF4D94FF)),
-                  title: const Text('Take a Photo', style: TextStyle(color: Colors.white)),
+                  title: Text('Take a Photo'.tr, style: const TextStyle(color: Colors.white)),
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.camera);
@@ -61,7 +61,7 @@ class ProfileUpdateScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF050810),
         foregroundColor: Colors.white,
-        title: const Text('Profile Update', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+        title: Text('Profile Update'.tr, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Get.back(),
@@ -137,32 +137,32 @@ class ProfileUpdateScreen extends StatelessWidget {
 
               SizedBox(height: 30.h),
 
-              const _SectionLabel(text: 'Full Name'),
+              _SectionLabel(text: 'Full Name'.tr),
               SizedBox(height: 8.h),
               _CustomTextField(
-                hintText: 'Enter your name',
+                hintText: 'Enter your name'.tr,
                 controller: controller.nameController,
               ),
 
               SizedBox(height: 20.h),
-              const _SectionLabel(text: 'Bio'),
+              _SectionLabel(text: 'Bio'.tr),
               SizedBox(height: 8.h),
               _CustomTextField(
-                hintText: 'Enter bio...',
+                hintText: 'Enter bio...'.tr,
                 controller: controller.bioController,
                 maxLines: 3,
               ),
 
               SizedBox(height: 20.h),
-              const _SectionLabel(text: 'Address'),
+              _SectionLabel(text: 'Address'.tr),
               SizedBox(height: 8.h),
               _CustomTextField(
-                hintText: 'Enter address...',
+                hintText: 'Enter address...'.tr,
                 controller: controller.addressController,
               ),
 
               SizedBox(height: 20.h),
-              const _SectionLabel(text: 'Profile Image'),
+              _SectionLabel(text: 'Profile Image'.tr),
               SizedBox(height: 8.h),
               GestureDetector(
                 onTap: () => _showImageSourceBottomSheet(context, controller),
@@ -185,8 +185,8 @@ class ProfileUpdateScreen extends StatelessWidget {
                         ),
                         child: Text(
                           controller.selectedImage.value != null
-                              ? 'Change image'
-                              : 'Choose image',
+                              ? 'Change image'.tr
+                              : 'Choose image'.tr,
                           style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
                         ),
                       ),
@@ -195,7 +195,7 @@ class ProfileUpdateScreen extends StatelessWidget {
                         child: Text(
                           controller.selectedImage.value != null
                               ? controller.selectedImage.value!.path.split('/').last
-                              : (controller.profileImageUrl.value.isNotEmpty ? 'Current photo loaded' : 'No file chosen'),
+                              : (controller.profileImageUrl.value.isNotEmpty ? 'Current photo loaded'.tr : 'No file chosen'.tr),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(color: Colors.white70, fontSize: 13.sp),
                         ),
@@ -228,7 +228,7 @@ class ProfileUpdateScreen extends StatelessWidget {
                             child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
-                            'Save Changes',
+                            'Save Changes'.tr,
                             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: Colors.white),
                           ),
                   ),

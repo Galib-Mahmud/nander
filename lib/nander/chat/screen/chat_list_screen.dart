@@ -71,7 +71,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Chats',
+          'Chats'.tr,
           style: TextStyle(
               color: Colors.white,
               fontSize: 22.sp,
@@ -96,8 +96,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       SizedBox(width: 6.w),
                       Text(
                         controller.isSocketConnected.value
-                            ? 'Online'
-                            : 'Offline',
+                            ? 'Online'.tr
+                            : 'Offline'.tr,
                         style:
                             TextStyle(color: Colors.white54, fontSize: 11.sp),
                       ),
@@ -144,7 +144,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       onChanged: _onSearchChanged,
                       style: TextStyle(color: Colors.white, fontSize: 14.sp),
                       decoration: InputDecoration(
-                        hintText: 'Search conversations',
+                        hintText: 'Search conversations'.tr,
                         hintStyle: TextStyle(color: textMuted, fontSize: 14.sp),
                         border: InputBorder.none,
                         isDense: true,
@@ -249,7 +249,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               isSearching
                   ? 'No results for "$searchTerm"'
-                  : 'No conversations yet',
+                  : 'No conversations yet'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.white70,
@@ -259,8 +259,8 @@ class _EmptyState extends StatelessWidget {
             SizedBox(height: 6.h),
             Text(
               isSearching
-                  ? 'Try a different name'
-                  : 'Start a conversation from your team',
+                  ? 'Try a different name'.tr
+                  : 'Start a conversation from your team'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white38, fontSize: 13.sp),
             ),

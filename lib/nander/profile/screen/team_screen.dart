@@ -48,7 +48,7 @@ class _TeamScreenState extends State<TeamScreen> {
         title: Obx(() {
           if (controller.isClubAdmin.value) {
             return Text(
-              'My Teams',
+              'My Teams'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22.sp,
@@ -58,10 +58,10 @@ class _TeamScreenState extends State<TeamScreen> {
           }
           final tabIndex = controller.trainerTab.value;
           final tabTitle = tabIndex == 0
-              ? 'My Teams'
+              ? 'My Teams'.tr
               : tabIndex == 1
-              ? 'Find Teams'
-              : 'Team Requests';
+              ? 'Find Teams'.tr
+              : 'Team Requests'.tr;
           return Text(
             tabTitle,
             style: TextStyle(
@@ -215,7 +215,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'My Teams (${controller.myTeams.length})',
+                          '${'My Teams'.tr} (${controller.myTeams.length})',
                           style: TextStyle(
                             color: controller.trainerTab.value == 0
                                 ? Colors.white
@@ -242,7 +242,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'Find Teams (${controller.findableTeams.length})',
+                          '${'Find Teams'.tr} (${controller.findableTeams.length})',
                           style: TextStyle(
                             color: controller.trainerTab.value == 1
                                 ? Colors.white
@@ -269,7 +269,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'Requests (${controller.requestedTeams.length})',
+                          '${'Requests'.tr} (${controller.requestedTeams.length})',
                           style: TextStyle(
                             color: controller.trainerTab.value == 2
                                 ? Colors.white

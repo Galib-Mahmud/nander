@@ -64,7 +64,7 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Select Team Image',
+                  'Select Team Image'.tr,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.sp,
@@ -74,8 +74,8 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                 ListTile(
                   leading: const Icon(Icons.photo_library_outlined,
                       color: Color(0xFF4D94FF)),
-                  title: const Text('Choose from Gallery',
-                      style: TextStyle(color: Colors.white)),
+                  title: Text('Choose from Gallery'.tr,
+                      style: const TextStyle(color: Colors.white)),
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.gallery);
@@ -84,8 +84,8 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                 ListTile(
                   leading: const Icon(Icons.camera_alt_outlined,
                       color: Color(0xFF4D94FF)),
-                  title: const Text('Take a Photo',
-                      style: TextStyle(color: Colors.white)),
+                  title: Text('Take a Photo'.tr,
+                      style: const TextStyle(color: Colors.white)),
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.camera);
@@ -112,7 +112,7 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          isEditing ? 'Edit Team' : 'Add New Team',
+          isEditing ? 'Edit Team'.tr : 'Add New Team'.tr,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -125,37 +125,37 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLabel('Team Name *'),
+            _buildLabel('Team Name *'.tr),
             SizedBox(height: 8.h),
-            _buildTextField(hint: 'Full Team name', controller: nameCtrl),
+            _buildTextField(hint: 'Full Team name'.tr, controller: nameCtrl),
             SizedBox(height: 20.h),
 
-            _buildLabel('Team Bio'),
+            _buildLabel('Team Bio'.tr),
             SizedBox(height: 8.h),
             _buildTextField(
-                hint: 'Enter Team Bio....', controller: bioCtrl, maxLines: 3),
+                hint: 'Enter Team Bio....'.tr, controller: bioCtrl, maxLines: 3),
             SizedBox(height: 20.h),
 
-            _buildLabel('Lead Trainer Name'),
+            _buildLabel('Lead Trainer Name'.tr),
             SizedBox(height: 8.h),
             _buildTextField(
-                hint: 'Enter Lead Trainer Name..', controller: trainerNameCtrl),
+                hint: 'Enter Lead Trainer Name..'.tr, controller: trainerNameCtrl),
             SizedBox(height: 20.h),
 
-            _buildLabel('Lead Trainer Email'),
+            _buildLabel('Lead Trainer Email'.tr),
             SizedBox(height: 8.h),
             _buildTextField(
-                hint: 'Enter Lead Trainer Email',
+                hint: 'Enter Lead Trainer Email'.tr,
                 controller: sendEmailCtrl,
                 keyboardType: TextInputType.emailAddress),
             SizedBox(height: 20.h),
 
-            _buildLabel('Address'),
+            _buildLabel('Address'.tr),
             SizedBox(height: 8.h),
-            _buildTextField(hint: 'Type here.....', controller: addressCtrl),
+            _buildTextField(hint: 'Type here.....'.tr, controller: addressCtrl),
             SizedBox(height: 20.h),
 
-            _buildLabel('Upload Image'),
+            _buildLabel('Upload Image'.tr),
             SizedBox(height: 8.h),
             GestureDetector(
               onTap: _showImageSourceBottomSheet,
@@ -182,7 +182,7 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                           border: Border.all(color: const Color(0xFF1F2937)),
                         ),
                         child: Text(
-                          file != null ? 'Change image' : 'Choose image',
+                          file != null ? 'Change image'.tr : 'Choose image'.tr,
                           style: const TextStyle(
                               color: Color(0xFF8B95A5), fontSize: 14),
                         ),
@@ -194,8 +194,8 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                               ? file.path.split('/').last
                               : (existingImage != null &&
                                       existingImage.isNotEmpty)
-                                  ? 'Current image loaded'
-                                  : 'No image selected',
+                                  ? 'Current image loaded'.tr
+                                  : 'No image selected'.tr,
                           overflow: TextOverflow.ellipsis,
                           style:
                               TextStyle(color: Colors.white70, fontSize: 13.sp),
@@ -280,7 +280,7 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                               color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          isEditing ? 'Update Team' : 'Save Team',
+                          isEditing ? 'Update Team'.tr : 'Save Team'.tr,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 17,

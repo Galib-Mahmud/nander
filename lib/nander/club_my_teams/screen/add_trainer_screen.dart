@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../controller/add_trainer_controller.dart';
 
 class ClubAddTrainerScreen extends StatefulWidget {
@@ -94,7 +95,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(_isInviteMode ? 'Invite Trainer' : 'Add Trainer',
+        title: Text(_isInviteMode ? 'Invite Trainer'.tr : 'Add Trainer'.tr,
             style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
       ),
       body: ListenableBuilder(
@@ -119,9 +120,9 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
                     onChanged: _controller.updateSearch, // ✅ Just filter locally now
                     autofocus: true,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      hintText: 'Search trainer...',
-                      hintStyle: TextStyle(color: Color(0xFF8892B0)),
+                    decoration: InputDecoration(
+                      hintText: 'Search trainer...'.tr,
+                      hintStyle: const TextStyle(color: Color(0xFF8892B0)),
                       prefixIcon: Icon(Icons.search, color: Color(0xFF8892B0)),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -174,7 +175,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
                                     backgroundColor: const Color(0xFF3B82F6), foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(horizontal: 20),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                                child: const Text('Request'),
+                                child: Text('Request'.tr),
                               ),
                             )
                           ],
@@ -192,11 +193,11 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
                     Center(
                       child: Column(
                         children: [
-                          const Text('Trainer not found!',
-                              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                          Text('Trainer not found!'.tr,
+                              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
-                          const Text('Search again or invite manually',
-                              style: TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
+                          Text('Search again or invite manually'.tr,
+                              style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
                         ],
                       ),
                     ),
@@ -221,11 +222,11 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Can't Find Your Trainer?",
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text("Can't Find Your Trainer?".tr,
+            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        const Text("Search again with correct name or email",
-            style: TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
+        Text("Search again with correct name or email".tr,
+            style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14)),
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity, height: 50,
@@ -234,7 +235,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6), foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            child: const Text('Invite the Trainer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            child: Text('Invite the Trainer'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ),
         ),
       ],
@@ -247,13 +248,13 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Trainer Name', style: TextStyle(color: Colors.white, fontSize: 16)),
+          Text('Trainer Name'.tr, style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(height: 8),
-          _buildInputField(_nameCtrl, 'Full Name'),
+          _buildInputField(_nameCtrl, 'Full Name'.tr),
           const SizedBox(height: 20),
-          const Text('Trainer Email', style: TextStyle(color: Colors.white, fontSize: 16)),
+          Text('Trainer Email'.tr, style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(height: 8),
-          _buildInputField(_emailCtrl, 'Enter Trainer Email', isEmail: true),
+          _buildInputField(_emailCtrl, 'Enter Trainer Email'.tr, isEmail: true),
           const SizedBox(height: 30),
           SizedBox(
             width: double.infinity, height: 50,
@@ -264,7 +265,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
               child: _isSubmitting
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Save', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  : Text('Save'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
           ),
         ],

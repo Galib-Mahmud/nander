@@ -119,18 +119,18 @@ class CustomDrawer extends StatelessWidget {
                       if (profileController.isClubAdmin)
                       _buildMenuItem(
                         icon: Icons.groups_outlined,
-                        label: 'My Teams',
+                        label: 'My Teams'.tr,
                         onTap: () => Get.toNamed(RouteName.clubMyTeam),
                       ),
                       if (profileController.isTrainer)
                       _buildMenuItem(
                         icon: Icons.sports_mma_outlined,
-                        label: 'Training',
+                        label: 'Training'.tr,
                         onTap: () => Get.toNamed(RouteName.scheduler),
                       ),
                       _buildMenuItem(
                         icon: Icons.chat_bubble_outline,
-                        label: 'Chats',
+                        label: 'Chats'.tr,
                         onTap: () => Get.toNamed(RouteName.chat),
                       ),
 
@@ -139,7 +139,7 @@ class CustomDrawer extends StatelessWidget {
                       if (profileController.isClubAdmin)
                         _buildMenuItem(
                           icon: Icons.account_balance_outlined,
-                          label: 'Club Network',
+                          label: 'Club Network'.tr,
                           onTap: () => Get.toNamed(RouteName.topClubs),
                         ),
                     ],
@@ -173,9 +173,9 @@ class CustomDrawer extends StatelessWidget {
                         size: 20.w,
                       ),
                       SizedBox(width: 12.w),
-                      const Text(
-                        'Log Out',
-                        style: TextStyle(
+                      Text(
+                        'Log Out'.tr,
+                        style: const TextStyle(
                           color: Color(0xFFFF5252),
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

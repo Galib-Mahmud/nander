@@ -67,7 +67,7 @@ class _ClubScreenState extends State<ClubScreen> {
         titleSpacing: 0,
         centerTitle: false,
         title: Text(
-          'Club',
+          'Club'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -99,7 +99,7 @@ class _ClubScreenState extends State<ClubScreen> {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          'My Clubs',
+                          'My Clubs'.tr,
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -130,7 +130,7 @@ class _ClubScreenState extends State<ClubScreen> {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          "Club's Request",
+                          "Club's Request".tr,
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -183,7 +183,7 @@ class _ClubScreenState extends State<ClubScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Join New Club',
+                        'Join New Club'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.sp,
@@ -216,7 +216,7 @@ class _ClubScreenState extends State<ClubScreen> {
       return _buildStateMessage(
         isLoading:
         controller.isLoading.value || controller.isLoadingMyClubs.value,
-        message: 'No clubs joined yet',
+        message: 'No clubs joined yet'.tr,
       );
     }
 
@@ -269,7 +269,7 @@ class _ClubScreenState extends State<ClubScreen> {
       return _buildStateMessage(
         isLoading:
         controller.isLoading.value || controller.isLoadingRequests.value,
-        message: 'No club requests',
+        message: 'No club requests'.tr,
       );
     }
 
@@ -332,7 +332,7 @@ class _ClubScreenState extends State<ClubScreen> {
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Text(
-                          'Approve',
+                          'Approve'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13.sp,
@@ -355,7 +355,7 @@ class _ClubScreenState extends State<ClubScreen> {
                           border: Border.all(color: const Color(0xFF374151)),
                         ),
                         child: Text(
-                          'Decline',
+                          'Decline'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13.sp,
@@ -378,7 +378,7 @@ class _ClubScreenState extends State<ClubScreen> {
                     border: Border.all(color: const Color(0xFF374151)),
                   ),
                   child: Text(
-                    'Pending Request',
+                    'Pending Request'.tr,
                     style: TextStyle(
                       color: const Color(0xFF8B95A5),
                       fontSize: 12.sp,

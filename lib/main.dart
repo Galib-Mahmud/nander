@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nander/nander/routes/app_route.dart';
 import 'package:nander/nander/routes/route_name.dart';
-import 'package:nander/nander/core/local_storage/user_info.dart'; // adjust to your actual path
+import 'package:nander/nander/core/local_storage/user_info.dart';
+import 'package:nander/nander/core/localization/app_translations.dart';
+import 'package:nander/nander/core/localization/localization_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,14 +22,25 @@ void main() async {
   if (isAuthenticated) {
     role = await UserInfo.getUserRole();
   }
+  final initialLocale = await LocalizationService.getInitialLocale();
 
-  runApp(MyApp(isAuthenticated: isAuthenticated, role: role));
+  runApp(MyApp(
+    isAuthenticated: isAuthenticated,
+    role: role,
+    initialLocale: initialLocale,
+  ));
 }
 
 class MyApp extends StatefulWidget {
   final bool isAuthenticated;
   final String? role;
-  const MyApp({super.key, this.isAuthenticated = false, this.role});
+  final Locale initialLocale;
+  const MyApp({
+    super.key,
+    this.isAuthenticated = false,
+    this.role,
+    this.initialLocale = AppTranslations.englishLocale,
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -48,6 +61,9 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
+          translations: AppTranslations(),
+          locale: widget.initialLocale,
+          fallbackLocale: AppTranslations.fallbackLocale,
           initialRoute: initialRoute,
           getPages: AppRoute.pages,
           theme: ThemeData(

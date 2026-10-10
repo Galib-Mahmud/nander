@@ -9,6 +9,18 @@ class UserInfo {
   static const _kPendingEmail = 'pending_signup_email';
   static const _kResetEmail  = 'reset_email';
   static const _kResetOtp    = 'reset_otp';
+  static const _kLanguage    = 'app_language';
+
+  // ─── Language ──────────────────────────────────────────────────
+  static Future<void> setLanguage(String langCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kLanguage, langCode);
+  }
+
+  static Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kLanguage) ?? 'en';
+  }
 
   // ─── Access Token ──────────────────────────────────────────────
   static Future<void> setAccessToken(String token) async {

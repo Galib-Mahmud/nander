@@ -60,7 +60,7 @@ class TrainerTeam extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Team',
+                    'Team'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24.sp,
@@ -101,8 +101,8 @@ class TrainerTeam extends StatelessWidget {
     if (controller.teams.isEmpty) {
       return _scrollableMessage(
         icon: Icons.groups_outlined,
-        title: 'No teams found',
-        subtitle: 'Teams you are part of will appear here',
+        title: 'No teams found'.tr,
+        subtitle: 'Teams you are part of will appear here'.tr,
       );
     }
 
@@ -191,7 +191,7 @@ class TrainerTeam extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Progress',
+                'Progress'.tr,
                 style: TextStyle(
                   color: const Color(0xFF8B95A5),
                   fontSize: 14.sp,

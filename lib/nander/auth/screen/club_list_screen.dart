@@ -72,20 +72,20 @@ class _ClubListScreenState extends State<ClubListScreen> {
                   }),
                 ),
                 const SizedBox(height: 8),
-                const Text('Step 3 of 3',
-                    style: TextStyle(color: Colors.white54, fontSize: 14)),
+                Text('Step 3 of 3'.tr,
+                    style: const TextStyle(color: Colors.white54, fontSize: 14)),
                 const SizedBox(height: 24),
-                const Text(
-                  'Select your Club!',
-                  style: TextStyle(
+                Text(
+                  'Select your Club!'.tr,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  "Pick your club, or skip this step — you can join one later.",
-                  style: TextStyle(color: Colors.white54, fontSize: 15),
+                Text(
+                  "Pick your club, or skip this step — you can join one later.".tr,
+                  style: const TextStyle(color: Colors.white54, fontSize: 15),
                 ),
                 const SizedBox(height: 24),
 
@@ -107,10 +107,10 @@ class _ClubListScreenState extends State<ClubListScreen> {
                           controller: searchController,
                           onChanged: _onSearchChanged,
                           style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Search clubs...',
-                            hintStyle: TextStyle(color: Colors.white38),
+                            hintText: 'Search clubs...'.tr,
+                            hintStyle: const TextStyle(color: Colors.white38),
                             isDense: true,
                           ),
                         ),
@@ -143,8 +143,8 @@ class _ClubListScreenState extends State<ClubListScreen> {
                         child: Center(
                           child: Text(
                             searchController.text.trim().isNotEmpty
-                                ? 'No clubs found'
-                                : 'No clubs available yet',
+                                ? 'No clubs found'.tr
+                                : 'No clubs available yet'.tr,
                             style: const TextStyle(
                                 color: Colors.white38, fontSize: 14),
                           ),
@@ -266,9 +266,9 @@ class _ClubListScreenState extends State<ClubListScreen> {
                               color: const Color(0xFF2A3550), width: 1),
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        child: const Center(
-                          child: Text('Back',
-                              style: TextStyle(
+                        child: Center(
+                          child: Text('Back'.tr,
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500)),
@@ -285,16 +285,16 @@ class _ClubListScreenState extends State<ClubListScreen> {
                             color: const Color(0xFF4D94FF),
                             borderRadius: BorderRadius.circular(28),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('Continue',
-                                  style: TextStyle(
+                              Text('Continue'.tr,
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
-                              SizedBox(width: 8),
-                              Icon(Icons.arrow_forward,
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward,
                                   color: Colors.white, size: 20),
                             ],
                           ),
