@@ -28,7 +28,7 @@ class ClubScreen extends StatelessWidget {
         titleSpacing: 0,
         centerTitle: false,
         title: Text(
-          'Club',
+          'Club'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -60,7 +60,7 @@ class ClubScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          'My Clubs',
+                          'My Clubs'.tr,
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -91,7 +91,7 @@ class ClubScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          "Club's Request",
+                          "Club's Request".tr,
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -139,7 +139,7 @@ class ClubScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Join New Club',
+                        'Join New Club'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.sp,
@@ -171,7 +171,7 @@ class ClubScreen extends StatelessWidget {
     if (controller.myClubs.isEmpty) {
       return Center(
         child: Text(
-          'No clubs joined yet',
+          'No clubs joined yet'.tr,
           style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
         ),
       );
@@ -224,7 +224,7 @@ class ClubScreen extends StatelessWidget {
     if (controller.requests.isEmpty) {
       return Center(
         child: Text(
-          'No club requests',
+          'No club requests'.tr,
           style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
         ),
       );
@@ -288,7 +288,7 @@ class ClubScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Text(
-                          'Approve',
+                          'Approve'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13.sp,
@@ -311,7 +311,7 @@ class ClubScreen extends StatelessWidget {
                           border: Border.all(color: const Color(0xFF374151)),
                         ),
                         child: Text(
-                          'Decline',
+                          'Decline'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13.sp,
@@ -334,7 +334,7 @@ class ClubScreen extends StatelessWidget {
                     border: Border.all(color: const Color(0xFF374151)),
                   ),
                   child: Text(
-                    'Pending Request',
+                    'Pending Request'.tr,
                     style: TextStyle(
                       color: const Color(0xFF8B95A5),
                       fontSize: 12.sp,

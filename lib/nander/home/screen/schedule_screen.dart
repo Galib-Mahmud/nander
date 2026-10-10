@@ -34,9 +34,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: const Text(
-          'Schedule',
-          style: TextStyle(
+        title: Text(
+          'Schedule'.tr,
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -186,7 +186,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'Upcoming',
+                                'Upcoming'.tr,
                                 style: TextStyle(
                                   color: isUpcomingSelected
                                       ? Colors.white
@@ -215,7 +215,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'Completed',
+                                'Completed'.tr,
                                 style: TextStyle(
                                   color: !isUpcomingSelected
                                       ? Colors.white
@@ -333,8 +333,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             SizedBox(height: 16.h),
             Text(
               isUpcomingSelected
-                  ? 'No upcoming training sessions'
-                  : 'No completed sessions yet',
+                  ? 'No upcoming training sessions'.tr
+                  : 'No completed sessions yet'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16.sp,
@@ -344,8 +344,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             SizedBox(height: 8.h),
             Text(
               isUpcomingSelected
-                  ? 'Create a training plan with AI to schedule your next session.'
-                  : 'Completed training sessions will appear here.',
+                  ? 'Create a training plan with AI to schedule your next session.'.tr
+                  : 'Completed training sessions will appear here.'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.5),
@@ -357,7 +357,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ElevatedButton.icon(
                 onPressed: () => Get.toNamed(RouteName.scheduler),
                 icon: const Icon(Icons.auto_awesome, size: 18),
-                label: const Text('Create Training Plan'),
+                label: Text('Create Training Plan'.tr),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4D94FF),
                   foregroundColor: Colors.white,
@@ -441,7 +441,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     color: Colors.white.withValues(alpha: 0.5), size: 14.w),
                 SizedBox(width: 4.w),
                 Text(
-                  '${session.durationMinutes} min',
+                  '${session.durationMinutes} ${'min'.tr}',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13.sp,
@@ -470,7 +470,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     color: Colors.white.withValues(alpha: 0.5), size: 14.w),
                 SizedBox(width: 4.w),
                 Text(
-                  '${session.exercises.length} exercises',
+                  '${session.exercises.length} ${'exercises'.tr}',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13.sp,

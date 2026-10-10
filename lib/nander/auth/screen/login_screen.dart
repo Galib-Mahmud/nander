@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : null,
                           ),
                           child: Center(
-                            child: Text('Login',
+                            child: Text('Login'.tr,
                                 style: TextStyle(
                                   color:
                                       isLogin ? Colors.white : Colors.white54,
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : null,
                           ),
                           child: Center(
-                            child: Text('Sign Up',
+                            child: Text('Sign Up'.tr,
                                 style: TextStyle(
                                   color:
                                       !isLogin ? Colors.white : Colors.white54,
@@ -120,8 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
 
               if (!isLogin) ...[
-                const Text('Full Name',
-                    style: TextStyle(
+                Text('Full Name'.tr,
+                    style: const TextStyle(
                         color: Color(0xFF8B95A5),
                         fontSize: 16,
                         fontWeight: FontWeight.w500)),
@@ -135,21 +135,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextField(
                     controller: controller.nameController,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                      hintText: 'Your full name',
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                      hintText: 'Your full name'.tr,
                       hintStyle:
-                          TextStyle(color: Color(0xFF8B95A5), fontSize: 16),
+                          const TextStyle(color: Color(0xFF8B95A5), fontSize: 16),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
               ],
 
-              const Text('Email Address',
-                  style: TextStyle(
+              Text('Email Address'.tr,
+                  style: const TextStyle(
                       color: Color(0xFF8B95A5),
                       fontSize: 16,
                       fontWeight: FontWeight.w500)),
@@ -176,8 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
 
-              const Text('Password',
-                  style: TextStyle(
+              Text('Password'.tr,
+                  style: const TextStyle(
                       color: Color(0xFF8B95A5),
                       fontSize: 16,
                       fontWeight: FontWeight.w500)),
@@ -220,8 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => Get.toNamed(RouteName.forgotPassword),
-                      child: const Text('Forgot Password?',
-                          style: TextStyle(
+                      child: Text('Forgot Password?'.tr,
+                          style: const TextStyle(
                               color: Color(0xFF4D94FF),
                               fontSize: 14,
                               fontWeight: FontWeight.w500)),
@@ -232,8 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
               if (!isLogin) ...[
                 const SizedBox(height: 20),
-                const Text('Re Type Password',
-                    style: TextStyle(
+                Text('Re Type Password'.tr,
+                    style: const TextStyle(
                         color: Color(0xFF8B95A5),
                         fontSize: 16,
                         fontWeight: FontWeight.w500)),
@@ -268,8 +268,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                // ✅ Role chip removed — role is now selected earlier in
-                // RoleSelectionScreen and carried here via AuthController.role
               ],
 
               const SizedBox(height: 30),
@@ -309,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : Text(
-                              isLogin ? 'Login' : 'Sign up',
+                              isLogin ? 'Login'.tr : 'Sign up'.tr,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
@@ -323,9 +321,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
               if (!isLogin) ...[
                 const SizedBox(height: 20),
-                const Text(
-                  'By clicking the "sign up" button, you accept the terms of the Privacy Policy.',
-                  style: TextStyle(
+                Text(
+                  'By clicking the "sign up" button, you accept the terms of the Privacy Policy.'.tr,
+                  style: const TextStyle(
                       color: Color(0xFF8B95A5),
                       fontSize: 14,
                       fontStyle: FontStyle.italic,
@@ -344,11 +342,11 @@ class _LoginScreenState extends State<LoginScreen> {
       AlertDialog(
         backgroundColor: const Color(0xFF1A2236),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Role Not Selected',
-            style: TextStyle(color: Colors.white)),
-        content: const Text(
-          "We couldn't find your role. Please go back and choose whether you're a Club Administrator or a Trainer before signing up.",
-          style: TextStyle(color: Color(0xFF8B95A5)),
+        title: Text('Role Not Selected'.tr,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(
+          "We couldn't find your role. Please go back and choose whether you're a Club Administrator or a Trainer before signing up.".tr,
+          style: const TextStyle(color: Color(0xFF8B95A5)),
         ),
         actions: [
           TextButton(
@@ -356,8 +354,8 @@ class _LoginScreenState extends State<LoginScreen> {
               Get.back(); // close dialog
               Get.offAllNamed(RouteName.wellcome1); // restart onboarding
             },
-            child: const Text('Start Over',
-                style: TextStyle(
+            child: Text('Start Over'.tr,
+                style: const TextStyle(
                     color: Color(0xFF4D94FF), fontWeight: FontWeight.w600)),
           ),
         ],

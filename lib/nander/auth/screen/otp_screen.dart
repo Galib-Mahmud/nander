@@ -58,14 +58,14 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 60),
-              const Text('Enter Your OTP',
-                  style: TextStyle(
+              Text('Enter Your OTP'.tr,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 28,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 30),
-              const Text('Enter Code',
-                  style: TextStyle(
+              Text('Enter Code'.tr,
+                  style: const TextStyle(
                       color: Color(0xFF8B95A5),
                       fontSize: 16,
                       fontWeight: FontWeight.w500)),
@@ -124,8 +124,8 @@ class _OtpScreenState extends State<OtpScreen> {
                       onTap: controller.isLoading.value
                           ? null
                           : controller.resendCode,
-                      child: const Text('Resend code',
-                          style: TextStyle(
+                      child: Text('Resend code'.tr,
+                          style: const TextStyle(
                               color: Color(0xFF4D94FF),
                               fontSize: 14,
                               fontWeight: FontWeight.w500)),
@@ -149,8 +149,8 @@ class _OtpScreenState extends State<OtpScreen> {
                                 height: 22,
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white))
-                            : const Text('Submit',
-                                style: TextStyle(
+                            : Text('Submit'.tr,
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 17,
                                     fontWeight: FontWeight.w600)),

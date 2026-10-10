@@ -34,12 +34,12 @@ class WelcomeScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 40),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(
-                    'Elevate Your Hockey Training',
+                    'Elevate Your Hockey Training'.tr,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -48,12 +48,12 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(
-                    'Plan smarter training sessions, develop your teams, and manage your hockey club from one powerful platform.',
+                    'Plan smarter training sessions, develop your teams, and manage your hockey club from one powerful platform.'.tr,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 15,
                       height: 1.4,
@@ -73,19 +73,19 @@ class WelcomeScreen extends StatelessWidget {
                         color: const Color(0xFF4D94FF),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Get Started',
-                            style: TextStyle(
+                            'Get Started'.tr,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward,
+                          const SizedBox(width: 8),
+                          const Icon(Icons.arrow_forward,
                               color: Colors.white, size: 20),
                         ],
                       ),
@@ -95,11 +95,11 @@ class WelcomeScreen extends StatelessWidget {
 
                 GestureDetector(
                   onTap: () => Get.toNamed(RouteName.login),
-                  child: const Padding(
-                    padding: EdgeInsets.only(bottom: 30),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
                     child: Text(
-                      'I Already Have an Account',
-                      style: TextStyle(
+                      'I Already Have an Account'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
                         decoration: TextDecoration.underline,

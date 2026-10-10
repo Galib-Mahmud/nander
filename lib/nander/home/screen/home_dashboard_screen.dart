@@ -73,7 +73,7 @@ class HomeDashboardScreen extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Today',
+                              Text('Today'.tr,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 24.sp,
@@ -81,8 +81,8 @@ class HomeDashboardScreen extends StatelessWidget {
                               SizedBox(height: 2.h),
                               Text(
                                   isAdmin
-                                      ? 'Club Admin Dashboard'
-                                      : 'Trainer Dashboard',
+                                      ? 'Club Admin Dashboard'.tr
+                                      : 'Trainer Dashboard'.tr,
                                   style: TextStyle(
                                       color:
                                           Colors.white.withValues(alpha: 0.6),
@@ -164,17 +164,17 @@ class HomeDashboardScreen extends StatelessWidget {
                     children: [
                       Expanded(
                           child: _buildStatCard(
-                              title: 'Total Sessions',
+                              title: 'Total Sessions'.tr,
                               value: data?.totalSession.toString() ?? '0',
                               sub: isAdmin && data?.totalTrainer != null
-                                  ? '${data!.totalTrainer} trainers'
-                                  : 'All time')),
+                                  ? '${data!.totalTrainer} ${'trainers'.tr}'
+                                  : 'All time'.tr)),
                       SizedBox(width: 12.w),
                       Expanded(
                           child: _buildStatCard(
-                              title: 'Weekly Progress',
+                              title: 'Weekly Progress'.tr,
                               value: '${data?.weeklyProgress.toInt() ?? 0}%',
-                              sub: 'This week',
+                              sub: 'This week'.tr,
                               isProgress: true,
                               progressValue:
                                   (data?.weeklyProgress.toDouble() ?? 0) /
@@ -241,9 +241,9 @@ class HomeDashboardScreen extends StatelessWidget {
                       _buildBadge(
                           session.displayFocus, const Color(0xFF4D94FF)),
                       if (session.isCompleted)
-                        _buildBadge('Completed', const Color(0xFF10B981))
+                        _buildBadge('Completed'.tr, const Color(0xFF10B981))
                       else
-                        _buildBadge('Active', const Color(0xFFFFB800)),
+                        _buildBadge('Active'.tr, const Color(0xFFFFB800)),
                     ]),
                 SizedBox(height: 12.h),
                 Text(
@@ -258,7 +258,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   Icon(Icons.access_time,
                       color: Colors.white.withValues(alpha: 0.7), size: 16.w),
                   SizedBox(width: 6.w),
-                  Text('${session.durationMinutes} min',
+                  Text('${session.durationMinutes} ${'min'.tr}',
                       style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 14.sp)),
@@ -279,7 +279,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   Icon(Icons.fitness_center_outlined,
                       color: Colors.white.withValues(alpha: 0.7), size: 16.w),
                   SizedBox(width: 6.w),
-                  Text('${session.exercises.length} exercises',
+                  Text('${session.exercises.length} ${'exercises'.tr}',
                       style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 14.sp)),
@@ -299,8 +299,8 @@ class HomeDashboardScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: const Color(0xFF4D94FF),
                         borderRadius: BorderRadius.circular(10.r)),
-                    child: const Text('View Session',
-                        style: TextStyle(
+                    child: Text('View Session'.tr,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
                             fontWeight: FontWeight.w600))),
@@ -381,14 +381,14 @@ class HomeDashboardScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Announcements',
+            Text('Announcements'.tr,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600)),
             GestureDetector(
               onTap: () => Get.toNamed(RouteName.announcements),
-              child: Text('All',
+              child: Text('All'.tr,
                   style: TextStyle(
                       color: const Color(0xFF4D94FF),
                       fontSize: 14.sp,
@@ -449,12 +449,12 @@ class HomeDashboardScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(isAdmin ? 'Club Readiness' : 'Team Readiness',
+            Text(isAdmin ? 'Club Readiness'.tr : 'Team Readiness'.tr,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600)),
-            Text('All',
+            Text('All'.tr,
                 style: TextStyle(
                     color: const Color(0xFF4D94FF),
                     fontSize: 14.sp,
@@ -560,7 +560,7 @@ class HomeDashboardScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Recent Sessions',
+            Text('Recent Sessions'.tr,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.sp,
@@ -569,7 +569,7 @@ class HomeDashboardScreen extends StatelessWidget {
               onTap: () =>
                   Get.to(() => const ScheduleScreen(activeTabIndex: 0)),
               child: Text(
-                'View All',
+                'View All'.tr,
               ),
             ),
           ]),
@@ -625,7 +625,7 @@ class HomeDashboardScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis),
                 SizedBox(height: 4.h),
                 Row(children: [
-                  Text('${session.durationMinutes} min',
+                  Text('${session.durationMinutes} ${'min'.tr}',
                       style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.5),
                           fontSize: 12.sp)),
@@ -648,11 +648,11 @@ class HomeDashboardScreen extends StatelessWidget {
             _buildMiniTag(session.displayFocus),
             SizedBox(height: 4.h),
             if (session.isCompleted)
-              Text('Done',
+              Text('Done'.tr,
                   style: TextStyle(
                       color: const Color(0xFF10B981), fontSize: 11.sp))
             else
-              Text('Pending',
+              Text('Pending'.tr,
                   style: TextStyle(
                       color: const Color(0xFFFFB800), fontSize: 11.sp)),
           ]),
@@ -705,7 +705,7 @@ class HomeDashboardScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Create Training Plan',
+                    'Create Training Plan'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
@@ -714,7 +714,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Generate AI training sessions for your team',
+                    'Generate AI training sessions for your team'.tr,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 12.sp,
@@ -733,7 +733,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  'Start',
+                  'Start'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 13.sp,

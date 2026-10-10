@@ -9,6 +9,7 @@ import '../../core/local_storage/user_info.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../profile/screen/club_screen.dart';
 import '../../profile/screen/team_screen.dart';
+import '../../core/localization/localization_service.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -59,9 +60,9 @@ class MoreScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'More',
-                    style: TextStyle(
+                  Text(
+                    'More'.tr,
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
@@ -73,8 +74,8 @@ class MoreScreen extends StatelessWidget {
                         controller.name.value.isNotEmpty
                             ? controller.name.value
                             : (controller.isLoading.value
-                                ? 'Loading...'
-                                : 'Profile'),
+                                ? 'Loading...'.tr
+                                : 'Profile'.tr),
                         style: TextStyle(
                             color: const Color(0xFF8B95A5), fontSize: 13.sp),
                         overflow: TextOverflow.ellipsis,
@@ -246,21 +247,21 @@ class MoreScreen extends StatelessWidget {
 
                 SizedBox(height: 30.h),
 
-                const Text(
-                  'MY DEVICE · ACCOUNT',
-                  style: TextStyle(
+                Text(
+                  'MY DEVICE · ACCOUNT'.tr,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5),
                 ),
                 SizedBox(height: 16.h),
-                _buildMenuItem('Profile Update', Icons.chevron_right,
+                _buildMenuItem('Profile Update'.tr, Icons.chevron_right,
                     onTap: () {
                   Get.toNamed(RouteName.updateprofile);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Reset Password', Icons.chevron_right,
+                _buildMenuItem('Reset Password'.tr, Icons.chevron_right,
                     onTap: () {
                   final auth = AuthController.to;
                   auth.resetOtpVerified.value = false;
@@ -270,16 +271,21 @@ class MoreScreen extends StatelessWidget {
                   Get.toNamed(RouteName.forgotPassword);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Language', Icons.chevron_right, onTap: () {}),
+                _buildMenuItem(
+                  'Language'.tr,
+                  Icons.chevron_right,
+                  trailingText: LocalizationService.currentLanguageName,
+                  onTap: () => _showLanguageBottomSheet(context),
+                ),
                 SizedBox(height: 12.h),
 
                 // Club and Team logic for TRAINER
                 if (controller.role.value == 'TRAINER') ...[
-                  _buildMenuItem('Club', Icons.chevron_right, onTap: () {
+                  _buildMenuItem('Club'.tr, Icons.chevron_right, onTap: () {
                     Get.to(() => const ClubScreen());
                   }),
                   SizedBox(height: 12.h),
-                  _buildMenuItem('Team', Icons.chevron_right, onTap: () {
+                  _buildMenuItem('Team'.tr, Icons.chevron_right, onTap: () {
                     Get.to(() => const TeamScreen());
                   }),
                   SizedBox(height: 12.h),
@@ -287,7 +293,7 @@ class MoreScreen extends StatelessWidget {
 
                 // Trainers list for CLUB_ADMIN
                 if (controller.role.value == 'CLUB_ADMIN') ...[
-                  _buildMenuItem('Trainers', Icons.chevron_right, onTap: () {
+                  _buildMenuItem('Trainers'.tr, Icons.chevron_right, onTap: () {
                     Get.toNamed(RouteName.trainers);
                   }),
                   SizedBox(height: 12.h),
@@ -295,30 +301,30 @@ class MoreScreen extends StatelessWidget {
 
                 SizedBox(height: 30.h),
 
-                const Text(
-                  'PRIVACY',
-                  style: TextStyle(
+                Text(
+                  'PRIVACY'.tr,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5),
                 ),
                 SizedBox(height: 16.h),
-                _buildMenuItem('Terms & Conditions', Icons.chevron_right,
+                _buildMenuItem('Terms & Conditions'.tr, Icons.chevron_right,
                     onTap: () {
                   Get.toNamed(RouteName.terms);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Privacy Policy', Icons.chevron_right,
+                _buildMenuItem('Privacy Policy'.tr, Icons.chevron_right,
                     onTap: () {
                   Get.toNamed(RouteName.privacy);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem("FAQ's", Icons.chevron_right, onTap: () {
+                _buildMenuItem("FAQ's".tr, Icons.chevron_right, onTap: () {
                   Get.toNamed(RouteName.faq);
                 }),
                 SizedBox(height: 12.h),
-                _buildMenuItem('Delete Account', Icons.chevron_right,
+                _buildMenuItem('Delete Account'.tr, Icons.chevron_right,
                     isDestructive: true, onTap: () {
                   controller.requestDeleteAccount();
                 }),
@@ -344,9 +350,9 @@ class MoreScreen extends StatelessWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.w),
-                          child: const Text(
-                            'Log Out',
-                            style: TextStyle(
+                          child: Text(
+                            'Log Out'.tr,
+                            style: const TextStyle(
                                 color: Color(0xFFEF4444),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold),
@@ -371,10 +377,135 @@ class MoreScreen extends StatelessWidget {
     );
   }
 
+  void _showLanguageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF111827),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Select Language'.tr,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white70),
+                      onPressed: () => Get.back(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                _buildLanguageOption(
+                  title: 'English',
+                  subtitle: 'English',
+                  isSelected: !LocalizationService.isDutch,
+                  onTap: () async {
+                    await LocalizationService.changeLanguage(
+                        LocalizationService.englishCode);
+                    Get.back();
+                  },
+                ),
+                SizedBox(height: 12.h),
+                _buildLanguageOption(
+                  title: 'Nederlands',
+                  subtitle: 'Dutch',
+                  isSelected: LocalizationService.isDutch,
+                  onTap: () async {
+                    await LocalizationService.changeLanguage(
+                        LocalizationService.dutchCode);
+                    Get.back();
+                  },
+                ),
+                SizedBox(height: 16.h),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF4D94FF).withValues(alpha: 0.12)
+              : const Color(0xFF1A2236),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color:
+                isSelected ? const Color(0xFF4D94FF) : const Color(0xFF2A3550),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: const Color(0xFF8B95A5),
+                    fontSize: 13.sp,
+                  ),
+                ),
+              ],
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: Color(0xFF4D94FF),
+              )
+            else
+              const Icon(
+                Icons.radio_button_unchecked,
+                color: Color(0xFF8B95A5),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMenuItem(
     String title,
     IconData icon, {
     bool isDestructive = false,
+    String? trailingText,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -397,12 +528,28 @@ class MoreScreen extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Icon(
-              icon,
-              color: isDestructive
-                  ? const Color(0xFFEF4444)
-                  : Colors.white.withValues(alpha: 0.7),
-              size: 20.w,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (trailingText != null) ...[
+                  Text(
+                    trailingText,
+                    style: TextStyle(
+                      color: const Color(0xFF8B95A5),
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                ],
+                Icon(
+                  icon,
+                  color: isDestructive
+                      ? const Color(0xFFEF4444)
+                      : Colors.white.withValues(alpha: 0.7),
+                  size: 20.w,
+                ),
+              ],
             ),
           ],
         ),

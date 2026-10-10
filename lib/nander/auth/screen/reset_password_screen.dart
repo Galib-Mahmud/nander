@@ -27,14 +27,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 40),
               Center(child: Image.asset('assets/images/logo.png', width: 120, fit: BoxFit.contain)),
               const SizedBox(height: 50),
-              const Text('Reset Your Password', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+              Text('Reset Your Password'.tr, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
 
               // ─── Step indicator text ───────────────────────────
               Obx(() => Text(
                 controller.resetOtpVerified.value
-                    ? 'Enter your new password below.'
-                    : "Enter your email — we'll send a code to confirm the change.",
+                    ? 'Enter your new password below.'.tr
+                    : "Enter your email — we'll send a code to confirm the change.".tr,
                 style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 14, height: 1.4),
               )),
               const SizedBox(height: 20),
@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Email Address', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+                    Text('Email Address'.tr, style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(
@@ -76,7 +76,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Password', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+                    Text('Password'.tr, style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(color: const Color(0xFF1A2236), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF2A3550))),
@@ -98,7 +98,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    const Text('Re Type Password', style: TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
+                    Text('Re Type Password'.tr, style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 16, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(color: const Color(0xFF1A2236), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF2A3550))),
@@ -139,7 +139,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: controller.isLoading.value
                         ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                         : Text(
-                      controller.resetOtpVerified.value ? 'Confirm' : 'Send Code',
+                      controller.resetOtpVerified.value ? 'Confirm'.tr : 'Send Code'.tr,
                       style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                   ),

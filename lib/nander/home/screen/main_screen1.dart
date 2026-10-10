@@ -7,7 +7,6 @@ import '../../widget/screen/custom_drawer.dart';
 import 'home_dashboard_screen.dart';
 import 'more_screen.dart';
 import 'schedule_screen.dart';
-import 'team_screen.dart';
 
 class MainScreen1 extends StatefulWidget {
   const MainScreen1({super.key, this.initialIndex = 0});
@@ -177,25 +176,25 @@ class _MainScreen1State extends State<MainScreen1>
                 SizedBox(width: 35.h),
                 _buildNavItem(
                   iconPath: 'assets/images/home.png',
-                  label: 'Home',
+                  label: 'Home'.tr,
                   index: 0,
                 ),
                 SizedBox(width: 30.h),
                 _buildNavItem(
                   iconPath: 'assets/images/schedule.png',
-                  label: 'Schedule',
+                  label: 'Schedule'.tr,
                   index: 1,
                 ),
                 SizedBox(width: 30.w),
                 _buildNavItem(
                   iconPath: 'assets/images/team.png',
-                  label: 'Team',
+                  label: 'Team'.tr,
                   index: 2,
                 ),
                 SizedBox(width: 30.h),
                 _buildNavItem(
                   iconPath: 'assets/images/more.png',
-                  label: 'More',
+                  label: 'More'.tr,
                   index: 3,
                 ),
               ],

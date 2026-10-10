@@ -44,20 +44,20 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                 }),
               ),
               const SizedBox(height: 8),
-              const Text('Step 2 of 3',
-                  style: TextStyle(color: Colors.white54, fontSize: 14)),
+              Text('Step 2 of 3'.tr,
+                  style: const TextStyle(color: Colors.white54, fontSize: 14)),
               const SizedBox(height: 24),
-              const Text(
-                'How will you use Train Up?',
-                style: TextStyle(
+              Text(
+                'How will you use Train Up?'.tr,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 32,
                     fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Select your primary role to customize your dashboard.',
-                style: TextStyle(color: Colors.white54, fontSize: 15),
+              Text(
+                'Select your primary role to customize your dashboard.'.tr,
+                style: const TextStyle(color: Colors.white54, fontSize: 15),
               ),
               const SizedBox(height: 24),
 
@@ -79,19 +79,19 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       width: 1,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Club Administrator',
-                          style: TextStyle(
+                      Text('Club Administrator'.tr,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600)),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                          'Manage your club, teams, trainers, schedules, and performance.',
+                          'Manage your club, teams, trainers, schedules, and performance.'.tr,
                           style:
-                              TextStyle(color: Colors.white54, fontSize: 14)),
+                              const TextStyle(color: Colors.white54, fontSize: 14)),
                     ],
                   ),
                 ),
@@ -116,19 +116,19 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       width: 1,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Trainer',
-                          style: TextStyle(
+                      Text('Trainer'.tr,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600)),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                          'Create training plans, track player progress, and run sessions.',
+                          'Create training plans, track player progress, and run sessions.'.tr,
                           style:
-                              TextStyle(color: Colors.white54, fontSize: 14)),
+                              const TextStyle(color: Colors.white54, fontSize: 14)),
                     ],
                   ),
                 ),
@@ -147,9 +147,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                             color: const Color(0xFF2A3550), width: 1),
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      child: const Center(
-                        child: Text('Back',
-                            style: TextStyle(
+                      child: Center(
+                        child: Text('Back'.tr,
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500)),
@@ -162,8 +162,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       onTap: () {
                         if (_selectedRole == null) {
                           Get.snackbar(
-                            'Selection Required',
-                            'Please select a role to continue',
+                            'Selection Required'.tr,
+                            'Please select a role to continue'.tr,
                             backgroundColor: const Color(0xFF1A2236),
                             colorText: Colors.white,
                             snackPosition: SnackPosition.BOTTOM,
@@ -192,16 +192,16 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                           color: const Color(0xFF4D94FF),
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Continue',
-                                style: TextStyle(
+                            Text('Continue'.tr,
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward,
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward,
                                 color: Colors.white, size: 20),
                           ],
                         ),
