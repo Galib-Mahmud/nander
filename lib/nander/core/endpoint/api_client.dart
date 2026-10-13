@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 import '../local_storage/user_info.dart';
+import '../localization/localization_service.dart';
 
 class ApiClient {
   final String baseUrl;
@@ -39,13 +40,13 @@ class ApiClient {
 
   // ─── GET ───────────────────────────────────────────────────────────
   Future<dynamic> get(
-    String endpoint, {
-    Map<String, String>? headers,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        Map<String, String>? headers,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final baseHeaders =
-        requiresAuth ? await _authHeaders() : {..._defaultHeaders};
+    requiresAuth ? await _authHeaders() : {..._defaultHeaders};
     final mergedHeaders = {...baseHeaders, ...?headers};
     _logRequest("GET", url, mergedHeaders, null);
     final response = await _httpClient.get(url, headers: mergedHeaders);
@@ -54,68 +55,68 @@ class ApiClient {
 
   // ─── POST ──────────────────────────────────────────────────────────
   Future<dynamic> post(
-    String endpoint, {
-    Map<String, String>? headers,
-    dynamic body,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        Map<String, String>? headers,
+        dynamic body,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final baseHeaders =
-        requiresAuth ? await _authHeaders() : {..._defaultHeaders};
+    requiresAuth ? await _authHeaders() : {..._defaultHeaders};
     final mergedHeaders = {...baseHeaders, ...?headers};
     final encodedBody = body != null ? jsonEncode(body) : null;
     _logRequest("POST", url, mergedHeaders, body);
     final response =
-        await _httpClient.post(url, headers: mergedHeaders, body: encodedBody);
+    await _httpClient.post(url, headers: mergedHeaders, body: encodedBody);
     return _handleResponse(response, url, method: "POST");
   }
 
   // ─── PUT ───────────────────────────────────────────────────────────
   Future<dynamic> put(
-    String endpoint, {
-    Map<String, String>? headers,
-    dynamic body,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        Map<String, String>? headers,
+        dynamic body,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final baseHeaders =
-        requiresAuth ? await _authHeaders() : {..._defaultHeaders};
+    requiresAuth ? await _authHeaders() : {..._defaultHeaders};
     final mergedHeaders = {...baseHeaders, ...?headers};
     final encodedBody = body != null ? jsonEncode(body) : null;
     _logRequest("PUT", url, mergedHeaders, body);
     final response =
-        await _httpClient.put(url, headers: mergedHeaders, body: encodedBody);
+    await _httpClient.put(url, headers: mergedHeaders, body: encodedBody);
     return _handleResponse(response, url, method: "PUT");
   }
 
   // ─── PATCH ─────────────────────────────────────────────────────────
   Future<dynamic> patch(
-    String endpoint, {
-    Map<String, String>? headers,
-    dynamic body,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        Map<String, String>? headers,
+        dynamic body,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final baseHeaders =
-        requiresAuth ? await _authHeaders() : {..._defaultHeaders};
+    requiresAuth ? await _authHeaders() : {..._defaultHeaders};
     final mergedHeaders = {...baseHeaders, ...?headers};
     final encodedBody = body != null ? jsonEncode(body) : null;
     _logRequest("PATCH", url, mergedHeaders, body);
     final response =
-        await _httpClient.patch(url, headers: mergedHeaders, body: encodedBody);
+    await _httpClient.patch(url, headers: mergedHeaders, body: encodedBody);
     return _handleResponse(response, url, method: "PATCH");
   }
 
   // ─── DELETE ────────────────────────────────────────────────────────
   Future<dynamic> delete(
-    String endpoint, {
-    Map<String, String>? headers,
-    dynamic body,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        Map<String, String>? headers,
+        dynamic body,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final baseHeaders =
-        requiresAuth ? await _authHeaders() : {..._defaultHeaders};
+    requiresAuth ? await _authHeaders() : {..._defaultHeaders};
     final mergedHeaders = {...baseHeaders, ...?headers};
     final encodedBody = body != null ? jsonEncode(body) : null;
     _logRequest("DELETE", url, mergedHeaders, body);
@@ -126,12 +127,12 @@ class ApiClient {
 
   // ─── MULTIPART ─────────────────────────────────────────────────────
   Future<dynamic> multipart(
-    String endpoint, {
-    required String method,
-    Map<String, String>? fields,
-    Map<String, File>? files,
-    bool requiresAuth = true,
-  }) async {
+      String endpoint, {
+        required String method,
+        Map<String, String>? fields,
+        Map<String, File>? files,
+        bool requiresAuth = true,
+      }) async {
     final url = Uri.parse(_buildUrl(endpoint));
     final token = requiresAuth ? await UserInfo.getAccessToken() : null;
     final request = http.MultipartRequest(method, url);
@@ -267,7 +268,7 @@ class ApiClient {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return null;
       try {
-        return jsonDecode(response.body);
+        return _localizeJson(jsonDecode(response.body));
       } catch (e) {
         throw HttpException(
           message: "Invalid JSON format",
@@ -294,7 +295,7 @@ class ApiClient {
       }
     } catch (_) {
       errorMessage =
-          response.body.isNotEmpty ? response.body : "Request failed";
+      response.body.isNotEmpty ? response.body : "Request failed";
     }
 
     switch (response.statusCode) {
@@ -321,6 +322,44 @@ class ApiClient {
             uri: url,
             body: response.body);
     }
+  }
+
+  // ─── Dutch localisation of response fields ─────────────────────────
+  // Backend sends both `name` and `dName`. When the app language is Dutch,
+  // put the `dX` value into `X`, so every model keeps reading `X` unchanged.
+  // Enum-like keys stay untouched (the app compares them, e.g. 'ATTACK');
+  // their Dutch label is still available under the original `dX` key.
+  static const Set<String> _keepRawKeys = {
+    'category',
+    'difficulty',
+    'fieldsize',
+    'focus',
+    'slot',
+    'status',
+    'role',
+    'period',
+    'perWeek',
+  };
+
+  dynamic _localizeJson(dynamic data) {
+    if (!LocalizationService.isDutch) return data;
+    if (data is List) return data.map(_localizeJson).toList();
+    if (data is Map) {
+      final out = <String, dynamic>{};
+      data.forEach((k, v) => out[k.toString()] = _localizeJson(v));
+      for (final key in data.keys.map((k) => k.toString())) {
+        if (key.length < 2 || key[0] != 'd') continue;
+        final second = key[1];
+        if (second == second.toLowerCase()) continue; // needs dName style
+        final base = second.toLowerCase() + key.substring(2);
+        if (_keepRawKeys.contains(base) || !data.containsKey(base)) continue;
+        final value = out[key];
+        if (value == null || (value is String && value.isEmpty)) continue;
+        out[base] = value;
+      }
+      return out;
+    }
+    return data;
   }
 
   // ─── Logger ────────────────────────────────────────────────────────
@@ -370,5 +409,5 @@ class NotFoundException extends HttpException {
 class ServerException extends HttpException {
   ServerException({required super.uri, super.body})
       : super(
-            message: "Server error. Please try again later.", statusCode: 500);
+      message: "Server error. Please try again later.", statusCode: 500);
 }

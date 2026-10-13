@@ -14,6 +14,11 @@ class LocalizationService {
     dutchLocale,
   ];
 
+  /// Bumped every time the language changes. Controllers listen to this
+  /// (`ever(LocalizationService.languageVersion, (_) => fetch())`) to reload
+  /// API data in the new language.
+  static final RxInt languageVersion = 0.obs;
+
   static Locale get currentLocale {
     final code = Get.locale?.languageCode ?? englishCode;
     return code == dutchCode ? dutchLocale : englishLocale;
@@ -31,6 +36,7 @@ class LocalizationService {
     final locale = langCode == dutchCode ? dutchLocale : englishLocale;
     await UserInfo.setLanguage(langCode);
     await Get.updateLocale(locale);
+    languageVersion.value++;
   }
 
   static Future<Locale> getInitialLocale() async {

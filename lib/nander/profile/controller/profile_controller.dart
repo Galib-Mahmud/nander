@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/endpoint/api_client.dart';
+import '../../core/localization/localization_service.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../core/local_storage/user_info.dart';
 import '../../routes/route_name.dart';
@@ -44,6 +45,8 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Language changed -> refetch so Dutch (dX) fields load.
+    ever(LocalizationService.languageVersion, (_) => fetchProfile());
     _seedFromCache();
     fetchProfile();
   }
