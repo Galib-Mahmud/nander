@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../profile/controller/profile_controller.dart';
 import '../../routes/route_name.dart';
 import '../../widget/controller/app_drawer_controller.dart';
 import '../controller/training_session_controller.dart';
@@ -18,6 +19,7 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   final TrainingSessionController _controller = TrainingSessionController.to;
+  final profileController = ProfileController.to;
   bool isUpcomingSelected = true;
   String selectedTeamFilter = 'ALL';
 
@@ -354,6 +356,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
             if (isUpcomingSelected) ...[
               SizedBox(height: 20.h),
+              if(profileController.isTrainer)
               ElevatedButton.icon(
                 onPressed: () => Get.toNamed(RouteName.scheduler),
                 icon: const Icon(Icons.auto_awesome, size: 18),

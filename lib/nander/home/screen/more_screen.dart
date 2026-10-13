@@ -11,8 +11,24 @@ import '../../profile/screen/club_screen.dart';
 import '../../profile/screen/team_screen.dart';
 import '../../core/localization/localization_service.dart';
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
+
+  @override
+  State<MoreScreen> createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends State<MoreScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // The bottom nav rebuilds this screen every time its tab is tapped,
+    // so refresh the profile here (cached values show meanwhile).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final c = ProfileController.to;
+      if (!c.isLoading.value) c.fetchProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +87,16 @@ class MoreScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 2.h),
                   Obx(() => Text(
-                        controller.name.value.isNotEmpty
-                            ? controller.name.value
-                            : (controller.isLoading.value
-                                ? 'Loading...'.tr
-                                : 'Profile'.tr),
-                        style: TextStyle(
-                            color: const Color(0xFF8B95A5), fontSize: 13.sp),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      )),
+                    controller.name.value.isNotEmpty
+                        ? controller.name.value
+                        : (controller.isLoading.value
+                        ? 'Loading...'.tr
+                        : 'Profile'.tr),
+                    style: TextStyle(
+                        color: const Color(0xFF8B95A5), fontSize: 13.sp),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  )),
                 ],
               ),
             ),
@@ -163,86 +179,86 @@ class MoreScreen extends StatelessWidget {
                     border: Border.all(color: const Color(0xFF1F2937)),
                   ),
                   child: controller.isLoading.value &&
-                          controller.nameController.text.isEmpty
+                      controller.nameController.text.isEmpty
                       ? const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(
-                              child: CircularProgressIndicator(
-                                  color: Color(0xFF4D94FF))),
-                        )
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF4D94FF))),
+                  )
                       : Column(
-                          children: [
-                            Container(
-                              width: 70.w,
-                              height: 70.w,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white, shape: BoxShape.circle),
-                              child: controller.profileImageUrl.value.isNotEmpty
-                                  ? ClipOval(
-                                      child: Image.network(
-                                        ApiEndpoint.resolveImageUrl(controller
-                                                .profileImageUrl.value) ??
-                                            '',
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(Icons.shield,
-                                                color: Color(0xFF050810),
-                                                size: 40),
-                                      ),
-                                    )
-                                  : const Icon(Icons.shield,
-                                      color: Color(0xFF050810), size: 40),
-                            ),
-                            SizedBox(height: 12.h),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.w),
-                              child: Text(
-                                controller.name.value.isNotEmpty
-                                    ? controller.name.value
-                                    : '—',
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.w),
-                              child: Text(
-                                controller.email.value,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.6),
-                                    fontSize: 13),
-                              ),
-                            ),
-                            SizedBox(height: 12.h),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 6.h),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF050810),
-                                borderRadius: BorderRadius.circular(20.r),
-                                border:
-                                    Border.all(color: const Color(0xFF1F2937)),
-                              ),
-                              child: Text(
-                                '${controller.role.value} · ${controller.status.value}',
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    fontSize: 12.sp),
-                              ),
-                            ),
-                          ],
+                    children: [
+                      Container(
+                        width: 70.w,
+                        height: 70.w,
+                        decoration: const BoxDecoration(
+                            color: Colors.white, shape: BoxShape.circle),
+                        child: controller.profileImageUrl.value.isNotEmpty
+                            ? ClipOval(
+                          child: Image.network(
+                            ApiEndpoint.resolveImageUrl(controller
+                                .profileImageUrl.value) ??
+                                '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.shield,
+                                color: Color(0xFF050810),
+                                size: 40),
+                          ),
+                        )
+                            : const Icon(Icons.shield,
+                            color: Color(0xFF050810), size: 40),
+                      ),
+                      SizedBox(height: 12.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: Text(
+                          controller.name.value.isNotEmpty
+                              ? controller.name.value
+                              : '—',
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: Text(
+                          controller.email.value,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              fontSize: 13),
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF050810),
+                          borderRadius: BorderRadius.circular(20.r),
+                          border:
+                          Border.all(color: const Color(0xFF1F2937)),
+                        ),
+                        child: Text(
+                          '${controller.role.value} · ${controller.status.value}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 12.sp),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: 30.h),
@@ -258,18 +274,18 @@ class MoreScreen extends StatelessWidget {
                 SizedBox(height: 16.h),
                 _buildMenuItem('Profile Update'.tr, Icons.chevron_right,
                     onTap: () {
-                  Get.toNamed(RouteName.updateprofile);
-                }),
+                      Get.toNamed(RouteName.updateprofile);
+                    }),
                 SizedBox(height: 12.h),
                 _buildMenuItem('Reset Password'.tr, Icons.chevron_right,
                     onTap: () {
-                  final auth = AuthController.to;
-                  auth.resetOtpVerified.value = false;
-                  auth.forgotEmailController.clear();
-                  auth.newPasswordController.clear();
-                  auth.confirmNewPasswordController.clear();
-                  Get.toNamed(RouteName.forgotPassword);
-                }),
+                      final auth = AuthController.to;
+                      auth.resetOtpVerified.value = false;
+                      auth.forgotEmailController.clear();
+                      auth.newPasswordController.clear();
+                      auth.confirmNewPasswordController.clear();
+                      Get.toNamed(RouteName.forgotPassword);
+                    }),
                 SizedBox(height: 12.h),
                 _buildMenuItem(
                   'Language'.tr,
@@ -312,13 +328,13 @@ class MoreScreen extends StatelessWidget {
                 SizedBox(height: 16.h),
                 _buildMenuItem('Terms & Conditions'.tr, Icons.chevron_right,
                     onTap: () {
-                  Get.toNamed(RouteName.terms);
-                }),
+                      Get.toNamed(RouteName.terms);
+                    }),
                 SizedBox(height: 12.h),
                 _buildMenuItem('Privacy Policy'.tr, Icons.chevron_right,
                     onTap: () {
-                  Get.toNamed(RouteName.privacy);
-                }),
+                      Get.toNamed(RouteName.privacy);
+                    }),
                 SizedBox(height: 12.h),
                 _buildMenuItem("FAQ's".tr, Icons.chevron_right, onTap: () {
                   Get.toNamed(RouteName.faq);
@@ -326,8 +342,8 @@ class MoreScreen extends StatelessWidget {
                 SizedBox(height: 12.h),
                 _buildMenuItem('Delete Account'.tr, Icons.chevron_right,
                     isDestructive: true, onTap: () {
-                  controller.requestDeleteAccount();
-                }),
+                      controller.requestDeleteAccount();
+                    }),
 
                 SizedBox(height: 30.h),
 
@@ -457,7 +473,7 @@ class MoreScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color:
-                isSelected ? const Color(0xFF4D94FF) : const Color(0xFF2A3550),
+            isSelected ? const Color(0xFF4D94FF) : const Color(0xFF2A3550),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -502,12 +518,12 @@ class MoreScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItem(
-    String title,
-    IconData icon, {
-    bool isDestructive = false,
-    String? trailingText,
-    required VoidCallback onTap,
-  }) {
+      String title,
+      IconData icon, {
+        bool isDestructive = false,
+        String? trailingText,
+        required VoidCallback onTap,
+      }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

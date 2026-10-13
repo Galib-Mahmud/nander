@@ -13,7 +13,10 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileController = ProfileController.to;
+    // Permanent instance, created as soon as the drawer is built.
+    final profileController = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController(), permanent: true);
 
     return Container(
       width: 280.w,
@@ -81,14 +84,18 @@ class CustomDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Nordkap Hockey Club',
-                    style: TextStyle(
+                  Obx(() => Text(
+                    profileController.name.value.isNotEmpty
+                        ? profileController.name.value
+                        : 'Profile'.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
-                  ),
+                  )),
                   SizedBox(height: 4.h),
                   Text(
                     'Season 2026/27',
@@ -108,7 +115,7 @@ class CustomDrawer extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Obx(
-                  () => Column(
+                      () => Column(
                     children: [
                       // _buildMenuItem(
                       //   icon: Icons.dashboard_outlined,
@@ -117,17 +124,17 @@ class CustomDrawer extends StatelessWidget {
                       // ),
 
                       if (profileController.isClubAdmin)
-                      _buildMenuItem(
-                        icon: Icons.groups_outlined,
-                        label: 'My Teams'.tr,
-                        onTap: () => Get.toNamed(RouteName.clubMyTeam),
-                      ),
+                        _buildMenuItem(
+                          icon: Icons.groups_outlined,
+                          label: 'My Teams'.tr,
+                          onTap: () => Get.toNamed(RouteName.clubMyTeam),
+                        ),
                       if (profileController.isTrainer)
-                      _buildMenuItem(
-                        icon: Icons.sports_mma_outlined,
-                        label: 'Training'.tr,
-                        onTap: () => Get.toNamed(RouteName.scheduler),
-                      ),
+                        _buildMenuItem(
+                          icon: Icons.sports_mma_outlined,
+                          label: 'Training'.tr,
+                          onTap: () => Get.toNamed(RouteName.scheduler),
+                        ),
                       _buildMenuItem(
                         icon: Icons.chat_bubble_outline,
                         label: 'Chats'.tr,

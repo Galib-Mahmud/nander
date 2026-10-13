@@ -1,7 +1,7 @@
 class ApiEndpoint {
- //static const String host = "https://nanapi.sobhoy.com";
- // static const String host = "http://10.10.26.235:8000";
- static const String host = "https://4f22-103-186-20-2.ngrok-free.app";
+  static const String host = "https://nanapi.sobhoy.com";
+ //  static const String host = "http://10.10.26.235:8000";
+ // static const String host = "https://4f22-103-186-20-2.ngrok-free.app";
 
 
  static const String baseUrl = "$host/api/v1";

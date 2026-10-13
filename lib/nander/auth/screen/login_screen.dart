@@ -321,14 +321,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
               if (!isLogin) ...[
                 const SizedBox(height: 20),
-                Text(
-                  'By clicking the "sign up" button, you accept the terms of the Privacy Policy.'.tr,
-                  style: const TextStyle(
-                      color: Color(0xFF8B95A5),
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      height: 1.4),
-                ),
+
+
+                // Text(
+                //   'By clicking the "sign up" button, you accept the terms of the Privacy Policy.'.tr,
+                //   style: const TextStyle(
+                //       color: Color(0xFF8B95A5),
+                //       fontSize: 14,
+                //       fontStyle: FontStyle.italic,
+                //       height: 1.4),
+                // ),
               ],
             ],
           ),

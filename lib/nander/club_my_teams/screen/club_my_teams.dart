@@ -202,7 +202,7 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                                       const SizedBox(height: 8),
                                       Text(team.bio ?? "No bio available".tr,
                                           style: const TextStyle(
-                                              color: Color(0xFF8892B0), fontSize: 12, height: 1.4),
+                                              color: Color(0xFF8892B0), fontSize: 16, height: 1.4),
                                           textAlign: TextAlign.center,
                                           maxLines: 3, overflow: TextOverflow.ellipsis),
                                     ],

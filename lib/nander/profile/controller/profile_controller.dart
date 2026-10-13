@@ -44,7 +44,32 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _seedFromCache();
     fetchProfile();
+  }
+
+  /// UserInfo.setUser() saves role/name/email locally, so menus and the
+  /// profile card can show instantly instead of waiting for the API.
+  Future<void> _seedFromCache() async {
+    try {
+      final cachedRole = await UserInfo.getUserRole();
+      final cachedName = await UserInfo.getUserName();
+      final cachedEmail = await UserInfo.getUserEmail();
+      if (role.value.isEmpty && cachedRole != null && cachedRole.isNotEmpty) {
+        role.value = cachedRole;
+      }
+      if (name.value.isEmpty && cachedName != null && cachedName.isNotEmpty) {
+        name.value = cachedName;
+        if (nameController.text.isEmpty) nameController.text = cachedName;
+      }
+      if (email.value.isEmpty &&
+          cachedEmail != null &&
+          cachedEmail.isNotEmpty) {
+        email.value = cachedEmail;
+      }
+    } catch (e) {
+      debugPrint('Profile cache read failed: $e');
+    }
   }
 
   // ─── Pick Image (Camera or Gallery) ─────────────────────────────
@@ -204,7 +229,7 @@ class ProfileController extends GetxController {
           TextButton(
             onPressed: () => Get.back(),
             child:
-                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -212,9 +237,9 @@ class ProfileController extends GetxController {
               await _sendDeleteAccountRequest();
             },
             style:
-                ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
+            ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
             child:
-                const Text('Send Code', style: TextStyle(color: Colors.white)),
+            const Text('Send Code', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -272,14 +297,14 @@ class ProfileController extends GetxController {
               decoration: InputDecoration(
                 hintText: 'Enter OTP',
                 hintStyle:
-                    const TextStyle(color: Colors.white38, letterSpacing: 0),
+                const TextStyle(color: Colors.white38, letterSpacing: 0),
                 filled: true,
                 fillColor: const Color(0xFF0F1522),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none),
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
           ],
@@ -288,7 +313,7 @@ class ProfileController extends GetxController {
           TextButton(
             onPressed: () => Get.back(),
             child:
-                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -301,7 +326,7 @@ class ProfileController extends GetxController {
               await _confirmDeleteAccount(code);
             },
             style:
-                ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
+            ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
             child: const Text('Delete Permanently',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -356,7 +381,7 @@ class ProfileController extends GetxController {
             const SizedBox(width: 10),
             Expanded(
                 child:
-                    Text(message, style: const TextStyle(color: Colors.white))),
+                Text(message, style: const TextStyle(color: Colors.white))),
           ],
         ),
         backgroundColor: color,
