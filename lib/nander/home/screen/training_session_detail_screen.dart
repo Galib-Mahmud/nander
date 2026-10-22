@@ -155,7 +155,7 @@ class _TrainingSessionDetailScreenState
             // Overview Section
             if (s.sessionOverview != null && s.sessionOverview!.isNotEmpty) ...[
               Text(
-                'Session Overview',
+                'Session Overview'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.sp,
@@ -187,7 +187,7 @@ class _TrainingSessionDetailScreenState
             if (s.coachingRationale != null &&
                 s.coachingRationale!.isNotEmpty) ...[
               Text(
-                'Coaching Rationale',
+                'Coaching Rationale'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.sp,
@@ -221,7 +221,7 @@ class _TrainingSessionDetailScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Exercises (${s.exercises.length})',
+                    'Exercises (${s.exercises.length})'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
@@ -296,7 +296,7 @@ class _TrainingSessionDetailScreenState
                               Text(
                                 _isCompleted
                                     ? 'Completed Session'
-                                    : 'Mark as Completed',
+                                    : 'Mark as Completed'.tr,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 15.sp,
@@ -418,8 +418,8 @@ class _TrainingSessionDetailScreenState
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
-                              'Submit Report',
+                          :  Text(
+                              'Submit Report'.tr,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

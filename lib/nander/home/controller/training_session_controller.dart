@@ -53,8 +53,8 @@ class TrainingSessionController extends GetxController {
   int _sessionReqSeq = 0;
 
   // Wizard state for creating a plan
-  final RxString selectedPeriod = '2 weeks'.obs;
-  final RxString selectedSessionsPerWeek = '1× per week'.obs;
+  final RxInt selectedDurationWeeks = 2.obs; // 2, 3, 4, 5
+  final RxInt selectedTrainingsPerWeek = 1.obs; // 1, 2, 3
   final RxString selectedFocus = 'ATTACK'.obs; // ATTACK, DEFENCE, TRANSITION, TECHNIQUE
   final RxString selectedDifficulty = 'EASY'.obs; // EASY, MEDIUM, HARD
   final RxString selectedFieldsize = 'FULL_FIELD'.obs; // FULL_FIELD, HALF_FIELD, CAROUSEL
@@ -277,14 +277,16 @@ class TrainingSessionController extends GetxController {
     isCreating.value = true;
     try {
       final body = {
+        'durationWeeks': selectedDurationWeeks.value,
+        'trainingsPerWeek': selectedTrainingsPerWeek.value,
         'focus': selectedFocus.value,
         'difficulty': selectedDifficulty.value,
         'fieldsize': selectedFieldsize.value,
-        'teamId': selectedTeamId.value,
-        if (targetDurationMinutes.value > 0)
-          'targetDurationMinutes': targetDurationMinutes.value,
         if (trainingTypeCtrl.text.trim().isNotEmpty)
           'trainingType': trainingTypeCtrl.text.trim(),
+        if (targetDurationMinutes.value > 0)
+          'targetDurationMinutes': targetDurationMinutes.value,
+        'teamId': selectedTeamId.value,
       };
 
       final response = await _apiClient.post(

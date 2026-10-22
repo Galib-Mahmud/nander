@@ -17,16 +17,18 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
   final TrainingSessionController _controller = TrainingSessionController.to;
 
   // Wizard steps
-  // 0: Team  1: Focus  2: Difficulty + Field size  3: Training type + Duration (optional)
-  // 4: Session overview (API response)
-  static const int _stepTeam = 0;
-  static const int _stepFocus = 1;
-  static const int _stepSetup = 2;
-  static const int _stepOptional = 3;
-  static const int _stepOverview = 4;
-  static const int _totalWizardSteps = 4;
+  // 0: Period (weeks)  1: Sessions per week  2: Focus
+  // 3: Difficulty + Field size  4: Training type + Duration (optional)
+  // 5: Session overview (API response)
+  static const int _stepPeriod = 0;
+  static const int _stepSessions = 1;
+  static const int _stepFocus = 2;
+  static const int _stepSetup = 3;
+  static const int _stepOptional = 4;
+  static const int _stepOverview = 5;
+  static const int _totalWizardSteps = 5;
 
-  int _currentStep = _stepTeam;
+  int _currentStep = _stepPeriod;
 
   final TextEditingController _reportCtrl = TextEditingController();
   String _selectedReportTopic = 'Late Issue';
@@ -38,16 +40,33 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     'General Note',
   ];
 
+  // (weeks, subtitle)
+  final List<(int, String)> _periodOptions = const [
+    (2, 'Start strong'),
+    (3, 'Build momentum'),
+    (4, 'Improve your game'),
+    (5, 'Reach your potential'),
+  ];
+
+  // (trainings per week, subtitle)
+  final List<(int, String)> _sessionsOptions = const [
+    (1, 'Light & consistent'),
+    (2, 'Balanced training'),
+    (3, 'High intensity'),
+  ];
+
   @override
   void initState() {
     super.initState();
-    // Notun plan: purono selection reset
+    // New plan: reset previous selection
+    _controller.selectedDurationWeeks.value = 2;
+    _controller.selectedTrainingsPerWeek.value = 1;
     _controller.selectedFocus.value = 'ATTACK';
     _controller.selectedDifficulty.value = 'EASY';
     _controller.selectedFieldsize.value = 'FULL_FIELD';
-    _controller.targetDurationMinutes.value = 0; // 0 = pathabo na (optional)
+    _controller.targetDurationMinutes.value = 0; // 0 = do not send (optional)
     _controller.trainingTypeCtrl.clear();
-    _controller.fetchActiveTeams();
+    _controller.fetchActiveTeams(); // first active team is auto-selected
   }
 
   @override
@@ -66,19 +85,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
   }
 
   Future<void> _handleNextStep() async {
-    // Step 1: team must be selected
-    if (_currentStep == _stepTeam && _controller.selectedTeamId.value.isEmpty) {
-      Get.snackbar(
-        'Select Team',
-        'Please select a team to continue',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    // Last input step -> ekshathe shob data POST
+    // Last input step -> POST everything at once
     if (_currentStep == _stepOptional) {
       final session = await _controller.createTrainingSession();
       if (session != null && mounted) {
@@ -119,7 +126,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       elevation: 0,
       leading: IconButton(
         icon:
-            const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+        const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
         onPressed: _goBack,
       ),
       title: Obx(() {
@@ -350,9 +357,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                     ),
                     SizedBox(width: 6.w),
                     Icon(
-                      isLast ? Icons.auto_awesome : Icons.arrow_forward,
+                      isLast ? Icons.auto_awesome : Icons.arrow_forward_ios,
                       color: Colors.white,
-                      size: 20,
+                      size: isLast ? 20 : 16,
                     ),
                   ],
                 ),
@@ -366,8 +373,10 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
 
   Widget _buildCurrentStep() {
     switch (_currentStep) {
-      case _stepTeam:
-        return _buildStepTeam();
+      case _stepPeriod:
+        return _buildStepPeriod();
+      case _stepSessions:
+        return _buildStepSessions();
       case _stepFocus:
         return _buildStepFocus();
       case _stepSetup:
@@ -422,103 +431,125 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     );
   }
 
-  // ── Step 1: Team ─────────────────────────────────────────────────
-  Widget _buildStepTeam() {
+  // Simple selectable card (title + subtitle), used by step 1 and step 2
+  Widget _buildChoiceCard(
+      String title,
+      String subtitle,
+      bool isSelected, {
+        required VoidCallback onTap,
+      }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color:
+            isSelected ? const Color(0xFF4D94FF) : const Color(0xFF1F2937),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 6.h),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 14.sp,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Step 1: Period (durationWeeks) ───────────────────────────────
+  Widget _buildStepPeriod() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(20.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _stepTitle('Which team is this plan for?'),
+          _stepTitle('Which period do you want to train for?'),
           Obx(() {
-            if (_controller.isLoadingTeams.value) {
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(color: const Color(0xFF1F2937)),
-                ),
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Color(0xFF4D94FF),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Text(
-                      'Loading teams...',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.6),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ],
-                ),
+            final selected = _controller.selectedDurationWeeks.value;
+            // Rows with intrinsic height instead of GridView + fixed
+            // childAspectRatio, so the cards grow with their content and
+            // never overflow.
+            Widget cardAt(int i) {
+              final o = _periodOptions[i];
+              return _buildChoiceCard(
+                '${o.$1} weeks',
+                o.$2,
+                selected == o.$1,
+                onTap: () => _controller.selectedDurationWeeks.value = o.$1,
               );
             }
 
-            if (_controller.activeTeams.isEmpty) {
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                      color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.info_outline,
-                        color: Color(0xFFEF4444), size: 20),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Text(
-                        'No active team found.',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 13.sp,
+            final rows = <Widget>[];
+            for (var i = 0; i < _periodOptions.length; i += 2) {
+              rows.add(
+                Padding(
+                  padding: EdgeInsets.only(bottom: 12.h),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: cardAt(i)),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: i + 1 < _periodOptions.length
+                              ? cardAt(i + 1)
+                              : const SizedBox(),
                         ),
-                      ),
+                      ],
                     ),
-                    GestureDetector(
-                      onTap: () => _controller.fetchActiveTeams(),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4D94FF),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Text(
-                          'Retry',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               );
             }
+            return Column(children: rows);
+          }),
+        ],
+      ),
+    );
+  }
 
-            final selectedId = _controller.selectedTeamId.value;
+  // ── Step 2: Sessions per week (trainingsPerWeek) ─────────────────
+  Widget _buildStepSessions() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _stepTitle('How many training sessions per week?'),
+          Obx(() {
+            final selected = _controller.selectedTrainingsPerWeek.value;
             return Column(
-              children: _controller.activeTeams.map((team) {
-                final isSelected = team.teamId == selectedId;
+              children: _sessionsOptions.map((o) {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
-                  child: _buildTeamCard(
-                    team.name,
-                    isSelected,
-                    onTap: () => _controller.selectTeam(team),
+                  child: _buildChoiceCard(
+                    '${o.$1}× per week',
+                    o.$2,
+                    selected == o.$1,
+                    onTap: () =>
+                    _controller.selectedTrainingsPerWeek.value = o.$1,
                   ),
                 );
               }).toList(),
@@ -529,85 +560,32 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     );
   }
 
-  Widget _buildTeamCard(String name, bool isSelected, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: const Color(0xFF111827),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color:
-                isSelected ? const Color(0xFF4D94FF) : const Color(0xFF1F2937),
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40.w,
-              height: 40.w,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4D94FF).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: const Icon(Icons.shield, color: Color(0xFF4D94FF)),
-            ),
-            SizedBox(width: 14.w),
-            Expanded(
-              child: Text(
-                name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (isSelected)
-              Container(
-                width: 26.w,
-                height: 26.w,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF4D94FF),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.check, color: Colors.white, size: 16),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ── Step 2: Focus ────────────────────────────────────────────────
+  // ── Step 3: Focus ────────────────────────────────────────────────
   Widget _buildStepFocus() {
     final trainingTypes = [
       (
-        'Attacking',
-        'Depth, tempo and goal-focused play',
-        Icons.sports_hockey,
-        'ATTACK'
+      'Attacking',
+      'Depth, tempo and goal-focused play',
+      Icons.sports_hockey,
+      'ATTACK'
       ),
       (
-        'Defending',
-        'Stay compact, apply pressure',
-        Icons.shield_outlined,
-        'DEFENCE'
+      'Defending',
+      'Stay compact, apply pressure',
+      Icons.shield_outlined,
+      'DEFENCE'
       ),
       (
-        'Transition',
-        'Quickly switch between attack/defense',
-        Icons.sync,
-        'TRANSITION'
+      'Transition',
+      'Quickly switch between attack/defense',
+      Icons.sync,
+      'TRANSITION'
       ),
       (
-        'Technique',
-        'Receiving, passing, dribbling',
-        Icons.auto_awesome,
-        'TECHNIQUE'
+      'Technique',
+      'Receiving, passing, dribbling',
+      Icons.auto_awesome,
+      'TECHNIQUE'
       ),
     ];
 
@@ -642,7 +620,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     );
   }
 
-  // ── Step 3: Difficulty + Field size ──────────────────────────────
+  // ── Step 4: Difficulty + Field size ──────────────────────────────
   Widget _buildStepSetup() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(20.w),
@@ -676,14 +654,14 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             return Row(
               children: [
                 _buildOptionChip('FULL_FIELD', 'Full Field', fs == 'FULL_FIELD',
-                    () {
-                  _controller.selectedFieldsize.value = 'FULL_FIELD';
-                }, const Color(0xFF4D94FF)),
+                        () {
+                      _controller.selectedFieldsize.value = 'FULL_FIELD';
+                    }, const Color(0xFF4D94FF)),
                 SizedBox(width: 10.w),
                 _buildOptionChip('HALF_FIELD', 'Half Field', fs == 'HALF_FIELD',
-                    () {
-                  _controller.selectedFieldsize.value = 'HALF_FIELD';
-                }, const Color(0xFF4D94FF)),
+                        () {
+                      _controller.selectedFieldsize.value = 'HALF_FIELD';
+                    }, const Color(0xFF4D94FF)),
                 SizedBox(width: 10.w),
                 _buildOptionChip('CAROUSEL', 'Carousel', fs == 'CAROUSEL', () {
                   _controller.selectedFieldsize.value = 'CAROUSEL';
@@ -696,7 +674,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     );
   }
 
-  // ── Step 4: Optional (Training type + Duration) ──────────────────
+  // ── Step 5: Optional (Training type + Duration) ──────────────────
   Widget _buildStepOptional() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(20.w),
@@ -738,9 +716,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                 final isSel = currentDur == d;
                 return Expanded(
                   child: GestureDetector(
-                    // Abar tap korle deselect hobe (optional)
+                    // Tap again to deselect (optional)
                     onTap: () =>
-                        _controller.targetDurationMinutes.value = isSel ? 0 : d,
+                    _controller.targetDurationMinutes.value = isSel ? 0 : d,
                     child: Container(
                       margin: EdgeInsets.only(right: d != 160 ? 8.w : 0),
                       padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -762,7 +740,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                             color: Colors.white,
                             fontSize: 13.sp,
                             fontWeight:
-                                isSel ? FontWeight.bold : FontWeight.w500,
+                            isSel ? FontWeight.bold : FontWeight.w500,
                           ),
                         ),
                       ),
@@ -820,7 +798,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color:
-                isSelected ? const Color(0xFF4D94FF) : const Color(0xFF1F2937),
+            isSelected ? const Color(0xFF4D94FF) : const Color(0xFF1F2937),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -841,7 +819,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                     child: Icon(
                       icon,
                       color:
-                          isSelected ? const Color(0xFF4D94FF) : Colors.white,
+                      isSelected ? const Color(0xFF4D94FF) : Colors.white,
                       size: 24.w,
                     ),
                   ),
@@ -887,7 +865,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     );
   }
 
-  // ── Step 5: Session Overview (API response) ──────────────────────
+  // ── Session Overview (API response) ──────────────────────────────
   Widget _buildSessionHeader({
     required String difficulty,
     required String focus,
@@ -1008,14 +986,14 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                     children: [
                       Expanded(
                         child: GestureDetector(
-                          // Settings change kore abar generate korar jonno
+                          // Change settings and generate again
                           onTap: () =>
                               setState(() => _currentStep = _stepOptional),
                           child: Container(
                             height: 44.h,
                             decoration: BoxDecoration(
                               border:
-                                  Border.all(color: const Color(0xFF2A3550)),
+                              Border.all(color: const Color(0xFF2A3550)),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: const Center(
@@ -1032,7 +1010,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () => Get.to(
-                              () => const ScheduleScreen(activeTabIndex: 3)),
+                                  () => const ScheduleScreen(activeTabIndex: 3)),
                           child: Container(
                             height: 44.h,
                             decoration: BoxDecoration(
@@ -1085,9 +1063,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             if (session != null && session.exercises.isNotEmpty)
               ...session.exercises.map((ex) {
                 final cue =
-                    ex.keyCoachingCue != null && ex.keyCoachingCue!.isNotEmpty
-                        ? '\nCue: ${ex.keyCoachingCue}'
-                        : '';
+                ex.keyCoachingCue != null && ex.keyCoachingCue!.isNotEmpty
+                    ? '\nCue: ${ex.keyCoachingCue}'
+                    : '';
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
                   child: _buildOverviewCard(
@@ -1137,7 +1115,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                         value: _selectedReportTopic,
                         dropdownColor: const Color(0xFF111827),
                         style:
-                            const TextStyle(color: Colors.white, fontSize: 14),
+                        const TextStyle(color: Colors.white, fontSize: 14),
                         icon: Icon(Icons.keyboard_arrow_down,
                             color: Colors.white.withValues(alpha: 0.6)),
                         isExpanded: true,
@@ -1186,37 +1164,37 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                       onTap: isSubmitting
                           ? null
                           : () async {
-                              if (_reportCtrl.text.trim().isEmpty) {
-                                Get.snackbar(
-                                  'Note Required',
-                                  'Please type your report message first',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor:
-                                      Colors.red.withValues(alpha: 0.8),
-                                  colorText: Colors.white,
-                                );
-                                return;
-                              }
-                              final sessionId = session?.id ?? '';
-                              if (sessionId.isNotEmpty) {
-                                final ok =
-                                    await _controller.submitSessionReport(
-                                  sessionId,
-                                  _selectedReportTopic,
-                                  _reportCtrl.text.trim(),
-                                );
-                                if (ok) _reportCtrl.clear();
-                              } else {
-                                Get.snackbar(
-                                  'Success',
-                                  'Report recorded for current session',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: const Color(0xFF10B981),
-                                  colorText: Colors.white,
-                                );
-                                _reportCtrl.clear();
-                              }
-                            },
+                        if (_reportCtrl.text.trim().isEmpty) {
+                          Get.snackbar(
+                            'Note Required',
+                            'Please type your report message first',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor:
+                            Colors.red.withValues(alpha: 0.8),
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        final sessionId = session?.id ?? '';
+                        if (sessionId.isNotEmpty) {
+                          final ok =
+                          await _controller.submitSessionReport(
+                            sessionId,
+                            _selectedReportTopic,
+                            _reportCtrl.text.trim(),
+                          );
+                          if (ok) _reportCtrl.clear();
+                        } else {
+                          Get.snackbar(
+                            'Success',
+                            'Report recorded for current session',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: const Color(0xFF10B981),
+                            colorText: Colors.white,
+                          );
+                          _reportCtrl.clear();
+                        }
+                      },
                       child: Container(
                         width: double.infinity,
                         height: 52.h,
@@ -1229,21 +1207,21 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                         child: Center(
                           child: isSubmitting
                               ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                               : const Text(
-                                  'Submit Report',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                            'Submit Report',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     );
@@ -1281,14 +1259,14 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                       onTap: isUpdating
                           ? null
                           : () async {
-                              final sessionId = session?.id ?? '';
-                              if (sessionId.isNotEmpty) {
-                                await _controller.toggleSessionComplete(
-                                    sessionId, true);
-                              }
-                              Get.to(() =>
-                                  const ScheduleScreen(activeTabIndex: 3));
-                            },
+                        final sessionId = session?.id ?? '';
+                        if (sessionId.isNotEmpty) {
+                          await _controller.toggleSessionComplete(
+                              sessionId, true);
+                        }
+                        Get.to(() =>
+                        const ScheduleScreen(activeTabIndex: 3));
+                      },
                       child: Container(
                         width: double.infinity,
                         height: 48.h,
