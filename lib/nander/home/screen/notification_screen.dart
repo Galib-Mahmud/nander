@@ -21,9 +21,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        title: Text(
+          'Notifications'.tr,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -89,7 +89,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Text(
-              'Keep up with your rewards and rankings.',
+              'Keep up with your rewards and rankings.'.tr,
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6), fontSize: 15.sp),
             ),
@@ -123,7 +123,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'All',
+                                'All'.tr,
                                 style: TextStyle(
                                   color: !controller.showUnreadOnly.value
                                       ? Colors.white
@@ -151,7 +151,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'Unread',
+                                'Unread'.tr,
                                 style: TextStyle(
                                   color: controller.showUnreadOnly.value
                                       ? Colors.white
@@ -182,8 +182,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 return Center(
                   child: Text(
                     controller.showUnreadOnly.value
-                        ? 'No unread notifications'
-                        : 'No notifications yet',
+                        ? 'No unread notifications'.tr
+                        : 'No notifications yet'.tr,
                     style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 14.sp),
@@ -249,7 +249,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: Text(
                     notification.title.isNotEmpty
                         ? notification.title
-                        : 'Notification',
+                        : 'Notification'.tr,
                     style: TextStyle(
                         color: titleColor,
                         fontSize: 17.sp,
@@ -286,7 +286,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         color: const Color(0xFF4D94FF),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
-                      child: Text('Accept',
+                      child: Text('Accept'.tr,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 14.sp,
@@ -307,7 +307,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         borderRadius: BorderRadius.circular(20.r),
                         border: Border.all(color: const Color(0xFF2A3550)),
                       ),
-                      child: Text('Reject',
+                      child: Text('Reject'.tr,
                           style: TextStyle(
                               color: Colors.white70,
                               fontSize: 14.sp,

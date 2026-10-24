@@ -98,7 +98,7 @@ class CustomDrawer extends StatelessWidget {
                   )),
                   SizedBox(height: 4.h),
                   Text(
-                    'Season 2026/27',
+                    'Season 2026/27'.tr,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 14,

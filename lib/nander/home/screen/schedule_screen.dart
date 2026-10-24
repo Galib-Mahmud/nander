@@ -149,7 +149,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Text(
-                  '${filteredSessions.length} session${filteredSessions.length == 1 ? "" : "s"} scheduled',
+                  '${filteredSessions.length} ${filteredSessions.length == 1 ? 'session scheduled'.tr : 'sessions scheduled'.tr}',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 14.sp,
@@ -244,7 +244,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _buildTeamChip('ALL', 'All teams'),
+                      _buildTeamChip('ALL', 'All teams'.tr),
                       ..._controller.sessionTeams.map((team) {
                         return Padding(
                           padding: EdgeInsets.only(left: 10.w),
@@ -381,7 +381,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _buildScheduleCard(TrainingSessionModel session) {
     final dateStr = session.createdAt != null
         ? '${session.createdAt!.day}/${session.createdAt!.month}/${session.createdAt!.year}'
-        : 'Session';
+        : 'Session'.tr;
 
     return GestureDetector(
       onTap: () {
@@ -411,7 +411,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
-                    session.displayFocus.toUpperCase(),
+                    session.displayFocus.tr.toUpperCase(),
                     style: TextStyle(
                       color: const Color(0xFF4D94FF),
                       fontSize: 11.sp,
@@ -484,7 +484,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     color: Colors.white.withValues(alpha: 0.5), size: 14.w),
                 SizedBox(width: 4.w),
                 Text(
-                  session.displayDifficulty,
+                  session.displayDifficulty.tr,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13.sp,

@@ -19,7 +19,7 @@ class AnnouncementDetailScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: const Text('Announcement Detail', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('Announcement Detail'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => Get.back(),
@@ -37,15 +37,15 @@ class AnnouncementDetailScreen extends StatelessWidget {
                       Get.dialog(AlertDialog(
                         backgroundColor: const Color(0xFF1A2236),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-                        title: const Text('Delete Announcement', style: TextStyle(color: Colors.white)),
-                        content: const Text(
-                          'Are you sure you want to delete this announcement?',
-                          style: TextStyle(color: Colors.white70),
+                        title: Text('Delete Announcement'.tr, style: const TextStyle(color: Colors.white)),
+                        content: Text(
+                          'Are you sure you want to delete this announcement?'.tr,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Get.back(),
-                            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                            child: Text('Cancel'.tr, style: const TextStyle(color: Colors.white54)),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -55,30 +55,30 @@ class AnnouncementDetailScreen extends StatelessWidget {
                                 Get.back(); // Go back to list screen
                               }
                             },
-                            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                            child: Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
                           ),
                         ],
                       ));
                     }
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit_outlined, color: Colors.white70, size: 20),
-                          SizedBox(width: 8),
-                          Text('Edit', style: TextStyle(color: Colors.white)),
+                          const Icon(Icons.edit_outlined, color: Colors.white70, size: 20),
+                          const SizedBox(width: 8),
+                          Text('Edit'.tr, style: const TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
                       child: Row(
                         children: [
-                          Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
-                          SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                          const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                          const SizedBox(width: 8),
+                          Text('Delete'.tr, style: const TextStyle(color: Colors.redAccent)),
                         ],
                       ),
                     ),

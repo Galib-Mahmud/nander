@@ -18,7 +18,7 @@ class AnnouncementListScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
-        title: const Text('Announcement', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('Announcement'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => Get.back(),
@@ -64,7 +64,7 @@ class AnnouncementListScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
             child: Text(
-              'Keep up with your rewards and rankings.',
+              'Keep up with your rewards and rankings.'.tr,
               style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14.sp),
             ),
           ),
@@ -85,7 +85,7 @@ class AnnouncementListScreen extends StatelessWidget {
                       SizedBox(height: 150.h),
                       Center(
                         child: Text(
-                          'No announcements yet',
+                          'No announcements yet'.tr,
                           style: TextStyle(color: Colors.white54, fontSize: 14.sp),
                         ),
                       ),
@@ -126,7 +126,7 @@ class AnnouncementListScreen extends StatelessWidget {
                             ),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.title,
@@ -181,9 +181,9 @@ class AnnouncementListScreen extends StatelessWidget {
                       minimumSize: Size(double.infinity, 50.h),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                     ),
-                    child: const Text(
-                      'Add New Announcement',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                    child: Text(
+                      'Add New Announcement'.tr,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 )

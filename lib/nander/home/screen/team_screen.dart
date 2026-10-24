@@ -48,7 +48,7 @@ class _TeamScreenState extends State<TeamScreen> {
         title: Obx(() {
           if (controller.isClubAdmin.value) {
             return Text(
-              'My Teams',
+              'My Teams'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22.sp,
@@ -58,10 +58,10 @@ class _TeamScreenState extends State<TeamScreen> {
           }
           final tabIndex = controller.trainerTab.value;
           final tabTitle = tabIndex == 0
-              ? 'My Teams'
+              ? 'My Teams'.tr
               : tabIndex == 1
-                  ? 'Find Teams'
-                  : 'Team Requests';
+                  ? 'Find Teams'.tr
+                  : 'Team Requests'.tr;
           return Text(
             tabTitle,
             style: TextStyle(
@@ -111,7 +111,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     ),
                     SizedBox(height: 14.h),
                     Text(
-                      'No teams found',
+                      'No teams found'.tr,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 16.sp,
@@ -120,7 +120,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     ),
                     SizedBox(height: 6.h),
                     Text(
-                      'Tap below to add your first team',
+                      'Tap below to add your first team'.tr,
                       style: TextStyle(
                         color: const Color(0xFF8B95A5),
                         fontSize: 13.sp,
@@ -166,7 +166,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Add New Team',
+                    'Add New Team'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
@@ -215,7 +215,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'My Teams (${controller.myTeams.length})',
+                              '${'My Teams'.tr} (${controller.myTeams.length})',
                               style: TextStyle(
                                 color: controller.trainerTab.value == 0
                                     ? Colors.white
@@ -242,7 +242,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Find Teams (${controller.filteredAllTeams.length})',
+                              '${'Find Teams'.tr} (${controller.filteredAllTeams.length})',
                               style: TextStyle(
                                 color: controller.trainerTab.value == 1
                                     ? Colors.white
@@ -269,7 +269,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Requests (${controller.requestedTeams.length})',
+                              '${'Requests'.tr} (${controller.requestedTeams.length})',
                               style: TextStyle(
                                 color: controller.trainerTab.value == 2
                                     ? Colors.white
@@ -338,7 +338,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
                 SizedBox(height: 14.h),
                 Text(
-                  'No teams joined yet',
+                  'No teams joined yet'.tr,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16.sp,
@@ -347,7 +347,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'Explore teams and send a request to join',
+                  'Explore teams and send a request to join'.tr,
                   style: TextStyle(
                     color: const Color(0xFF8B95A5),
                     fontSize: 13.sp,
@@ -367,9 +367,9 @@ class _TeamScreenState extends State<TeamScreen> {
                           borderRadius: BorderRadius.circular(24.r),
                         ),
                       ),
-                      child: const Text(
-                        'Find Teams',
-                        style: TextStyle(
+                      child: Text(
+                        'Find Teams'.tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -419,7 +419,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 elevation: 0,
               ),
               child: Text(
-                'Find More Teams',
+                'Find More Teams'.tr,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.sp,
@@ -453,7 +453,7 @@ class _TeamScreenState extends State<TeamScreen> {
               onChanged: controller.filterAllTeams,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search teams by name, location...',
+                hintText: 'Search teams by name, location...'.tr,
                 hintStyle: TextStyle(
                   color: const Color(0xFF8B95A5),
                   fontSize: 14.sp,
@@ -486,7 +486,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       color: const Color(0xFF8B95A5), size: 48.w),
                   SizedBox(height: 10.h),
                   Text(
-                    'No teams found',
+                    'No teams found'.tr,
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 15.sp,
@@ -539,7 +539,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
                 SizedBox(height: 14.h),
                 Text(
-                  'No pending team requests',
+                  'No pending team requests'.tr,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16.sp,
@@ -548,7 +548,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'Invitations from clubs will appear here',
+                  'Invitations from clubs will appear here'.tr,
                   style: TextStyle(
                     color: const Color(0xFF8B95A5),
                     fontSize: 13.sp,
@@ -654,9 +654,9 @@ class _TeamScreenState extends State<TeamScreen> {
                 color: const Color(0xFF10B981).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10.r),
               ),
-              child: const Text(
-                'Active',
-                style: TextStyle(
+              child: Text(
+                'Active'.tr,
+                style: const TextStyle(
                   color: Color(0xFF10B981),
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
@@ -675,7 +675,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${team.completedSessions}/${team.totalSessions} Sessions',
+                          '${team.completedSessions}/${team.totalSessions} ${'Sessions'.tr}',
                           style: TextStyle(
                             color: const Color(0xFF8B95A5),
                             fontSize: 10.sp,
@@ -810,9 +810,9 @@ class _TeamScreenState extends State<TeamScreen> {
                   color: const Color(0xFF10B981).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16.r),
                 ),
-                child: const Text(
-                  'Joined',
-                  style: TextStyle(
+                child: Text(
+                  'Joined'.tr,
+                  style: const TextStyle(
                     color: Color(0xFF10B981),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -826,9 +826,9 @@ class _TeamScreenState extends State<TeamScreen> {
                   color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16.r),
                 ),
-                child: const Text(
-                  'Pending',
-                  style: TextStyle(
+                child: Text(
+                  'Pending'.tr,
+                  style: const TextStyle(
                     color: Color(0xFFF59E0B),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -852,7 +852,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Join',
+                  'Join'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.sp,
@@ -952,7 +952,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    'Accept',
+                    'Accept'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12.sp,
@@ -980,7 +980,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     border: Border.all(color: const Color(0xFF334155)),
                   ),
                   child: Text(
-                    'Decline',
+                    'Decline'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12.sp,
@@ -1208,7 +1208,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                   ),
                                   child: Center(
                                     child: Obx(() => Text(
-                                          'Active Members (${controller.activeTeamMembers.length})',
+                                          '${'Active Members'.tr} (${controller.activeTeamMembers.length})',
                                           style: TextStyle(
                                             color: activeTabIndex == 0
                                                 ? Colors.white
@@ -1236,7 +1236,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                   ),
                                   child: Center(
                                     child: Obx(() => Text(
-                                          'Requests (${controller.requestTeamMembers.length})',
+                                          '${'Requests'.tr} (${controller.requestTeamMembers.length})',
                                           style: TextStyle(
                                             color: activeTabIndex == 1
                                                 ? Colors.white
@@ -1276,7 +1276,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                     Icon(Icons.people_outline,
                                         color: Colors.white24, size: 40.sp),
                                     SizedBox(height: 8.h),
-                                    Text('No active team members yet',
+                                    Text('No active team members yet'.tr,
                                         style: TextStyle(
                                             color: Colors.white54,
                                             fontSize: 13.sp)),
@@ -1337,9 +1337,9 @@ class _TeamScreenState extends State<TeamScreen> {
                                           .withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(10.r),
                                     ),
-                                    child: const Text(
-                                      'Active',
-                                      style: TextStyle(
+                                    child: Text(
+                                      'Active'.tr,
+                                      style: const TextStyle(
                                         color: Color(0xFF10B981),
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
@@ -1359,7 +1359,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                     Icon(Icons.inbox_outlined,
                                         color: Colors.white24, size: 40.sp),
                                     SizedBox(height: 8.h),
-                                    Text('No pending join requests',
+                                    Text('No pending join requests'.tr,
                                         style: TextStyle(
                                             color: Colors.white54,
                                             fontSize: 13.sp)),
@@ -1448,7 +1448,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                                     BorderRadius.circular(20.r),
                                               ),
                                               child: Text(
-                                                'Approve',
+                                                'Approve'.tr,
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 12.sp,
@@ -1479,7 +1479,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                                         0xFF334155)),
                                               ),
                                               child: Text(
-                                                'Decline',
+                                                'Decline'.tr,
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 12.sp,
@@ -1510,9 +1510,9 @@ class _TeamScreenState extends State<TeamScreen> {
                           },
                           icon: const Icon(Icons.person_add_alt_1,
                               color: Color(0xFF4D94FF), size: 18),
-                          label: const Text(
-                            'Invite / Add Trainer',
-                            style: TextStyle(
+                          label: Text(
+                            'Invite / Add Trainer'.tr,
+                            style: const TextStyle(
                               color: Color(0xFF4D94FF),
                               fontWeight: FontWeight.bold,
                             ),
@@ -1544,17 +1544,17 @@ class _TeamScreenState extends State<TeamScreen> {
         backgroundColor: const Color(0xFF111827),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Delete Team',
+        title: Text('Delete Team'.tr,
             style:
-                TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: Text(
-            'Are you sure you want to delete "${team.name}"? This action cannot be undone.',
+            '${'Are you sure you want to delete'.tr} "${team.name}"? ${'This action cannot be undone.'.tr}',
             style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: Color(0xFF8B95A5))),
+            child: Text('Cancel'.tr,
+                style: const TextStyle(color: Color(0xFF8B95A5))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1567,7 +1567,7 @@ class _TeamScreenState extends State<TeamScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r)),
             ),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: Text('Delete'.tr, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1602,7 +1602,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Add Member to Team',
+                    'Add Member to Team'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.sp,
@@ -1621,7 +1621,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     TextStyle(color: const Color(0xFF4D94FF), fontSize: 13.sp),
               ),
               SizedBox(height: 16.h),
-              Text('Trainer Name',
+              Text('Trainer Name'.tr,
                   style: TextStyle(color: Colors.white70, fontSize: 14.sp)),
               SizedBox(height: 6.h),
               Container(
@@ -1635,7 +1635,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   controller: nameCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'Full Name'.tr,
                     hintStyle: TextStyle(
                         color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
@@ -1644,7 +1644,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
               ),
               SizedBox(height: 14.h),
-              Text('Trainer Email',
+              Text('Trainer Email'.tr,
                   style: TextStyle(color: Colors.white70, fontSize: 14.sp)),
               SizedBox(height: 6.h),
               Container(
@@ -1659,7 +1659,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Enter Trainer Email',
+                    hintText: 'Enter Trainer Email'.tr,
                     hintStyle: TextStyle(
                         color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
@@ -1684,7 +1684,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                       ),
                       child: Text(
-                        'Browse Trainers',
+                        'Browse Trainers'.tr,
                         style: TextStyle(
                           color: const Color(0xFF8B95A5),
                           fontSize: 13.sp,
@@ -1697,7 +1697,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (emailCtrl.text.trim().isEmpty) {
-                          Get.snackbar('Error', 'Please enter trainer email');
+                          Get.snackbar('Error'.tr, 'Please enter trainer email'.tr);
                           return;
                         }
                         Navigator.pop(ctx);
@@ -1716,7 +1716,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                       ),
                       child: Text(
-                        'Add Member',
+                        'Add Member'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

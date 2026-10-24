@@ -44,7 +44,7 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
         title: Text(
-          isEditing ? 'Edit Announcement' : 'New Announcement',
+          isEditing ? 'Edit Announcement'.tr : 'New Announcement'.tr,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
@@ -58,19 +58,19 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Keep up with your rewards and rankings.',
+              'Keep up with your rewards and rankings.'.tr,
               style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14.sp),
             ),
             SizedBox(height: 30.h),
 
             // Title Field
-            Text('Announcement Title', style: TextStyle(color: Colors.white, fontSize: 14.sp)),
+            Text('Announcement Title'.tr, style: TextStyle(color: Colors.white, fontSize: 14.sp)),
             SizedBox(height: 8.h),
             TextField(
               controller: titleCtrl,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Enter title',
+                hintText: 'Enter title'.tr,
                 hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: const Color(0xFF1A2236),
@@ -81,14 +81,14 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
             SizedBox(height: 20.h),
 
             // Description Field
-            Text('Description', style: TextStyle(color: Colors.white, fontSize: 14.sp)),
+            Text('Description'.tr, style: TextStyle(color: Colors.white, fontSize: 14.sp)),
             SizedBox(height: 8.h),
             TextField(
               controller: descCtrl,
               maxLines: 6,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Enter description....',
+                hintText: 'Enter description....'.tr,
                 hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: const Color(0xFF1A2236),
@@ -110,8 +110,8 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
                       : () {
                           if (titleCtrl.text.trim().isEmpty || descCtrl.text.trim().isEmpty) {
                             Get.snackbar(
-                              'Error',
-                              'Please fill all fields',
+                              'Error'.tr,
+                              'Please fill all fields'.tr,
                               backgroundColor: const Color(0xFF1A2236),
                               colorText: Colors.white,
                             );
@@ -143,7 +143,7 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
                           child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          isEditing ? 'Update' : 'Save',
+                          isEditing ? 'Update'.tr : 'Save'.tr,
                           style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),

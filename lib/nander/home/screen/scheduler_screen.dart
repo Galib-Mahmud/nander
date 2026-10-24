@@ -139,8 +139,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
           children: [
             Text(
               _currentStep == _stepOverview
-                  ? (session?.displayTitle ?? 'Training Session')
-                  : 'New Training Plan',
+                  ? (session?.displayTitle ?? 'Training Session'.tr)
+                  : 'New Training Plan'.tr,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -238,7 +238,10 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Step ${_currentStep + 1} of $_totalWizardSteps',
+            'Step @step of @total'.trParams({
+              'step': '${_currentStep + 1}',
+              'total': '$_totalWizardSteps',
+            }),
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14.sp,
@@ -279,7 +282,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
           const CircularProgressIndicator(color: Color(0xFF4D94FF)),
           SizedBox(height: 20.h),
           Text(
-            'Generating AI Training Plan...',
+            'Generating AI Training Plan...'.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 16.sp,
@@ -288,7 +291,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
           ),
           SizedBox(height: 8.h),
           Text(
-            'Designing tactical drills & session structure',
+            'Designing tactical drills & session structure'.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 13.sp,
@@ -322,10 +325,10 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                 border: Border.all(color: const Color(0xFF2A3550)),
                 borderRadius: BorderRadius.circular(28.r),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Back',
-                  style: TextStyle(
+                  'Back'.tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -348,7 +351,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      isLast ? 'Generate Plan' : 'Continue',
+                      isLast ? 'Generate Plan'.tr : 'Continue'.tr,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -395,7 +398,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          text,
+          text.tr,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 28,
@@ -405,7 +408,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         if (subtitle != null) ...[
           SizedBox(height: 8.h),
           Text(
-            subtitle,
+            subtitle.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14.sp,
@@ -421,7 +424,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
       child: Text(
-        text,
+        text.tr,
         style: TextStyle(
           color: Colors.white.withValues(alpha: 0.8),
           fontSize: 15.sp,
@@ -466,7 +469,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             ),
             SizedBox(height: 6.h),
             Text(
-              subtitle,
+              subtitle.tr,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 14.sp,
@@ -485,7 +488,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _stepTitle('Which period do you want to train for?'),
+          _stepTitle('Which period do you want to train for?'.tr),
           Obx(() {
             final selected = _controller.selectedDurationWeeks.value;
             // Rows with intrinsic height instead of GridView + fixed
@@ -494,8 +497,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             Widget cardAt(int i) {
               final o = _periodOptions[i];
               return _buildChoiceCard(
-                '${o.$1} weeks',
-                o.$2,
+                '${o.$1} ${'weeks'.tr}',
+                o.$2.tr,
                 selected == o.$1,
                 onTap: () => _controller.selectedDurationWeeks.value = o.$1,
               );
@@ -537,7 +540,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _stepTitle('How many training sessions per week?'),
+          _stepTitle('How many training sessions per week?'.tr),
           Obx(() {
             final selected = _controller.selectedTrainingsPerWeek.value;
             return Column(
@@ -545,8 +548,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
                   child: _buildChoiceCard(
-                    '${o.$1}× per week',
-                    o.$2,
+                    '${o.$1}× ${'per week'.tr}',
+                    o.$2.tr,
                     selected == o.$1,
                     onTap: () =>
                     _controller.selectedTrainingsPerWeek.value = o.$1,
@@ -594,7 +597,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _stepTitle('What would you like to train?'),
+          _stepTitle('What would you like to train?'.tr),
           Obx(() {
             final selectedFocus = _controller.selectedFocus.value;
             return GridView.count(
@@ -606,8 +609,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
               childAspectRatio: 1.1,
               children: trainingTypes.map((t) {
                 return _buildTrainingTypeCard(
-                  t.$1,
-                  t.$2,
+                  t.$1.tr,
+                  t.$2.tr,
                   t.$3,
                   selectedFocus == t.$4,
                   onTap: () => _controller.selectedFocus.value = t.$4,
@@ -627,43 +630,43 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _stepTitle('Set up the session'),
-          _sectionLabel('Difficulty Level'),
+          _stepTitle('Set up the session'.tr),
+          _sectionLabel('Difficulty Level'.tr),
           Obx(() {
             final diff = _controller.selectedDifficulty.value;
             return Row(
               children: [
-                _buildOptionChip('EASY', 'Easy', diff == 'EASY', () {
+                _buildOptionChip('EASY', 'Easy'.tr, diff == 'EASY', () {
                   _controller.selectedDifficulty.value = 'EASY';
                 }, const Color(0xFF10B981)),
                 SizedBox(width: 10.w),
-                _buildOptionChip('MEDIUM', 'Medium', diff == 'MEDIUM', () {
+                _buildOptionChip('MEDIUM', 'Medium'.tr, diff == 'MEDIUM', () {
                   _controller.selectedDifficulty.value = 'MEDIUM';
                 }, const Color(0xFFFFB800)),
                 SizedBox(width: 10.w),
-                _buildOptionChip('HARD', 'Hard', diff == 'HARD', () {
+                _buildOptionChip('HARD', 'Hard'.tr, diff == 'HARD', () {
                   _controller.selectedDifficulty.value = 'HARD';
                 }, const Color(0xFFEF4444)),
               ],
             );
           }),
           SizedBox(height: 28.h),
-          _sectionLabel('Field Setup'),
+          _sectionLabel('Field Setup'.tr),
           Obx(() {
             final fs = _controller.selectedFieldsize.value;
             return Row(
               children: [
-                _buildOptionChip('FULL_FIELD', 'Full Field', fs == 'FULL_FIELD',
+                _buildOptionChip('FULL_FIELD', 'Full Field'.tr, fs == 'FULL_FIELD',
                         () {
                       _controller.selectedFieldsize.value = 'FULL_FIELD';
                     }, const Color(0xFF4D94FF)),
                 SizedBox(width: 10.w),
-                _buildOptionChip('HALF_FIELD', 'Half Field', fs == 'HALF_FIELD',
+                _buildOptionChip('HALF_FIELD', 'Half Field'.tr, fs == 'HALF_FIELD',
                         () {
                       _controller.selectedFieldsize.value = 'HALF_FIELD';
                     }, const Color(0xFF4D94FF)),
                 SizedBox(width: 10.w),
-                _buildOptionChip('CAROUSEL', 'Carousel', fs == 'CAROUSEL', () {
+                _buildOptionChip('CAROUSEL', 'Carousel'.tr, fs == 'CAROUSEL', () {
                   _controller.selectedFieldsize.value = 'CAROUSEL';
                 }, const Color(0xFF4D94FF)),
               ],
@@ -682,10 +685,10 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _stepTitle(
-            'Anything else?',
-            subtitle: 'Both fields are optional. You can generate right away.',
+            'Anything else?'.tr,
+            subtitle: 'Both fields are optional. You can generate right away.'.tr,
           ),
-          _sectionLabel('Training Type (Optional)'),
+          _sectionLabel('Training Type (Optional)'.tr),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
             decoration: BoxDecoration(
@@ -697,7 +700,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
               controller: _controller.trainingTypeCtrl,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'e.g. Circle entry, Tactical Session...',
+                hintText: 'e.g. Circle entry, Tactical Session...'.tr,
                 hintStyle: TextStyle(
                   color: Colors.white.withValues(alpha: 0.4),
                   fontSize: 14,
@@ -707,7 +710,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             ),
           ),
           SizedBox(height: 28.h),
-          _sectionLabel('Target Duration (Optional)'),
+          _sectionLabel('Target Duration (Optional)'.tr),
           Obx(() {
             final currentDur = _controller.targetDurationMinutes.value;
             final durations = [60, 90, 120, 160];
@@ -735,7 +738,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          '$d min',
+                          '$d ${'min'.tr}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13.sp,
@@ -913,7 +916,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                 color: Colors.white.withValues(alpha: 0.6), size: 16.w),
             SizedBox(width: 6.w),
             Text(
-              'Thu 27 Aug · 16:30 · $duration min',
+              'Thu 27 Aug · 16:30 · $duration ${'min'.tr}',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 13.sp,
@@ -946,7 +949,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
   Widget _buildSessionOverview() {
     return Obx(() {
       final session = _controller.currentSession.value;
-      final sessionTitle = session?.displayTitle ?? 'Training Session';
+      final sessionTitle = session?.displayTitle ?? 'Training Session'.tr;
       final duration = session?.durationMinutes ?? 0;
       final difficulty =
           session?.displayDifficulty ?? _controller.selectedDifficulty.value;
@@ -996,10 +999,10 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                               Border.all(color: const Color(0xFF2A3550)),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Reschedule',
-                                style: TextStyle(
+                                'Reschedule'.tr,
+                                style: const TextStyle(
                                     color: Colors.white, fontSize: 14),
                               ),
                             ),
@@ -1017,15 +1020,15 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                               color: const Color(0xFF4D94FF),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.check,
+                                const Icon(Icons.check,
                                     color: Colors.white, size: 18),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(
-                                  'Continue',
-                                  style: TextStyle(
+                                  'Continue'.tr,
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
@@ -1045,13 +1048,13 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             // Coaching Rationale & Overview Text
             if (session?.sessionOverview != null &&
                 session!.sessionOverview!.isNotEmpty) ...[
-              _buildOverviewCard('Session Rationale', session.sessionOverview!),
+              _buildOverviewCard('Session Rationale'.tr, session.sessionOverview!),
               SizedBox(height: 12.h),
             ],
 
-            const Text(
-              'Session Overview',
-              style: TextStyle(
+            Text(
+              'Session Overview'.tr,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -1069,8 +1072,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
                   child: _buildOverviewCard(
-                    '${ex.slotName ?? "Exercise ${ex.order}"} - ${ex.exerciseName}',
-                    '${ex.description ?? "Focus on execution, tactical movement and teamwork."}$cue (${ex.allocatedDuration ?? "${ex.durationMinutes} min"})',
+                    '${ex.slotName ?? "Exercise ${ex.order}".tr} - ${ex.exerciseName}',
+                    '${ex.description ?? "Focus on execution, tactical movement and teamwork.".tr}$cue (${ex.allocatedDuration ?? "${ex.durationMinutes} ${'min'.tr}"})',
                   ),
                 );
               }),
@@ -1088,18 +1091,18 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Report Lead Trainer',
-                    style: TextStyle(
+                  Text(
+                    'Report Lead Trainer'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  const Text(
-                    'Report Topic',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  Text(
+                    'Report Topic'.tr,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
                   SizedBox(height: 8.h),
                   Container(
@@ -1122,7 +1125,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                         items: _reportTopics.map((t) {
                           return DropdownMenuItem<String>(
                             value: t,
-                            child: Text(t),
+                            child: Text(t.tr),
                           );
                         }).toList(),
                         onChanged: (val) {
@@ -1134,9 +1137,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  const Text(
-                    'Your Report',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  Text(
+                    'Your Report'.tr,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
                   SizedBox(height: 8.h),
                   Container(
@@ -1150,9 +1153,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                     child: TextField(
                       controller: _reportCtrl,
                       style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Type here...',
-                        hintStyle: TextStyle(color: Colors.white54),
+                      decoration: InputDecoration(
+                        hintText: 'Type here...'.tr,
+                        hintStyle: const TextStyle(color: Colors.white54),
                         border: InputBorder.none,
                       ),
                     ),
@@ -1166,8 +1169,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                           : () async {
                         if (_reportCtrl.text.trim().isEmpty) {
                           Get.snackbar(
-                            'Note Required',
-                            'Please type your report message first',
+                            'Note Required'.tr,
+                            'Please type your report message first'.tr,
                             snackPosition: SnackPosition.BOTTOM,
                             backgroundColor:
                             Colors.red.withValues(alpha: 0.8),
@@ -1186,8 +1189,8 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                           if (ok) _reportCtrl.clear();
                         } else {
                           Get.snackbar(
-                            'Success',
-                            'Report recorded for current session',
+                            'Success'.tr,
+                            'Report recorded for current session'.tr,
                             snackPosition: SnackPosition.BOTTOM,
                             backgroundColor: const Color(0xFF10B981),
                             colorText: Colors.white,
@@ -1214,9 +1217,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                              : const Text(
-                            'Submit Report',
-                            style: TextStyle(
+                              : Text(
+                            'Submit Report'.tr,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -1292,9 +1295,9 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
                               const Icon(Icons.check,
                                   color: Colors.white, size: 18),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Done Session',
-                                style: TextStyle(
+                              Text(
+                                'Done Session'.tr,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -1334,7 +1337,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             SizedBox(width: 4.w),
           ],
           Text(
-            text,
+            text.tr,
             style: TextStyle(
               color: textColor ?? Colors.white,
               fontSize: 12.sp,
@@ -1359,7 +1362,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            title.tr,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,

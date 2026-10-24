@@ -46,9 +46,9 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF050810),
         foregroundColor: Colors.white,
-        title: const Text(
-          'Top Clubs',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        title: Text(
+          'Top Clubs'.tr,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -68,7 +68,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Text(
-              'Keep up with your rewards and rankings.',
+              'Keep up with your rewards and rankings.'.tr,
               style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
             ),
           ),
@@ -102,7 +102,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            'My Network',
+                            'My Network'.tr,
                             style: TextStyle(
                               color: !isFindClubsActive
                                   ? Colors.white
@@ -130,7 +130,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            'Find Clubs',
+                            'Find Clubs'.tr,
                             style: TextStyle(
                               color: isFindClubsActive
                                   ? Colors.white
@@ -168,9 +168,9 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
                     child: TextField(
                       controller: _searchController,
                       style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Search clubs...',
-                        hintStyle: TextStyle(color: Color(0xFF8B95A5)),
+                      decoration: InputDecoration(
+                        hintText: 'Search clubs...'.tr,
+                        hintStyle: const TextStyle(color: Color(0xFF8B95A5)),
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
@@ -210,7 +210,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
       if (controller.findClubs.isEmpty) {
         return Center(
           child: Text(
-            'No clubs found',
+            'No clubs found'.tr,
             style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
           ),
         );
@@ -246,7 +246,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
       if (controller.networkClubs.isEmpty) {
         return Center(
           child: Text(
-            'No clubs in your network',
+            'No clubs in your network'.tr,
             style: TextStyle(color: const Color(0xFF8B95A5), fontSize: 14.sp),
           ),
         );
@@ -320,7 +320,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
                     : () => controller.sendInvite(club.id),
                 child: Container(
                   padding: EdgeInsets.symmetric(
-                      horizontal: 24.w, vertical: 10.h),
+                       horizontal: 24.w, vertical: 10.h),
                   decoration: BoxDecoration(
                     color: isInvited
                         ? const Color(0xFF1F2937)
@@ -328,7 +328,7 @@ class _TopClubsScreenState extends State<TopClubsScreen> {
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Text(
-                    isInvited ? 'Sent' : 'Invite',
+                    isInvited ? 'Sent'.tr : 'Invite'.tr,
                     style: TextStyle(
                       color: isInvited
                           ? const Color(0xFF8B95A5)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ClubProfileScreen extends StatelessWidget {
@@ -93,7 +94,7 @@ class ClubProfileScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Text(
-                'Keep up with your rewards and rankings.',
+                'Keep up with your rewards and rankings.'.tr,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14.sp,
@@ -176,20 +177,20 @@ class ClubProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Club readiness',
-                        style: TextStyle(
+                        'Club readiness'.tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        'All',
-                        style: TextStyle(
+                        'All'.tr,
+                        style: const TextStyle(
                           color: Color(0xFF4D94FF),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -243,9 +244,9 @@ class ClubProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Trainingen per week (Laatste 8w)',
-                      style: TextStyle(
+                    Text(
+                      'Trainings per week (Last 8w)'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -394,7 +395,7 @@ class ClubProfileScreen extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Session',
+            'Session'.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.6),
               fontSize: 13.sp,

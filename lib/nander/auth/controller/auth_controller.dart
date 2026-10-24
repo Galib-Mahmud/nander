@@ -396,7 +396,7 @@ class AuthController extends GetxController {
             const SizedBox(width: 10),
             Expanded(
                 child:
-                    Text(message, style: const TextStyle(color: Colors.white))),
+                    Text(message.tr, style: const TextStyle(color: Colors.white))),
           ],
         ),
         backgroundColor: color,

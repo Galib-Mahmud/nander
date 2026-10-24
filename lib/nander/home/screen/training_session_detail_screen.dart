@@ -142,7 +142,7 @@ class _TrainingSessionDetailScreenState
                     children: [
                       _buildChip(
                         icon: Icons.timer_outlined,
-                        label: "${s.durationMinutes} min",
+                        label: "${s.durationMinutes} ${'min'.tr}",
                       ),
                       _buildChip(
                         icon: Icons.shield_outlined,
@@ -150,11 +150,11 @@ class _TrainingSessionDetailScreenState
                       ),
                       _buildChip(
                         icon: Icons.speed,
-                        label: s.displayDifficulty,
+                        label: s.displayDifficulty.tr,
                       ),
                       _buildChip(
                         icon: Icons.crop_square,
-                        label: s.displayFieldsize,
+                        label: s.displayFieldsize.tr,
                       ),
                     ],
                   ),
@@ -232,7 +232,7 @@ class _TrainingSessionDetailScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Exercises (${s.exercises.length})'.tr,
+                    '${'Exercises'.tr} (${s.exercises.length})',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
@@ -240,7 +240,7 @@ class _TrainingSessionDetailScreenState
                     ),
                   ),
                   Text(
-                    '${s.durationMinutes} min total',
+                    '${s.durationMinutes} ${'min total'.tr}',
                     style: TextStyle(
                       color: const Color(0xFF4D94FF),
                       fontSize: 13.sp,
@@ -306,7 +306,7 @@ class _TrainingSessionDetailScreenState
                         SizedBox(width: 8.w),
                         Text(
                           _isCompleted
-                              ? 'Completed Session'
+                              ? 'Completed Session'.tr
                               : 'Mark as Completed'.tr,
                           style: TextStyle(
                             color: Colors.white,
@@ -345,8 +345,8 @@ class _TrainingSessionDetailScreenState
   Future<void> _submitReview() async {
     if (_rating == 0) {
       Get.snackbar(
-        'Rating required',
-        'Please select a star rating first',
+        'Rating required'.tr,
+        'Please select a star rating first'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
@@ -374,7 +374,7 @@ class _TrainingSessionDetailScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Rate & Review Session',
+          'Rate & Review Session'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 16.sp,
@@ -402,24 +402,24 @@ class _TrainingSessionDetailScreenState
       children: [
         _buildRatingPicker(),
         _buildReviewField(
-          label: 'Review',
+          label: 'Review'.tr,
           controller: _reviewCtrl,
-          hint: 'Write a short review of this session...',
+          hint: 'Write a short review of this session...'.tr,
         ),
         _buildReviewField(
-          label: 'Evaluation',
+          label: 'Evaluation'.tr,
           controller: _evaluationCtrl,
-          hint: 'How did the players perform overall?',
+          hint: 'How did the players perform overall?'.tr,
         ),
         _buildReviewField(
-          label: 'Feedback',
+          label: 'Feedback'.tr,
           controller: _feedbackCtrl,
-          hint: 'Feedback on drills, intensity or structure...',
+          hint: 'Feedback on drills, intensity or structure...'.tr,
         ),
         _buildReviewField(
-          label: 'Training Goal',
+          label: 'Training Goal'.tr,
           controller: _goalCtrl,
-          hint: 'What was the goal and was it achieved?',
+          hint: 'What was the goal and was it achieved?'.tr,
         ),
         SizedBox(height: 14.h),
         DropdownButtonFormField<String>(
@@ -427,7 +427,7 @@ class _TrainingSessionDetailScreenState
           dropdownColor: const Color(0xFF1A2236),
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            labelText: 'Report Topic',
+            labelText: 'Report Topic'.tr,
             labelStyle:
             TextStyle(color: Colors.white.withValues(alpha: 0.6)),
             border: OutlineInputBorder(
@@ -440,16 +440,16 @@ class _TrainingSessionDetailScreenState
             ),
           ),
           items: _topics
-              .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+              .map((t) => DropdownMenuItem(value: t, child: Text(t.tr)))
               .toList(),
           onChanged: (val) {
             if (val != null) setState(() => _selectedTopic = val);
           },
         ),
         _buildReviewField(
-          label: 'Your Report',
+          label: 'Your Report'.tr,
           controller: _yourReportCtrl,
-          hint: 'Enter observation, notes or issues...',
+          hint: 'Enter observation, notes or issues...'.tr,
           maxLines: 3,
         ),
         SizedBox(height: 18.h),
@@ -505,7 +505,7 @@ class _TrainingSessionDetailScreenState
       child: Column(
         children: [
           Text(
-            'How was this session?',
+            'How was this session?'.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 14.sp,
@@ -545,8 +545,8 @@ class _TrainingSessionDetailScreenState
             duration: const Duration(milliseconds: 200),
             child: Text(
               _rating == 0
-                  ? 'Tap a star to rate'
-                  : '$_rating/5 · ${_ratingLabels[_rating - 1]}',
+                  ? 'Tap a star to rate'.tr
+                  : '$_rating/5 · ${_ratingLabels[_rating - 1].tr}',
               key: ValueKey(_rating),
               style: TextStyle(
                 color: _rating == 0
@@ -574,7 +574,7 @@ class _TrainingSessionDetailScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
+            label.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 13.sp,
@@ -587,7 +587,7 @@ class _TrainingSessionDetailScreenState
             maxLines: maxLines,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: hint,
+              hintText: hint.tr,
               hintStyle: TextStyle(
                 color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 13.sp,
@@ -620,7 +620,7 @@ class _TrainingSessionDetailScreenState
             color: const Color(0xFF10B981), size: 44.w),
         SizedBox(height: 10.h),
         Text(
-          'Thanks for your review!',
+          'Thanks for your review!'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 16.sp,
@@ -658,7 +658,7 @@ class _TrainingSessionDetailScreenState
           Icon(icon, color: Colors.white.withValues(alpha: 0.6), size: 14.w),
           SizedBox(width: 6.w),
           Text(
-            label,
+            label.tr,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 12.sp,
@@ -737,7 +737,7 @@ class _TrainingSessionDetailScreenState
           if (ex.coachingPoints.isNotEmpty) ...[
             SizedBox(height: 10.h),
             Text(
-              'Coaching Points:',
+              'Coaching Points:'.tr,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 12.sp,

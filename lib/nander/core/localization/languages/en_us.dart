@@ -307,4 +307,210 @@ const Map<String, String> enUS = {
   'Copied': 'Copied',
   'Message copied to clipboard': 'Message copied to clipboard',
   'No club requests': 'No club requests',
+
+  // Scheduler Wizard & Options
+  'New Training Plan': 'New Training Plan',
+  'Step @step of @total': 'Step @step of @total',
+  'Which period do you want to train for?':
+      'Which period do you want to train for?',
+  'weeks': 'weeks',
+  'Start strong': 'Start strong',
+  'Build momentum': 'Build momentum',
+  'Improve your game': 'Improve your game',
+  'Reach your potential': 'Reach your potential',
+  'How many training sessions per week?':
+      'How many training sessions per week?',
+  'per week': 'per week',
+  'Light & consistent': 'Light & consistent',
+  'Balanced training': 'Balanced training',
+  'High intensity': 'High intensity',
+  'What would you like to train?': 'What would you like to train?',
+  'Attacking': 'Attacking',
+  'Depth, tempo and goal-focused play': 'Depth, tempo and goal-focused play',
+  'Defending': 'Defending',
+  'Stay compact, apply pressure': 'Stay compact, apply pressure',
+  'Transition': 'Transition',
+  'Quickly switch between attack/defense':
+      'Quickly switch between attack/defense',
+  'Technique': 'Technique',
+  'Receiving, passing, dribbling': 'Receiving, passing, dribbling',
+  'Set up the session': 'Set up the session',
+  'Difficulty Level': 'Difficulty Level',
+  'Easy': 'Easy',
+  'Medium': 'Medium',
+  'Hard': 'Hard',
+  'EASY': 'Easy',
+  'MEDIUM': 'Medium',
+  'HARD': 'Hard',
+  'Field Setup': 'Field Setup',
+  'Full Field': 'Full Field',
+  'Half Field': 'Half Field',
+  'Carousel': 'Carousel',
+  'FULL_FIELD': 'Full Field',
+  'HALF_FIELD': 'Half Field',
+  'CAROUSEL': 'Carousel',
+  'ATTACK': 'Attacking',
+  'DEFENCE': 'Defending',
+  'TRANSITION': 'Transition',
+  'Anything else?': 'Anything else?',
+  'Both fields are optional. You can generate right away.':
+      'Both fields are optional. You can generate right away.',
+  'Training Type (Optional)': 'Training Type (Optional)',
+  'Target Duration (Optional)': 'Target Duration (Optional)',
+  'e.g. Circle entry, Tactical Session...':
+      'e.g. Circle entry, Tactical Session...',
+  'Generate Plan': 'Generate Plan',
+  'Generating AI Training Plan...': 'Generating AI Training Plan...',
+  'Designing tactical drills & session structure':
+      'Designing tactical drills & session structure',
+  'Reschedule': 'Reschedule',
+  'Session Overview': 'Session Overview',
+  'Session Rationale': 'Session Rationale',
+  'Report Lead Trainer': 'Report Lead Trainer',
+  'Report Topic': 'Report Topic',
+  'Your Report': 'Your Report',
+  'Type here...': 'Type here...',
+  'Submit Report': 'Submit Report',
+  'Done Session': 'Done Session',
+  'Late Issue': 'Late Issue',
+  'Tactical Feedback': 'Tactical Feedback',
+  'Player Injury': 'Player Injury',
+  'Equipment Missing': 'Equipment Missing',
+  'General Note': 'General Note',
+  'Note Required': 'Note Required',
+  'Please type your report message first':
+      'Please type your report message first',
+  'Report recorded for current session':
+      'Report recorded for current session',
+  'Focus on execution, tactical movement and teamwork.':
+      'Focus on execution, tactical movement and teamwork.',
+
+  // Training Session Details & Review
+  'Coaching Points:': 'Coaching Points:',
+  'Coaching Rationale': 'Coaching Rationale',
+  'Mark as Completed': 'Mark as Completed',
+  'Completed Session': 'Completed Session',
+  'Rate & Review Session': 'Rate & Review Session',
+  'How was this session?': 'How was this session?',
+  'Tap a star to rate': 'Tap a star to rate',
+  'Review': 'Review',
+  'Write a short review of this session...':
+      'Write a short review of this session...',
+  'Evaluation': 'Evaluation',
+  'How did the players perform overall?':
+      'How did the players perform overall?',
+  'Feedback': 'Feedback',
+  'Feedback on drills, intensity or structure...':
+      'Feedback on drills, intensity or structure...',
+  'Training Goal': 'Training Goal',
+  'What was the goal and was it achieved?':
+      'What was the goal and was it achieved?',
+  'Enter observation, notes or issues...':
+      'Enter observation, notes or issues...',
+  'Submit Review': 'Submit Review',
+  'Thanks for your review!': 'Thanks for your review!',
+  'Rating required': 'Rating required',
+  'Please select a star rating first': 'Please select a star rating first',
+  'Poor': 'Poor',
+  'Fair': 'Fair',
+  'Good': 'Good',
+  'Very good': 'Very good',
+  'Excellent': 'Excellent',
+  'min total': 'min total',
+  'Exercises': 'Exercises',
+
+  // Teams & Trainer Screen additions
+  'Find More Teams': 'Find More Teams',
+  'Tap below to add your first team': 'Tap below to add your first team',
+  'Explore teams and send a request to join':
+      'Explore teams and send a request to join',
+  'Search teams by name, location...': 'Search teams by name, location...',
+  'No pending team requests': 'No pending team requests',
+  'Invitations from clubs will appear here':
+      'Invitations from clubs will appear here',
+  'Sessions': 'Sessions',
+  'Join': 'Join',
+  'Team Request': 'Team Request',
+  'Active Members': 'Active Members',
+  'No active team members yet': 'No active team members yet',
+  'No pending join requests': 'No pending join requests',
+  'Invite / Add Trainer': 'Invite / Add Trainer',
+  'Are you sure you want to delete': 'Are you sure you want to delete',
+  'This action cannot be undone.': 'This action cannot be undone.',
+  'Delete': 'Delete',
+  'Add Member to Team': 'Add Member to Team',
+  'Browse Trainers': 'Browse Trainers',
+  'Add Member': 'Add Member',
+  'Please enter trainer email': 'Please enter trainer email',
+  'Total': 'Total',
+  'All teams': 'All teams',
+  'session scheduled': 'session scheduled',
+  'sessions scheduled': 'sessions scheduled',
+
+  // Top Clubs & Club Profile
+  'Top Clubs': 'Top Clubs',
+  'My Network': 'My Network',
+  'Keep up with your rewards and rankings.':
+      'Keep up with your rewards and rankings.',
+  'No clubs in your network': 'No clubs in your network',
+  'Invite': 'Invite',
+  'Sent': 'Sent',
+  'Club Profile': 'Club Profile',
+  'Club readiness': 'Club readiness',
+  'Trainings per week (Last 8w)': 'Trainings per week (Last 8w)',
+  'sessions': 'sessions',
+  'vs last': 'vs last',
+
+  // Notifications
+  'Unread': 'Unread',
+  'No unread notifications': 'No unread notifications',
+  'Reject': 'Reject',
+  'Notification': 'Notification',
+
+  // Announcements
+  'Announcement': 'Announcement',
+  'Announcement Detail': 'Announcement Detail',
+  'No announcements yet': 'No announcements yet',
+  'Add New Announcement': 'Add New Announcement',
+  'New Announcement': 'New Announcement',
+  'Edit Announcement': 'Edit Announcement',
+  'Announcement Title': 'Announcement Title',
+  'Enter title': 'Enter title',
+  'Description': 'Description',
+  'Enter description....': 'Enter description....',
+  'Update': 'Update',
+  'Publish Announcement': 'Publish Announcement',
+  'Please fill all fields': 'Please fill all fields',
+  'Delete Announcement': 'Delete Announcement',
+  'Are you sure you want to delete this announcement?':
+      'Are you sure you want to delete this announcement?',
+  'Edit': 'Edit',
+
+  // Chat
+  'Clear Chat': 'Clear Chat',
+  'Are you sure you want to clear messages from this screen?':
+      'Are you sure you want to clear messages from this screen?',
+  'Clear': 'Clear',
+  'Refresh chat': 'Refresh chat',
+  'Clear chat': 'Clear chat',
+  'Delete for me': 'Delete for me',
+  'Yesterday': 'Yesterday',
+
+  // Drawer & Onboarding
+  'Selection Required': 'Selection Required',
+  'Trainer': 'Trainer',
+  'Create training plans, track player progress, and run sessions.':
+      'Create training plans, track player progress, and run sessions.',
+
+  // Additional Common / Errors
+  'Please enter a team name': 'Please enter a team name',
+  'Current image loaded': 'Current image loaded',
+  'Success': 'Success',
+  'Error': 'Error',
+  'Signup successful. Check your email for the code.':
+      'Signup successful. Check your email for the code.',
+  'Please enter the complete code': 'Please enter the complete code',
+  'Email verified successfully': 'Email verified successfully',
+  'Something went wrong. Please try again.':
+      'Something went wrong. Please try again.',
 };

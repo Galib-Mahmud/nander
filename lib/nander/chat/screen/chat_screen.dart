@@ -122,8 +122,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final msgDate = DateTime(dt.year, dt.month, dt.day);
     final diff = today.difference(msgDate).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Yesterday';
+    if (diff == 0) return 'Today'.tr;
+    if (diff == 1) return 'Yesterday'.tr;
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -287,7 +287,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if (isMine)
               ListTile(
                 leading: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
-                title: const Text('Delete for me', style: TextStyle(color: Colors.redAccent)),
+                title: Text('Delete for me'.tr, style: const TextStyle(color: Colors.redAccent)),
                 onTap: () {
                   Navigator.pop(context);
                   controller.deleteMessageLocally(msg.id);
@@ -305,22 +305,22 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: waAppBarColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Clear Chat', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Are you sure you want to clear messages from this screen?',
-          style: TextStyle(color: Colors.white70),
+        title: Text('Clear Chat'.tr, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          'Are you sure you want to clear messages from this screen?'.tr,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child: Text('Cancel'.tr, style: const TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               controller.clearChatLocally();
             },
-            child: const Text('Clear', style: TextStyle(color: Colors.redAccent)),
+            child: Text('Clear'.tr, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -393,7 +393,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   Text(
-                    '$_peerRole • ${widget.isPeerOnline ? "Online" : "Offline"}',
+                    '$_peerRole • ${widget.isPeerOnline ? "Online".tr : "Offline".tr}',
                     style: TextStyle(
                       color: widget.isPeerOnline ? waTealAccent : waTextMuted,
                       fontSize: 11.5.sp,
@@ -418,13 +418,13 @@ class _ChatScreenState extends State<ChatScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'refresh',
-                child: Text('Refresh chat', style: TextStyle(color: Colors.white)),
+                child: Text('Refresh chat'.tr, style: const TextStyle(color: Colors.white)),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'clear',
-                child: Text('Clear chat', style: TextStyle(color: Colors.white)),
+                child: Text('Clear chat'.tr, style: const TextStyle(color: Colors.white)),
               ),
             ],
           ),

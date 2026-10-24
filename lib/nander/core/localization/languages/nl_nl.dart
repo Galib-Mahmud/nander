@@ -308,4 +308,210 @@ const Map<String, String> nlNL = {
   'Copied': 'Gekopieerd',
   'Message copied to clipboard': 'Bericht gekopieerd naar klembord',
   'No club requests': 'Geen clubaanvragen',
+
+  // Scheduler Wizard & Options
+  'New Training Plan': 'Nieuw trainingsplan',
+  'Step @step of @total': 'Stap @step van @total',
+  'Which period do you want to train for?':
+      'Voor welke periode wilt u trainen?',
+  'weeks': 'weken',
+  'Start strong': 'Sterk starten',
+  'Build momentum': 'Bouw momentum op',
+  'Improve your game': 'Verbeter uw spel',
+  'Reach your potential': 'Bereik uw potentieel',
+  'How many training sessions per week?':
+      'Hoeveel trainingssessies per week?',
+  'per week': 'per week',
+  'Light & consistent': 'Licht & consistent',
+  'Balanced training': 'Evenwichtige training',
+  'High intensity': 'Hoge intensiteit',
+  'What would you like to train?': 'Wat wilt u trainen?',
+  'Attacking': 'Aanvallen',
+  'Depth, tempo and goal-focused play': 'Diepte, tempo en doelgericht spel',
+  'Defending': 'Verdedigen',
+  'Stay compact, apply pressure': 'Compact blijven, druk zetten',
+  'Transition': 'Omschakeling',
+  'Quickly switch between attack/defense':
+      'Snel schakelen tussen aanval/verdediging',
+  'Technique': 'Techniek',
+  'Receiving, passing, dribbling': 'Aannemen, passen, dribbelen',
+  'Set up the session': 'Stel de sessie in',
+  'Difficulty Level': 'Moeilijkheidsgraad',
+  'Easy': 'Makkelijk',
+  'Medium': 'Gemiddeld',
+  'Hard': 'Moeilijk',
+  'EASY': 'Makkelijk',
+  'MEDIUM': 'Gemiddeld',
+  'HARD': 'Moeilijk',
+  'Field Setup': 'Veldopstelling',
+  'Full Field': 'Volledig veld',
+  'Half Field': 'Half veld',
+  'Carousel': 'Carrousel',
+  'FULL_FIELD': 'Volledig veld',
+  'HALF_FIELD': 'Half veld',
+  'CAROUSEL': 'Carrousel',
+  'ATTACK': 'Aanvallend',
+  'DEFENCE': 'Verdedigend',
+  'TRANSITION': 'Omschakeling',
+  'Anything else?': 'Nog iets anders?',
+  'Both fields are optional. You can generate right away.':
+      'Beide velden zijn optioneel. U kunt direct genereren.',
+  'Training Type (Optional)': 'Trainingstype (optioneel)',
+  'Target Duration (Optional)': 'Doelduur (optioneel)',
+  'e.g. Circle entry, Tactical Session...':
+      'bijv. Cirkelpenetratie, tactische sessie...',
+  'Generate Plan': 'Plan genereren',
+  'Generating AI Training Plan...': 'AI-trainingsplan wordt gegenereerd...',
+  'Designing tactical drills & session structure':
+      'Tactische oefeningen en sessiestructuur worden ontworpen',
+  'Reschedule': 'Opnieuw inplannen',
+  'Session Overview': 'Sessieoverzicht',
+  'Session Rationale': 'Sessierationale',
+  'Report Lead Trainer': 'Hoofdtrainer rapporteren',
+  'Report Topic': 'Onderwerp van rapport',
+  'Your Report': 'Uw rapport',
+  'Type here...': 'Typ hier...',
+  'Submit Report': 'Rapport verzenden',
+  'Done Session': 'Sessie afronden',
+  'Late Issue': 'Te laat probleem',
+  'Tactical Feedback': 'Tactische feedback',
+  'Player Injury': 'Spelersblessure',
+  'Equipment Missing': 'Materiaal ontbreekt',
+  'General Note': 'Algemene opmerking',
+  'Note Required': 'Notitie vereist',
+  'Please type your report message first':
+      'Typ eerst uw rapportbericht',
+  'Report recorded for current session':
+      'Rapport vastgelegd voor huidige sessie',
+  'Focus on execution, tactical movement and teamwork.':
+      'Focus op uitvoering, tactische beweging en teamwork.',
+
+  // Training Session Details & Review
+  'Coaching Points:': 'Aandachtspunten:',
+  'Coaching Rationale': 'Coaching rationale',
+  'Mark as Completed': 'Markeren als voltooid',
+  'Completed Session': 'Voltooide sessie',
+  'Rate & Review Session': 'Sessie beoordelen & recenseren',
+  'How was this session?': 'Hoe was deze sessie?',
+  'Tap a star to rate': 'Tik op een ster om te beoordelen',
+  'Review': 'Recensie',
+  'Write a short review of this session...':
+      'Schrijf een korte recensie over deze sessie...',
+  'Evaluation': 'Evaluatie',
+  'How did the players perform overall?':
+      'Hoe presteerden de spelers over het algemeen?',
+  'Feedback': 'Feedback',
+  'Feedback on drills, intensity or structure...':
+      'Feedback op oefeningen, intensiteit of structuur...',
+  'Training Goal': 'Trainingsdoel',
+  'What was the goal and was it achieved?':
+      'Wat was het doel en is het bereikt?',
+  'Enter observation, notes or issues...':
+      'Voer observatie, notities of problemen in...',
+  'Submit Review': 'Recensie versturen',
+  'Thanks for your review!': 'Bedankt voor uw recensie!',
+  'Rating required': 'Beoordeling vereist',
+  'Please select a star rating first': 'Selecteer eerst een sterbeoordeling',
+  'Poor': 'Slecht',
+  'Fair': 'Matig',
+  'Good': 'Goed',
+  'Very good': 'Zeer goed',
+  'Excellent': 'Uitstekend',
+  'min total': 'min totaal',
+  'Exercises': 'Oefeningen',
+
+  // Teams & Trainer Screen additions
+  'Find More Teams': 'Meer teams zoeken',
+  'Tap below to add your first team': 'Tik hieronder om uw eerste team toe te voegen',
+  'Explore teams and send a request to join':
+      'Ontdek teams en stuur een verzoek om lid te worden',
+  'Search teams by name, location...': 'Zoek teams op naam, locatie...',
+  'No pending team requests': 'Geen openstaande teamaanvragen',
+  'Invitations from clubs will appear here':
+      'Uitnodigingen van clubs verschijnen hier',
+  'Sessions': 'Sessies',
+  'Join': 'Deelnemen',
+  'Team Request': 'Teamaanvraag',
+  'Active Members': 'Actieve leden',
+  'No active team members yet': 'Nog geen actieve teamleden',
+  'No pending join requests': 'Geen openstaande toetredingsverzoeken',
+  'Invite / Add Trainer': 'Trainer uitnodigen / toevoegen',
+  'Are you sure you want to delete': 'Weet u zeker dat u wilt verwijderen',
+  'This action cannot be undone.': 'Deze actie kan niet ongedaan worden gemaakt.',
+  'Delete': 'Verwijderen',
+  'Add Member to Team': 'Lid toevoegen aan team',
+  'Browse Trainers': 'Trainers bekijken',
+  'Add Member': 'Lid toevoegen',
+  'Please enter trainer email': 'Voer e-mailadres van trainer in',
+  'Total': 'Totaal',
+  'All teams': 'Alle teams',
+  'session scheduled': 'sessie gepland',
+  'sessions scheduled': 'sessies gepland',
+
+  // Top Clubs & Club Profile
+  'Top Clubs': 'Topclubs',
+  'My Network': 'Mijn netwerk',
+  'Keep up with your rewards and rankings.':
+      'Blijf op de hoogte van uw beloningen en ranglijsten.',
+  'No clubs in your network': 'Geen clubs in uw netwerk',
+  'Invite': 'Uitnodigen',
+  'Sent': 'Verzonden',
+  'Club Profile': 'Clubprofiel',
+  'Club readiness': 'Clubgereedheid',
+  'Trainings per week (Last 8w)': 'Trainingen per week (Laatste 8w)',
+  'sessions': 'sessies',
+  'vs last': 't.o.v. vorige',
+
+  // Notifications
+  'Unread': 'Ongelezen',
+  'No unread notifications': 'Geen ongelezen meldingen',
+  'Reject': 'Weigeren',
+  'Notification': 'Melding',
+
+  // Announcements
+  'Announcement': 'Aankondiging',
+  'Announcement Detail': 'Aankondigingsdetails',
+  'No announcements yet': 'Nog geen aankondigingen',
+  'Add New Announcement': 'Nieuwe aankondiging toevoegen',
+  'New Announcement': 'Nieuwe aankondiging',
+  'Edit Announcement': 'Aankondiging bewerken',
+  'Announcement Title': 'Titel van aankondiging',
+  'Enter title': 'Voer titel in',
+  'Description': 'Beschrijving',
+  'Enter description....': 'Voer beschrijving in....',
+  'Update': 'Bijwerken',
+  'Publish Announcement': 'Aankondiging publiceren',
+  'Please fill all fields': 'Vul alle velden in',
+  'Delete Announcement': 'Aankondiging verwijderen',
+  'Are you sure you want to delete this announcement?':
+      'Weet u zeker dat u deze aankondiging wilt verwijderen?',
+  'Edit': 'Bewerken',
+
+  // Chat
+  'Clear Chat': 'Chat wissen',
+  'Are you sure you want to clear messages from this screen?':
+      'Weet u zeker dat u berichten van dit scherm wilt wissen?',
+  'Clear': 'Wissen',
+  'Refresh chat': 'Chat vernieuwen',
+  'Clear chat': 'Chat wissen',
+  'Delete for me': 'Voor mij verwijderen',
+  'Yesterday': 'Gisteren',
+
+  // Drawer & Onboarding
+  'Selection Required': 'Selectie vereist',
+  'Trainer': 'Trainer',
+  'Create training plans, track player progress, and run sessions.':
+      'Maak trainingsplannen, volg de voortgang van spelers en leid sessies.',
+
+  // Additional Common / Errors
+  'Please enter a team name': 'Voer een teamnaam in',
+  'Current image loaded': 'Huidige afbeelding geladen',
+  'Success': 'Succes',
+  'Error': 'Fout',
+  'Signup successful. Check your email for the code.':
+      'Aanmelding geslaagd. Controleer uw e-mail voor de code.',
+  'Please enter the complete code': 'Voer de volledige code in',
+  'Email verified successfully': 'E-mail succesvol geverifieerd',
+  'Something went wrong. Please try again.':
+      'Er is iets misgegaan. Probeer het opnieuw.',
 };

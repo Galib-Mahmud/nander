@@ -111,7 +111,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     ),
                     SizedBox(height: 14.h),
                     Text(
-                      'No teams found',
+                      'No teams found'.tr,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 16.sp,
@@ -120,7 +120,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     ),
                     SizedBox(height: 6.h),
                     Text(
-                      'Tap below to add your first team',
+                      'Tap below to add your first team'.tr,
                       style: TextStyle(
                         color: const Color(0xFF8B95A5),
                         fontSize: 13.sp,
@@ -166,7 +166,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Add New Team',
+                    'Add New Team'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.sp,
