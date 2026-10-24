@@ -139,7 +139,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
           children: [
             Text(
               _currentStep == _stepOverview
-                  ? (session?.displayTitle ?? 'Training Session'.tr)
+                  ? (session?.displayTitle.tr ?? 'Training Session'.tr)
                   : 'New Training Plan'.tr,
               style: const TextStyle(
                 color: Colors.white,
@@ -885,12 +885,12 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         Row(
           children: [
             _buildTag(
-              difficulty.toLowerCase(),
+              difficulty.tr.toLowerCase(),
               const Color(0xFF1F2937),
               textColor: Colors.white,
             ),
             SizedBox(width: 8.w),
-            _buildTag(focus.toLowerCase(), const Color(0xFFDC2626)),
+            _buildTag(focus.tr.toLowerCase(), const Color(0xFFDC2626)),
             SizedBox(width: 8.w),
             _buildTag(
               'ai',
@@ -902,7 +902,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
         ),
         SizedBox(height: 12.h),
         Text(
-          sessionTitle,
+          sessionTitle.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: titleSize,
@@ -932,7 +932,7 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
             SizedBox(width: 6.w),
             Expanded(
               child: Text(
-                '$teamName · $fieldsize',
+                '$teamName · ${fieldsize.tr}',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 13.sp,
@@ -949,14 +949,14 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
   Widget _buildSessionOverview() {
     return Obx(() {
       final session = _controller.currentSession.value;
-      final sessionTitle = session?.displayTitle ?? 'Training Session'.tr;
+      final sessionTitle = session?.displayTitle.tr ?? 'Training Session'.tr;
       final duration = session?.durationMinutes ?? 0;
       final difficulty =
           session?.displayDifficulty ?? _controller.selectedDifficulty.value;
       final focus = session?.displayFocus ?? _controller.selectedFocus.value;
       final teamName =
           session?.teamName ?? _controller.selectedTeam.value?.name ?? '';
-      final fieldsize = session?.displayFieldsize ?? 'Full Field';
+      final fieldsize = session?.displayFieldsize.tr ?? 'Full Field'.tr;
 
       return SingleChildScrollView(
         padding: EdgeInsets.all(20.w),
@@ -1067,12 +1067,17 @@ class _NewTrainingPlanScreenState extends State<NewTrainingPlanScreen> {
               ...session.exercises.map((ex) {
                 final cue =
                 ex.keyCoachingCue != null && ex.keyCoachingCue!.isNotEmpty
-                    ? '\nCue: ${ex.keyCoachingCue}'
+                    ? '\n${'Cue:'.tr} ${ex.keyCoachingCue}'
                     : '';
+                final slot = ex.localizedSlotName;
+                final name = ex.localizedExerciseName;
+                final headerTitle = (slot.toLowerCase() == name.toLowerCase())
+                    ? slot
+                    : '$slot - $name';
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
                   child: _buildOverviewCard(
-                    '${ex.slotName ?? "Exercise ${ex.order}".tr} - ${ex.exerciseName}',
+                    headerTitle,
                     '${ex.description ?? "Focus on execution, tactical movement and teamwork.".tr}$cue (${ex.allocatedDuration ?? "${ex.durationMinutes} ${'min'.tr}"})',
                   ),
                 );

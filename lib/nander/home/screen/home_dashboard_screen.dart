@@ -239,7 +239,7 @@ class HomeDashboardScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildBadge(
-                          session.displayFocus, const Color(0xFF4D94FF)),
+                          session.displayFocus.tr, const Color(0xFF4D94FF)),
                       if (session.isCompleted)
                         _buildBadge('Completed'.tr, const Color(0xFF10B981))
                       else
@@ -247,7 +247,7 @@ class HomeDashboardScreen extends StatelessWidget {
                     ]),
                 SizedBox(height: 12.h),
                 Text(
-                  session.displayTitle,
+                  session.displayTitle.tr,
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -287,7 +287,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   Icon(Icons.bar_chart_outlined,
                       color: Colors.white.withValues(alpha: 0.7), size: 16.w),
                   SizedBox(width: 6.w),
-                  Text(session.displayDifficulty,
+                  Text(session.displayDifficulty.tr,
                       style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 14.sp)),
@@ -320,7 +320,7 @@ class HomeDashboardScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(6.r),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(label,
+      child: Text(label.tr,
           style: TextStyle(
               color: color, fontSize: 12.sp, fontWeight: FontWeight.w600)),
     );
@@ -616,7 +616,7 @@ class HomeDashboardScreen extends StatelessWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                Text(session.displayTitle,
+                Text(session.displayTitle.tr,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 15.sp,
@@ -645,7 +645,7 @@ class HomeDashboardScreen extends StatelessWidget {
                 ]),
               ])),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            _buildMiniTag(session.displayFocus),
+            _buildMiniTag(session.displayFocus.tr),
             SizedBox(height: 4.h),
             if (session.isCompleted)
               Text('Done'.tr,
@@ -669,7 +669,7 @@ class HomeDashboardScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(4.r),
           border: Border.all(
               color: const Color(0xFF4D94FF).withValues(alpha: 0.3))),
-      child: Text(label,
+      child: Text(label.tr,
           style: TextStyle(
               color: const Color(0xFF4D94FF),
               fontSize: 10.sp,

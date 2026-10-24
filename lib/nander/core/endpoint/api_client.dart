@@ -15,9 +15,10 @@ class ApiClient {
   ApiClient({required this.baseUrl, http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
 
-  final Map<String, String> _defaultHeaders = {
+  Map<String, String> get _defaultHeaders => {
     "Accept": "application/json",
     "Content-Type": "application/json",
+    "Accept-Language": LocalizationService.isDutch ? "nl" : "en",
   };
 
   // ─── URL Builder (fixes double slash) ─────────────────────────────
@@ -140,6 +141,7 @@ class ApiClient {
       request.headers["Authorization"] = "Bearer $token";
     }
     request.headers["Accept"] = "application/json";
+    request.headers["Accept-Language"] = LocalizationService.isDutch ? "nl" : "en";
     if (fields != null) request.fields.addAll(fields);
     if (files != null) {
       for (final entry in files.entries) {

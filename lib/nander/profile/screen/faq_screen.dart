@@ -54,7 +54,7 @@ class FaqScreen extends StatelessWidget {
                     vertical: 16,
                   ),
                   title: Text(
-                    question,
+                    question.tr,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,

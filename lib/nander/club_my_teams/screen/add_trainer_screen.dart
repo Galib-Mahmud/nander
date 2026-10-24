@@ -46,12 +46,12 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Request sent!"), backgroundColor: Colors.green));
+          SnackBar(content: Text("Request sent!".tr), backgroundColor: Colors.green));
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed: $e"), backgroundColor: Colors.red));
+          SnackBar(content: Text("${'Failed'.tr}: $e"), backgroundColor: Colors.red));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -60,7 +60,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
   Future<void> _handleInvite() async {
     if (_nameCtrl.text.trim().isEmpty || _emailCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Fill all fields"), backgroundColor: Colors.orange));
+          SnackBar(content: Text("Please fill all fields".tr), backgroundColor: Colors.orange));
       return;
     }
 
@@ -73,7 +73,7 @@ class _ClubAddTrainerScreenState extends State<ClubAddTrainerScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invitation sent!"), backgroundColor: Colors.green));
+          SnackBar(content: Text("Invitation sent!".tr), backgroundColor: Colors.green));
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;

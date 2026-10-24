@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import '../../core/endpoint/api_endpoint.dart';
 
 class ActiveTeamItem {
@@ -89,6 +90,40 @@ class ExerciseModel {
         title = title ?? exerciseName ?? 'Exercise';
 
   String? get resolvedImageUrl => ApiEndpoint.resolveImageUrl(imageUrl);
+
+  String get localizedTitle {
+    final raw = title;
+    final match =
+        RegExp(r'^Exercise\s*(\d+)$', caseSensitive: false).firstMatch(raw);
+    if (match != null) {
+      final num = match.group(1);
+      return '${'Exercise'.tr} $num';
+    }
+    return raw.tr;
+  }
+
+  String get localizedSlotName {
+    if (slotName == null || slotName!.isEmpty) {
+      return '${'Exercise'.tr} $order';
+    }
+    final match =
+        RegExp(r'^Exercise\s*(\d+)$', caseSensitive: false).firstMatch(slotName!);
+    if (match != null) {
+      final num = match.group(1);
+      return '${'Exercise'.tr} $num';
+    }
+    return slotName!.tr;
+  }
+
+  String get localizedExerciseName {
+    final match =
+        RegExp(r'^Exercise\s*(\d+)$', caseSensitive: false).firstMatch(exerciseName);
+    if (match != null) {
+      final num = match.group(1);
+      return '${'Exercise'.tr} $num';
+    }
+    return exerciseName.tr;
+  }
 
   factory ExerciseModel.fromJson(Map<String, dynamic> json) {
     List<String> parseList(dynamic val) {
@@ -203,16 +238,22 @@ class TrainingSessionModel {
   int get durationMinutes => totalDurationMinutes;
 
   String get displayTitle =>
-      (title != null && title!.isNotEmpty) ? title! : 'Training Session';
+      (title != null && title!.isNotEmpty) ? title!.tr : 'Training Session'.tr;
 
-  String get displayFocus =>
-      (focus != null && focus!.isNotEmpty) ? focus! : (category ?? 'ATTACK');
+  String get displayFocus {
+    final raw = (focus != null && focus!.isNotEmpty) ? focus! : (category ?? 'ATTACK');
+    return raw.tr;
+  }
 
-  String get displayDifficulty =>
-      (difficulty != null && difficulty!.isNotEmpty) ? difficulty! : 'EASY';
+  String get displayDifficulty {
+    final raw = (difficulty != null && difficulty!.isNotEmpty) ? difficulty! : 'EASY';
+    return raw.tr;
+  }
 
-  String get displayFieldsize =>
-      (fieldsize != null && fieldsize!.isNotEmpty) ? fieldsize! : 'FULL_FIELD';
+  String get displayFieldsize {
+    final raw = (fieldsize != null && fieldsize!.isNotEmpty) ? fieldsize! : 'FULL_FIELD';
+    return raw.tr;
+  }
 
   factory TrainingSessionModel.fromJson(Map<String, dynamic> json) {
     var exList = <ExerciseModel>[];

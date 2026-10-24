@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -96,7 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Login',
+                              'Login'.tr,
                               style: TextStyle(
                                 color: isLogin ? Colors.white : Colors.white54,
                                 fontSize: 16,
@@ -123,7 +124,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Sign Up',
+                              'Sign Up'.tr,
                               style: TextStyle(
                                 color: !isLogin ? Colors.white : Colors.white54,
                                 fontSize: 16,
@@ -139,9 +140,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 30),
               // Email Label
-              const Text(
-                'Email Address',
-                style: TextStyle(
+              Text(
+                'Email Address'.tr,
+                style: const TextStyle(
                   color: Color(0xFF8B95A5),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -170,9 +171,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               // Password Label
-              const Text(
-                'Password',
-                style: TextStyle(
+              Text(
+                'Password'.tr,
+                style: const TextStyle(
                   color: Color(0xFF8B95A5),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -212,9 +213,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               // Re Type Password Label
-              const Text(
-                'Re Type Password',
-                style: TextStyle(
+              Text(
+                'Re Type Password'.tr,
+                style: const TextStyle(
                   color: Color(0xFF8B95A5),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -261,10 +262,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   color: const Color(0xFF4D94FF),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Sign up',
-                    style: TextStyle(
+                    'Sign up'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -274,9 +275,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               // Privacy Policy Text
-              const Text(
-                'By clicking the "sign up" button, you accept the terms of the Privacy Policy.',
-                style: TextStyle(
+              Text(
+                'By clicking the "sign up" button, you accept the terms of the Privacy Policy.'.tr,
+                style: const TextStyle(
                   color: Color(0xFF8B95A5),
                   fontSize: 14,
                   fontStyle: FontStyle.italic,

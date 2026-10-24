@@ -266,8 +266,8 @@ class TrainingSessionController extends GetxController {
 
     if (selectedTeamId.value.isEmpty) {
       Get.snackbar(
-        'Select Team',
-        'Please select or join an active team first',
+        'Select Team'.tr,
+        'Please select or join an active team first'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
@@ -283,6 +283,7 @@ class TrainingSessionController extends GetxController {
         'focus': selectedFocus.value,
         'difficulty': selectedDifficulty.value,
         'fieldsize': selectedFieldsize.value,
+        'language': LocalizationService.isDutch ? 'nl' : 'en',
         if (trainingTypeCtrl.text.trim().isNotEmpty)
           'trainingType': trainingTypeCtrl.text.trim(),
         if (targetDurationMinutes.value > 0)
@@ -308,9 +309,9 @@ class TrainingSessionController extends GetxController {
           } catch (_) {}
 
           Get.snackbar(
-            'Success',
-            response['message']?.toString() ??
-                'Training session created successfully',
+            'Success'.tr,
+            response['message']?.toString().tr ??
+                'Training session created successfully'.tr,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: const Color(0xFF10B981),
             colorText: Colors.white,
@@ -319,8 +320,8 @@ class TrainingSessionController extends GetxController {
         }
       } else {
         Get.snackbar(
-          'Error',
-          response?['message']?.toString() ?? 'Failed to create plan',
+          'Error'.tr,
+          response?['message']?.toString().tr ?? 'Failed to create plan'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.withValues(alpha: 0.8),
           colorText: Colors.white,
@@ -329,8 +330,8 @@ class TrainingSessionController extends GetxController {
     } catch (e) {
       debugPrint('Error creating training session: $e');
       Get.snackbar(
-        'Error',
-        'Something went wrong while generating session.',
+        'Error'.tr,
+        'Something went wrong while generating session.'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
@@ -434,7 +435,6 @@ class TrainingSessionController extends GetxController {
     isSubmittingReview.value = true;
     try {
       final body = <String, dynamic>{
-        'sessionId': sessionId,
         'rating': rating,
         if (review.isNotEmpty) 'review': review,
         if (evaluation.isNotEmpty) 'evaluation': evaluation,
@@ -445,7 +445,7 @@ class TrainingSessionController extends GetxController {
       };
 
       final response = await _apiClient.post(
-        '/training-session/submit-review',
+        '/training-session/submit-review/$sessionId',
         body: body,
         requiresAuth: true,
       );

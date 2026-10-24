@@ -28,7 +28,7 @@ class AddTeamScreen extends StatelessWidget {
         titleSpacing: 0,
         centerTitle: false,
         title: Text(
-          'Add Team',
+          'Add Team'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -59,7 +59,7 @@ class AddTeamScreen extends StatelessWidget {
                       color: Color(0xFF8B95A5),
                       size: 20,
                     ),
-                    hintText: 'Search Team...',
+                    hintText: 'Search Team...'.tr,
                     hintStyle: TextStyle(
                       color: const Color(0xFF8B95A5),
                       fontSize: 14.sp,
@@ -95,7 +95,7 @@ class AddTeamScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Team not found!',
+                          'Team not found!'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18.sp,
@@ -104,7 +104,7 @@ class AddTeamScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Search again with correct name or email',
+                          'Search again with correct name or email'.tr,
                           style: TextStyle(
                             color: const Color(0xFF8B95A5),
                             fontSize: 13.sp,
@@ -178,7 +178,7 @@ class AddTeamScreen extends StatelessWidget {
                 border: Border.all(color: const Color(0xFF374151)),
               ),
               child: Text(
-                'Pending Request',
+                'Pending Request'.tr,
                 style: TextStyle(
                   color: const Color(0xFF8B95A5),
                   fontSize: 12.sp,
@@ -196,7 +196,7 @@ class AddTeamScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
-                  'Request',
+                  'Request'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 13.sp,

@@ -61,7 +61,7 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                 );
                 if (result == true && mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Team updated successfully!"),
+                      SnackBar(content: Text("Team updated successfully!".tr),
                           backgroundColor: Colors.green));
                 }
               },
@@ -77,11 +77,11 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                   await _controller.deleteTeam(team.id);
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Team deleted"), backgroundColor: Colors.green));
+                      SnackBar(content: Text("Team deleted".tr), backgroundColor: Colors.green));
                 } catch (e) {
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Failed to delete: $e"), backgroundColor: Colors.red));
+                      SnackBar(content: Text("${'Failed to delete'.tr}: $e"), backgroundColor: Colors.red));
                 }
               },
             ),
@@ -257,7 +257,7 @@ class _ClubMyteamsState extends State<ClubMyteams> {
                           );
                           if (result == true && mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Team created successfully!"),
+                                SnackBar(content: Text("Team created successfully!".tr),
                                     backgroundColor: Colors.green));
                           }
                         },

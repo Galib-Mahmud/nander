@@ -66,7 +66,7 @@ class _TrainingSessionDetailScreenState
         backgroundColor: const Color(0xFF0A0E1A),
         foregroundColor: Colors.white,
         title: Text(
-          s.displayTitle,
+          s.displayTitle.tr,
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -106,7 +106,7 @@ class _TrainingSessionDetailScreenState
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          s.displayFocus.toUpperCase(),
+                          s.displayFocus.tr.toUpperCase(),
                           style: TextStyle(
                             color: const Color(0xFF4D94FF),
                             fontSize: 12.sp,
@@ -127,7 +127,7 @@ class _TrainingSessionDetailScreenState
                   ),
                   SizedBox(height: 12.h),
                   Text(
-                    s.displayTitle,
+                    s.displayTitle.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.sp,
@@ -705,7 +705,7 @@ class _TrainingSessionDetailScreenState
               SizedBox(width: 10.w),
               Expanded(
                 child: Text(
-                  ex.title,
+                  ex.localizedTitle,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 15.sp,

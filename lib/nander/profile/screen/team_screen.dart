@@ -1170,7 +1170,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                     Icon(Icons.people_outline,
                                         color: Colors.white24, size: 40.sp),
                                     SizedBox(height: 8.h),
-                                    Text('No active team members yet',
+                                    Text('No active team members yet'.tr,
                                         style: TextStyle(
                                             color: Colors.white54,
                                             fontSize: 13.sp)),
@@ -1253,7 +1253,7 @@ class _TeamScreenState extends State<TeamScreen> {
                                     Icon(Icons.inbox_outlined,
                                         color: Colors.white24, size: 40.sp),
                                     SizedBox(height: 8.h),
-                                    Text('No pending join requests',
+                                    Text('No pending join requests'.tr,
                                         style: TextStyle(
                                             color: Colors.white54,
                                             fontSize: 13.sp)),
@@ -1438,17 +1438,17 @@ class _TeamScreenState extends State<TeamScreen> {
         backgroundColor: const Color(0xFF111827),
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text('Delete Team',
+        title: Text('Delete Team'.tr,
             style:
-            TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: Text(
-            'Are you sure you want to delete "${team.name}"? This action cannot be undone.',
+            'Are you sure you want to delete "${team.name}"? This action cannot be undone.'.tr,
             style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: Color(0xFF8B95A5))),
+            child: Text('Cancel'.tr,
+                style: const TextStyle(color: Color(0xFF8B95A5))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1461,7 +1461,7 @@ class _TeamScreenState extends State<TeamScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r)),
             ),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: Text('Delete'.tr, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1515,7 +1515,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 TextStyle(color: const Color(0xFF4D94FF), fontSize: 13.sp),
               ),
               SizedBox(height: 16.h),
-              Text('Trainer Name',
+              Text('Trainer Name'.tr,
                   style: TextStyle(color: Colors.white70, fontSize: 14.sp)),
               SizedBox(height: 6.h),
               Container(
@@ -1529,7 +1529,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   controller: nameCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'Full Name'.tr,
                     hintStyle: TextStyle(
                         color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
@@ -1538,7 +1538,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ),
               ),
               SizedBox(height: 14.h),
-              Text('Trainer Email',
+              Text('Trainer Email'.tr,
                   style: TextStyle(color: Colors.white70, fontSize: 14.sp)),
               SizedBox(height: 6.h),
               Container(
@@ -1553,7 +1553,7 @@ class _TeamScreenState extends State<TeamScreen> {
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Enter Trainer Email',
+                    hintText: 'Enter Trainer Email'.tr,
                     hintStyle: TextStyle(
                         color: const Color(0xFF8B95A5), fontSize: 14.sp),
                     border: InputBorder.none,
@@ -1578,7 +1578,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                       ),
                       child: Text(
-                        'Browse Trainers',
+                        'Browse Trainers'.tr,
                         style: TextStyle(
                           color: const Color(0xFF8B95A5),
                           fontSize: 13.sp,
@@ -1591,7 +1591,7 @@ class _TeamScreenState extends State<TeamScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (emailCtrl.text.trim().isEmpty) {
-                          Get.snackbar('Error', 'Please enter trainer email');
+                          Get.snackbar('Error'.tr, 'Please enter trainer email'.tr);
                           return;
                         }
                         Navigator.pop(ctx);
@@ -1610,7 +1610,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                       ),
                       child: Text(
-                        'Add Member',
+                        'Add Member'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -2910,7 +2910,7 @@ class _TeamScreenState extends State<TeamScreen> {
 //                                     Icon(Icons.people_outline,
 //                                         color: Colors.white24, size: 40.sp),
 //                                     SizedBox(height: 8.h),
-//                                     Text('No active team members yet',
+//                                     Text('No active team members yet'.tr.tr,
 //                                         style: TextStyle(
 //                                             color: Colors.white54,
 //                                             fontSize: 13.sp)),
@@ -2993,7 +2993,7 @@ class _TeamScreenState extends State<TeamScreen> {
 //                                     Icon(Icons.inbox_outlined,
 //                                         color: Colors.white24, size: 40.sp),
 //                                     SizedBox(height: 8.h),
-//                                     Text('No pending join requests',
+//                                     Text('No pending join requests'.tr,
 //                                         style: TextStyle(
 //                                             color: Colors.white54,
 //                                             fontSize: 13.sp)),

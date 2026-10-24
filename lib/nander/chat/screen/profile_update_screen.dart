@@ -17,9 +17,9 @@ class ProfileUpdateScreen extends StatelessWidget {
               color: Colors.white, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Profile Update',
-          style: TextStyle(
+        title: Text(
+          'Profile Update'.tr,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -89,9 +89,9 @@ class ProfileUpdateScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.r),
                       border: Border.all(color: const Color(0xFF1F2937)),
                     ),
-                    child: const Text(
-                      'Choose your image',
-                      style: TextStyle(color: Color(0xFF8B95A5), fontSize: 14),
+                    child: Text(
+                      'Choose your image'.tr,
+                      style: const TextStyle(color: Color(0xFF8B95A5), fontSize: 14),
                     ),
                   ),
                 ],
@@ -105,10 +105,10 @@ class ProfileUpdateScreen extends StatelessWidget {
                 color: const Color(0xFF4D94FF),
                 borderRadius: BorderRadius.circular(14.r),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Save',
-                  style: TextStyle(
+                  'Save'.tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
@@ -124,7 +124,7 @@ class ProfileUpdateScreen extends StatelessWidget {
 
   Widget _buildLabel(String text) {
     return Text(
-      text,
+      text.tr,
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
@@ -144,7 +144,7 @@ class ProfileUpdateScreen extends StatelessWidget {
       child: TextField(
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          hintText: hint,
+          hintText: hint.tr,
           hintStyle: TextStyle(
               color: Colors.white.withValues(alpha: 0.4), fontSize: 14.sp),
           border: InputBorder.none,

@@ -222,17 +222,17 @@ class ProfileController extends GetxController {
       AlertDialog(
         backgroundColor: const Color(0xFF161E30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Account',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text(
-          'Are you sure you want to delete your account? A verification code (OTP) will be sent to your email to confirm deletion.',
-          style: TextStyle(color: Colors.white70),
+        title: Text('Delete Account'.tr,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Text(
+          'Are you sure you want to delete your account? A verification code (OTP) will be sent to your email to confirm deletion.'.tr,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child:
-            const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            Text('Cancel'.tr, style: const TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -242,7 +242,7 @@ class ProfileController extends GetxController {
             style:
             ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
             child:
-            const Text('Send Code', style: TextStyle(color: Colors.white)),
+            Text('Send Code'.tr, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -280,15 +280,15 @@ class ProfileController extends GetxController {
       AlertDialog(
         backgroundColor: const Color(0xFF161E30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirm Account Deletion',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text('Confirm Account Deletion'.tr,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Enter the OTP code received in your email to permanently delete your account:',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            Text(
+              'Enter the OTP code received in your email to permanently delete your account:'.tr,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -298,7 +298,7 @@ class ProfileController extends GetxController {
                   color: Colors.white, fontSize: 18, letterSpacing: 4),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
-                hintText: 'Enter OTP',
+                hintText: 'Enter OTP'.tr,
                 hintStyle:
                 const TextStyle(color: Colors.white38, letterSpacing: 0),
                 filled: true,
@@ -316,13 +316,13 @@ class ProfileController extends GetxController {
           TextButton(
             onPressed: () => Get.back(),
             child:
-            const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            Text('Cancel'.tr, style: const TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () async {
               final code = otpController.text.trim();
               if (code.isEmpty) {
-                _showError('Please enter the OTP code');
+                _showError('Please enter the OTP code'.tr);
                 return;
               }
               Get.back();
@@ -330,8 +330,8 @@ class ProfileController extends GetxController {
             },
             style:
             ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700),
-            child: const Text('Delete Permanently',
-                style: TextStyle(color: Colors.white)),
+            child: Text('Delete Permanently'.tr,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -8,7 +8,6 @@ import '../../profile/controller/profile_controller.dart';
 import '../../core/local_storage/user_info.dart';
 import '../../core/endpoint/api_endpoint.dart';
 import '../../profile/screen/club_screen.dart';
-import '../../profile/screen/team_screen.dart';
 import '../../core/localization/localization_service.dart';
 
 class MoreScreen extends StatefulWidget {
@@ -302,7 +301,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   }),
                   SizedBox(height: 12.h),
                   _buildMenuItem('Team'.tr, Icons.chevron_right, onTap: () {
-                    Get.to(() => const TeamScreen());
+                    Get.toNamed(RouteName.team);
                   }),
                   SizedBox(height: 12.h),
                 ],
