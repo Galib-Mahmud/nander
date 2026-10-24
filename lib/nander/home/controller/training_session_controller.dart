@@ -67,6 +67,7 @@ class TrainingSessionController extends GetxController {
   final RxBool isCreating = false.obs;
   final RxBool isUpdating = false.obs;
   final RxBool isSubmittingReport = false.obs;
+  final RxBool isSubmittingReview = false.obs;
   final RxBool isLoadingSingleSession = false.obs;
 
   @override
@@ -414,6 +415,71 @@ class TrainingSessionController extends GetxController {
       debugPrint('Error submitting session report: $e');
     } finally {
       isSubmittingReport.value = false;
+    }
+    return false;
+  }
+
+  /// POST /training-session/submit-review
+  /// rating: 1..5. Empty optional text fields are not sent.
+  Future<bool> submitSessionReview({
+    required String sessionId,
+    required int rating,
+    required String reportTopic,
+    String review = '',
+    String evaluation = '',
+    String feedback = '',
+    String trainingGoal = '',
+    String yourReport = '',
+  }) async {
+    isSubmittingReview.value = true;
+    try {
+      final body = <String, dynamic>{
+        'sessionId': sessionId,
+        'rating': rating,
+        if (review.isNotEmpty) 'review': review,
+        if (evaluation.isNotEmpty) 'evaluation': evaluation,
+        if (feedback.isNotEmpty) 'feedback': feedback,
+        if (trainingGoal.isNotEmpty) 'trainingGoal': trainingGoal,
+        'reportTopic': reportTopic,
+        if (yourReport.isNotEmpty) 'yourReport': yourReport,
+      };
+
+      final response = await _apiClient.post(
+        '/training-session/submit-review',
+        body: body,
+        requiresAuth: true,
+      );
+
+      if (response != null && response['success'] == true) {
+        fetchSessionsByTrainer();
+        Get.snackbar(
+          'Success',
+          response['message']?.toString() ?? 'Review submitted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFF10B981),
+          colorText: Colors.white,
+        );
+        return true;
+      }
+
+      Get.snackbar(
+        'Error',
+        response?['message']?.toString() ?? 'Failed to submit review',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      debugPrint('Error submitting session review: $e');
+      Get.snackbar(
+        'Error',
+        'Something went wrong while submitting review.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    } finally {
+      isSubmittingReview.value = false;
     }
     return false;
   }

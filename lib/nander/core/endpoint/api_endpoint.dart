@@ -1,6 +1,6 @@
 class ApiEndpoint {
-   static const String host = "https://nanapi.sobhoy.com";
-  //  static const String host = "http://10.10.26.235:8000";
+ static const String host = "https://nanapi.sobhoy.com";
+ // static const String host = "http://10.10.26.235:8000";
   //  static const String host = "http://10.10.26.235:7701";
 
 

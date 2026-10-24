@@ -20,7 +20,14 @@ class _TrainingSessionDetailScreenState
       TrainingSessionController.to;
 
   late bool _isCompleted;
-  final TextEditingController _notesCtrl = TextEditingController();
+  // Rate & review form
+  int _rating = 0; // 0 = not rated yet, otherwise 1..5
+  bool _reviewSubmitted = false;
+  final TextEditingController _reviewCtrl = TextEditingController();
+  final TextEditingController _evaluationCtrl = TextEditingController();
+  final TextEditingController _feedbackCtrl = TextEditingController();
+  final TextEditingController _goalCtrl = TextEditingController();
+  final TextEditingController _yourReportCtrl = TextEditingController();
   String _selectedTopic = 'Tactical Feedback';
   final List<String> _topics = [
     'Tactical Feedback',
@@ -38,7 +45,11 @@ class _TrainingSessionDetailScreenState
 
   @override
   void dispose() {
-    _notesCtrl.dispose();
+    _reviewCtrl.dispose();
+    _evaluationCtrl.dispose();
+    _feedbackCtrl.dispose();
+    _goalCtrl.dispose();
+    _yourReportCtrl.dispose();
     super.dispose();
   }
 
@@ -250,14 +261,14 @@ class _TrainingSessionDetailScreenState
                 onTap: loading
                     ? null
                     : () async {
-                        final ok = await _controller.toggleSessionComplete(
-                            s.id, !_isCompleted);
-                        if (ok) {
-                          setState(() {
-                            _isCompleted = !_isCompleted;
-                          });
-                        }
-                      },
+                  final ok = await _controller.toggleSessionComplete(
+                      s.id, !_isCompleted);
+                  if (ok) {
+                    setState(() {
+                      _isCompleted = !_isCompleted;
+                    });
+                  }
+                },
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -275,165 +286,361 @@ class _TrainingSessionDetailScreenState
                   child: Center(
                     child: loading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                         : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _isCompleted
-                                    ? Icons.check_circle
-                                    : Icons.check_circle_outline,
-                                color: Colors.white,
-                                size: 20.w,
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                _isCompleted
-                                    ? 'Completed Session'
-                                    : 'Mark as Completed'.tr,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _isCompleted
+                              ? Icons.check_circle
+                              : Icons.check_circle_outline,
+                          color: Colors.white,
+                          size: 20.w,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          _isCompleted
+                              ? 'Completed Session'
+                              : 'Mark as Completed'.tr,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
                           ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             }),
             SizedBox(height: 20.h),
 
-            // Submit Session Report
-            Text(
-              'Session Report & Notes',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A2236),
-                borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(color: const Color(0xFF2A3550)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedTopic,
-                    dropdownColor: const Color(0xFF1A2236),
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Report Topic',
-                      labelStyle: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide:
-                            const BorderSide(color: Color(0xFF2A3550)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide:
-                            const BorderSide(color: Color(0xFF2A3550)),
-                      ),
-                    ),
-                    items: _topics
-                        .map((t) =>
-                            DropdownMenuItem(value: t, child: Text(t)))
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) setState(() => _selectedTopic = val);
-                    },
-                  ),
-                  SizedBox(height: 12.h),
-                  TextField(
-                    controller: _notesCtrl,
-                    maxLines: 3,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Enter observation, feedback or notes...',
-                      hintStyle: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide:
-                            const BorderSide(color: Color(0xFF2A3550)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide:
-                            const BorderSide(color: Color(0xFF2A3550)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 14.h),
-                  Obx(() {
-                    final isReporting =
-                        _controller.isSubmittingReport.value;
-                    return ElevatedButton(
-                      onPressed: isReporting
-                          ? null
-                          : () async {
-                              if (_notesCtrl.text.trim().isEmpty) {
-                                Get.snackbar('Error', 'Please enter notes');
-                                return;
-                              }
-                              final ok =
-                                  await _controller.submitSessionReport(
-                                s.id,
-                                _selectedTopic,
-                                _notesCtrl.text.trim(),
-                              );
-                              if (ok) {
-                                _notesCtrl.clear();
-                              }
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4D94FF),
-                        minimumSize: Size(double.infinity, 44.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                      child: isReporting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          :  Text(
-                              'Submit Report'.tr,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    );
-                  }),
-                ],
-              ),
-            ),
+            // Rate & Review
+            _buildReviewSection(),
             SizedBox(height: 50.h),
           ],
         ),
       ),
+    );
+  }
+
+  // ─── Rate & Review ───────────────────────────────────────────────
+  static const List<String> _ratingLabels = [
+    'Poor',
+    'Fair',
+    'Good',
+    'Very good',
+    'Excellent',
+  ];
+
+  static const Color _starColor = Color(0xFFFFB800);
+
+  Future<void> _submitReview() async {
+    if (_rating == 0) {
+      Get.snackbar(
+        'Rating required',
+        'Please select a star rating first',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final ok = await _controller.submitSessionReview(
+      sessionId: widget.session.id,
+      rating: _rating,
+      review: _reviewCtrl.text.trim(),
+      evaluation: _evaluationCtrl.text.trim(),
+      feedback: _feedbackCtrl.text.trim(),
+      trainingGoal: _goalCtrl.text.trim(),
+      reportTopic: _selectedTopic,
+      yourReport: _yourReportCtrl.text.trim(),
+    );
+    if (ok && mounted) {
+      setState(() => _reviewSubmitted = true);
+    }
+  }
+
+  Widget _buildReviewSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Rate & Review Session',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A2236),
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: const Color(0xFF2A3550)),
+          ),
+          child: _reviewSubmitted ? _buildReviewThanks() : _buildReviewForm(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRatingPicker(),
+        _buildReviewField(
+          label: 'Review',
+          controller: _reviewCtrl,
+          hint: 'Write a short review of this session...',
+        ),
+        _buildReviewField(
+          label: 'Evaluation',
+          controller: _evaluationCtrl,
+          hint: 'How did the players perform overall?',
+        ),
+        _buildReviewField(
+          label: 'Feedback',
+          controller: _feedbackCtrl,
+          hint: 'Feedback on drills, intensity or structure...',
+        ),
+        _buildReviewField(
+          label: 'Training Goal',
+          controller: _goalCtrl,
+          hint: 'What was the goal and was it achieved?',
+        ),
+        SizedBox(height: 14.h),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedTopic,
+          dropdownColor: const Color(0xFF1A2236),
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: 'Report Topic',
+            labelStyle:
+            TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              borderSide: const BorderSide(color: Color(0xFF2A3550)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              borderSide: const BorderSide(color: Color(0xFF2A3550)),
+            ),
+          ),
+          items: _topics
+              .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+              .toList(),
+          onChanged: (val) {
+            if (val != null) setState(() => _selectedTopic = val);
+          },
+        ),
+        _buildReviewField(
+          label: 'Your Report',
+          controller: _yourReportCtrl,
+          hint: 'Enter observation, notes or issues...',
+          maxLines: 3,
+        ),
+        SizedBox(height: 18.h),
+        Obx(() {
+          final loading = _controller.isSubmittingReview.value;
+          return ElevatedButton(
+            onPressed: loading ? null : _submitReview,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4D94FF),
+              disabledBackgroundColor: const Color(0xFF2A3550),
+              minimumSize: Size(double.infinity, 48.h),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+            ),
+            child: loading
+                ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
+                : Text(
+              'Submit Review'.tr,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  /// 5-star picker. Tap a star to set rating 1..5.
+  Widget _buildRatingPicker() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A0E1A),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: _rating > 0
+              ? _starColor.withValues(alpha: 0.5)
+              : const Color(0xFF2A3550),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'How was this session?',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.8),
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (i) {
+              final filled = i < _rating;
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _rating = i + 1),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: AnimatedScale(
+                    scale: filled ? 1.12 : 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutBack,
+                    child: Icon(
+                      filled
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      size: 40.w,
+                      color: filled
+                          ? _starColor
+                          : Colors.white.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+          SizedBox(height: 10.h),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Text(
+              _rating == 0
+                  ? 'Tap a star to rate'
+                  : '$_rating/5 · ${_ratingLabels[_rating - 1]}',
+              key: ValueKey(_rating),
+              style: TextStyle(
+                color: _rating == 0
+                    ? Colors.white.withValues(alpha: 0.5)
+                    : _starColor,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    int maxLines = 2,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(top: 14.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.8),
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          TextField(
+            controller: controller,
+            maxLines: maxLines,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 13.sp,
+              ),
+              filled: true,
+              fillColor: const Color(0xFF0A0E1A),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: const BorderSide(color: Color(0xFF2A3550)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: const BorderSide(color: Color(0xFF2A3550)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: const BorderSide(color: Color(0xFF4D94FF)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewThanks() {
+    return Column(
+      children: [
+        Icon(Icons.check_circle_rounded,
+            color: const Color(0xFF10B981), size: 44.w),
+        SizedBox(height: 10.h),
+        Text(
+          'Thanks for your review!',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (i) {
+            return Icon(
+              i < _rating ? Icons.star_rounded : Icons.star_outline_rounded,
+              size: 24.w,
+              color: i < _rating
+                  ? _starColor
+                  : Colors.white.withValues(alpha: 0.3),
+            );
+          }),
+        ),
+      ],
     );
   }
 
@@ -539,7 +746,7 @@ class _TrainingSessionDetailScreenState
             ),
             SizedBox(height: 4.h),
             ...ex.coachingPoints.map(
-              (cp) => Padding(
+                  (cp) => Padding(
                 padding: EdgeInsets.only(bottom: 3.h, left: 6.w),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
